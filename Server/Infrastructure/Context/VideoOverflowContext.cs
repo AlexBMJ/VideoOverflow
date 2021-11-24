@@ -14,6 +14,7 @@ public class VideoOverflowContext : DbContext
    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Many to Many
         modelBuilder.Entity<Resource>()
             .HasMany(resource => resource.Tags)
             .WithMany(t => t.Resources);
@@ -25,7 +26,8 @@ public class VideoOverflowContext : DbContext
         modelBuilder.Entity<Tag>()
             .HasMany(tag => tag.TagSynonyms)
             .WithMany(tagsynonym => tagsynonym.Tags);
-
+        
+        // One to Many
         modelBuilder.Entity<Resource>()
             .HasMany(resource => resource.Comments);
         

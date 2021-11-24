@@ -1,9 +1,7 @@
 ﻿namespace VideoOverflow.Server.Infrastructure.Entities;
 public class Resource
 {
-    
-    //Attributed
-
+    //Attributes
     public int Id { get; set; }
     public DateTime Created { get; set; }
     public string MaterialType { get; set; }
