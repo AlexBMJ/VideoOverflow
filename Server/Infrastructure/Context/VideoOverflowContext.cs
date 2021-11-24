@@ -1,0 +1,36 @@
+﻿namespace VideoOverflow.Server.Infrastructure.Context;
+
+public class VideoOverflowContext : DbContext
+{
+    public DbSet<Tag> Tags => Set<Tag>();
+    public DbSet<TagSynonym> TagSynonyms => Set<TagSynonym>();
+    public DbSet<Category> Categories => Set<Category>();
+    public DbSet<Comment> Comments=> Set<Comment>();
+    public DbSet<User> Users => Set<User>();
+    public DbSet<Resource> Resources=> Set<Resource>();
+    
+    
+    public VideoOverflowContext(DbContextOptions<VideoOverflowContext> options) : base(options) { }
+   
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Resource>()
+            .HasMany(resource => resource.Tags)
+            .WithMany(t => t.Resources);
+
+        modelBuilder.Entity<Resource>()
+            .HasMany(resource => resource.Categories)
+            .WithMany(category => category.Resources);
+
+        modelBuilder.Entity<Tag>()
+            .HasMany(tag => tag.TagSynonyms)
+            .WithMany(tagsynonym => tagsynonym.Tags);
+
+        modelBuilder.Entity<Resource>()
+            .HasMany(resource => resource.Comments);
+        
+        modelBuilder.Entity<User>()
+            .HasMany(user => user.Comments);
+    }
+
+}
