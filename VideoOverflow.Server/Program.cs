@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
+using VideoOverflow.Repository;
+using VideoOverflow.Repository.Infrastructure.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();
+    
+    // Map user secrets
+    builder.Services.AddDbContext<VideoOverflowContext>(options => options.UseNpgsql(builder
+        .Configuration.GetConnectionString("Resources")));
 }
 else
 {

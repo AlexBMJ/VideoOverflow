@@ -12,10 +12,13 @@
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Videooverflow.Server' " />
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\VideoOverflow.Client\VideoOverflow.Client.csproj" />
+    <ProjectReference Include="..\VideoOverflow.Repository\VideoOverflow.Repository.csproj" />
   </ItemGroup>
 
   <ItemGroup>
