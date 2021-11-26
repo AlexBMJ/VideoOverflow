@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web.Resource;
-using Videooverflow.Shared;
+using Shared;
 
-namespace Videooverflow.Server.Controllers;
+namespace Server.Controllers;
 
 [Authorize]
 [ApiController]

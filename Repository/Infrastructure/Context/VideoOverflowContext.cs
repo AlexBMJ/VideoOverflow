@@ -1,4 +1,6 @@
-﻿namespace VideoOverflow.Server.Infrastructure.Context;
+﻿using Repository.Infrastructure.Entities;
+
+namespace Repository.Infrastructure.Context;
 
 public class VideoOverflowContext : DbContext
 {

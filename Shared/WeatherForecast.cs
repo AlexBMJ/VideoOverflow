@@ -1,4 +1,4 @@
-namespace Videooverflow.Shared;
+namespace Shared;
 
 public class WeatherForecast
 {

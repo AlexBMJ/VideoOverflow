@@ -1,5 +1,5 @@
 ﻿
-namespace VideoOverflow.Server.Infrastructure.Context;
+namespace Repository.Infrastructure.Context;
 
 public class VideoOverflowContextFactory : IDesignTimeDbContextFactory<VideoOverflowContext>
 {

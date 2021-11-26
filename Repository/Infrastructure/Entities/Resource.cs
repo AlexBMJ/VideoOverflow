@@ -1,4 +1,4 @@
-﻿namespace VideoOverflow.Server.Infrastructure.Entities;
+﻿namespace Repository.Infrastructure.Entities;
 public class Resource
 {
     //Attributes
@@ -7,7 +7,7 @@ public class Resource
     public string MaterialType { get; set; }
     public string Site_url { get; set; }
     public string Site_title { get; set; }
-    public string Creator { get; set; }
+    public string Author { get; set; }
     public string Content_source { get; set; }
     public int LixNumber { get; set; }
     public int SkillLevel { get; set; }
