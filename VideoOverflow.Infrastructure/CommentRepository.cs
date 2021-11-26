@@ -1,33 +1,54 @@
-namespace VideoOverflow.Repository.Infrastructure.Repositories;
+namespace VideoOverflow.Infrastructure;
 
-public class CommentRepository
+public class CommentRepository : ICommentRepository
 {
-    private readonly VideoOverflowContext _context;
+    private readonly IVideoOverflowContext _context;
 
-    public CommentRepository(VideoOverflowContext context)
+    public CommentRepository(IVideoOverflowContext context)
     {
         _context = context;
     }
-    
-    
-    public async Task<IEnumerable<CommentDetailsDTO>() ReadAll()
+
+    public async Task<IReadOnlyCollection<CommentDTO>> GetAll()
     {
-        // add code 
+        return (await _context.Comments.Select(c => new CommentDTO(c.Id, c.Content))
+            .ToListAsync())
+            .AsReadOnly();
     }
     
-    public async Task<CommentDetailsDTO?> ReadAll(int id)
+    public async Task<CommentDTO?> Get(int commentId)
     {
-        // add code 
+        return await (from c in _context.Comments
+            where c.Id == commentId
+            select new CommentDTO(c.Id, c.Content)).FirstOrDefaultAsync();
     }
 
-    public async Task<CommentDetailsDTO> Create(CommentDTO create)
+    public async Task<CommentDTO> Push(CommentCreateDTO comment)
     {
-        // add code
+        var createdComment = new Comment() {Content = comment.Content};
+        
+        await _context.Comments.AddAsync(createdComment);
+        await _context.SaveChangesAsync();
+
+        return new CommentDTO(createdComment.Id, createdComment.Content);
     }
 
-    public async Task<Status> Update(int id, CommentUpdateDTO update)
+    public async Task<Status> Update(CommentUpdateDTO comment)
     {
-        // add code
+        var entity = await (from c in _context.Comments
+            where c.Id == comment.Id
+            select c).FirstOrDefaultAsync();
+
+        if (entity == null)
+        {
+            return Status.NotFound;
+        }
+
+        entity.Content = comment.Content;
+        
+        await _context.SaveChangesAsync();
+
+        return Status.Updated;
     }
     
 }
