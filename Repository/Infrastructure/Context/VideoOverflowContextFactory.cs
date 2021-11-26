@@ -1,4 +1,6 @@
 ﻿
+using Microsoft.Extensions.Configuration;
+
 namespace Repository.Infrastructure.Context;
 
 public class VideoOverflowContextFactory : IDesignTimeDbContextFactory<VideoOverflowContext>

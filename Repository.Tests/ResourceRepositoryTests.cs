@@ -49,7 +49,7 @@ public class ResourceRepositoryTests : IDisposable
         var database = new Category { Name = "Database" };
 
         var resource1 = new Resource { Categories = new List<Category>() { programming }, Comments = new List<Comment>() { user1comment1 }, Author = "Deniz", Langauge = "English", SkillLevel = 3, LixNumber = 39, Tags = new List<Tag>() { csharp }, Site_title = "C-Sharp tutorial", Site_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ", MaterialType = "Video", Created = new DateTime(2020, 3, 16, 0, 0, 0), Content_source = "Youtube"};
-        var resource2 = new Resource { Categories = new List<Category>() { database, containerization}, Comments = new List<Comment>() { user1comment2, user2comment1}, Author = "Anton", Langauge = "English", Site_title = "Docker step by step tutorial", Tags = new List<Tag>() { docker}, SkillLevel = 4, LixNumber = 46, Site_url = "https://docs.docker.com/get-started/", MaterialType = "Article",  }
+        var resource2 = new Resource { Categories = new List<Category>() { database, containerization }, Comments = new List<Comment>() { user1comment2, user2comment1 }, Author = "Anton", Langauge = "English", Site_title = "Docker step by step tutorial", Tags = new List<Tag>() { docker }, SkillLevel = 4, LixNumber = 46, Site_url = "https://docs.docker.com/get-started/", MaterialType = "Article", };
     }
 
     [Fact]
