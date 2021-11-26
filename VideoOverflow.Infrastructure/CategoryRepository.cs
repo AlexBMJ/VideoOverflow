@@ -9,26 +9,48 @@ public class CategoryRepository
     {
         _context = context;
     }
-    
-    
-    public async Task<IEnumerable<CategoryDetailsDTO>> ReadAll()
+
+    public async Task<IReadOnlyCollection<CategoryDTO>> GetAll()
     {
-        // add code 
-    }
+        return (await _context.Categories.Select(category => new CategoryDTO(category.Id, category.Name))
+            .ToListAsync()).AsReadOnly();
+    }  
+        
     
-    public async Task<CategoryDetailsDTO?> ReadAll(int id)
+    
+    public async Task<CategoryDTO?> Get(int categoryId)
     {
-        // add code 
+        return await (from category in _context.Categories
+                        where category.Id == categoryId
+                        select new CategoryDTO(category.Id, category.Name)).FirstOrDefaultAsync();
     }
 
-    public async Task<CategoryDetailsDTO> Create(CategoryDTO create)
+    public async Task<CategoryDTO> Push(CategoryCreateDTO category)
     {
-        // add code
+        var createdCategory = new Category() {Name = category.Name};
+        
+        await _context.Categories.AddAsync(createdCategory);
+        await _context.SaveChangesAsync();
+        
+        return new CategoryDTO(createdCategory.Id, createdCategory.Name);
     }
 
-    public async Task<Status> Update(int id, CategoryUpdateDTO update)
+    public async Task<Status> Update(CategoryUpdateDTO category)
     {
-        // add code
+        var instance = await (from c in _context.Categories
+            where c.Id == category.Id
+            select c).FirstOrDefaultAsync();
+
+        if (instance == null)
+        {
+            return Status.NotFound;
+        }
+
+        instance.Name = category.Name;
+        
+        await _context.SaveChangesAsync();
+
+        return Status.Updated;
     }
 
 }

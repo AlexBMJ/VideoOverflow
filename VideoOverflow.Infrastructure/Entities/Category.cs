@@ -7,5 +7,5 @@ public class Category
     public string Name { get; set; }
     
     // Relation
-    public IReadOnlyCollection<Resource> Resources { get; set; }
+    public ICollection<Resource>? Resources { get; set; }
 }
