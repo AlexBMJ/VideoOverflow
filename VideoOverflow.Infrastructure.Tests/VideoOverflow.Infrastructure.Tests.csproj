@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VideoOverflow.Core\VideoOverflow.Core.csproj" />
+    <ProjectReference Include="..\VideoOverflow.Infrastructure\VideoOverflow.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
