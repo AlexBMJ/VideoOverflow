@@ -2,11 +2,9 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using VideoOverflow.Repository.Infrastructure.Context;
-using VideoOverflow.Repository.Infrastructure.Entities;
 using Xunit;
 
-namespace VideoOverflow.Repository.Tests;
+namespace VideoOverflow.Infrastructure.Tests;
 
 public class ResourceRepositoryTests : IDisposable
 {

@@ -1,4 +1,4 @@
-﻿namespace Videooverflow.Server.Core
+﻿namespace VideoOverflow.Core
 {
     internal class SkillLevel
     {

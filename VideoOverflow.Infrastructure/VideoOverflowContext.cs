@@ -1,8 +1,9 @@
-﻿using VideoOverflow.Repository.Infrastructure.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using VideoOverflow.Infrastructure.Entities;
 
-namespace VideoOverflow.Repository.Infrastructure.Context;
+namespace VideoOverflow.Infrastructure;
 
-public class VideoOverflowContext : DbContext
+public class VideoOverflowContext : DbContext, IVideoOverflowContext
 {
     public DbSet<Tag> Tags => Set<Tag>();
     public DbSet<TagSynonym> TagSynonyms => Set<TagSynonym>();

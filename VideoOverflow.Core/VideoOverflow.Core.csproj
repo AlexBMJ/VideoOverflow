@@ -4,6 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <RootNamespace>VideoOverflow.Core</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,12 +13,5 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Infrastructure\Core\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Infrastructure\Core\" />
   </ItemGroup>
 </Project>

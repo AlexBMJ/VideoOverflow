@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
-using VideoOverflow.Repository;
 using VideoOverflow.Repository.Infrastructure.Context;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -6,7 +6,7 @@
 
     <IsPackable>false</IsPackable>
 
-    <RootNamespace>Repository.Tests</RootNamespace>
+    <RootNamespace>VideoOverflow.Infrastructure.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\VideoOverflow.Repository\VideoOverflow.Repository.csproj" />
+    <ProjectReference Include="..\VideoOverflow.Core\VideoOverflow.Core.csproj" />
   </ItemGroup>
 
 </Project>

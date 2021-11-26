@@ -1,18 +1,18 @@
-﻿namespace VideoOverflow.Repository.Infrastructure.Repositories;
+﻿namespace VideoOverflow.Infrastructure;
 
-public class ResourceRepository
+public class ResourceRepository : IResourceRepository
 {
-    private readonly VideoOverflowContext _context;
+    private readonly IVideoOverflowContext _context;
 
-    public ResourceRepository(VideoOverflowContext context)
+    public ResourceRepository(IVideoOverflowContext context)
     {
         _context = context;
     }
     
     
-    public async Task<IEnumerable<ResourceDetailsDTO>() ReadAll()
+    public async Task<IEnumerable<ResourceDetailsDTO>> ReadAll()
     {
-        // add code 
+        // add code
     }
     
     public async Task<ResourceDetailsDTO?> ReadAll(int id)

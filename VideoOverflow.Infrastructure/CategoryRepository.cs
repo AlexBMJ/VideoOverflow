@@ -1,17 +1,17 @@
-namespace VideoOverflow.Repository.Infrastructure.Repositories;
+namespace VideoOverflow.Infrastructure;
 
 public class CategoryRepository
 {
 
-    private readonly VideoOverflowContext _context;
+    private readonly IVideoOverflowContext _context;
 
-    public CategoryRepository(VideoOverflowContext context)
+    public CategoryRepository(IVideoOverflowContext context)
     {
         _context = context;
     }
     
     
-    public async Task<IEnumerable<CategoryDetailsDTO>() ReadAll()
+    public async Task<IEnumerable<CategoryDetailsDTO>> ReadAll()
     {
         // add code 
     }

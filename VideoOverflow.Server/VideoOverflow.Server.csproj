@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VideoOverflow.Client\VideoOverflow.Client.csproj" />
-    <ProjectReference Include="..\VideoOverflow.Repository\VideoOverflow.Repository.csproj" />
+    <ProjectReference Include="..\VideoOverflow.Core\VideoOverflow.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
