@@ -1,10 +1,10 @@
-namespace VideoOverflow.Repository.Infrastructure.Repositories;
-
+namespace VideoOverflow.Infrastructure;
+/*
 public class TagRepository
 {
-    private readonly VideoOverflowContext _context;
+    private readonly IVideoOverflowContext _context;
 
-    public TagRepository(VideoOverflowContext context)
+    public TagRepository(IVideoOverflowContext context)
     {
         _context = context;
     }
@@ -30,4 +30,4 @@ public class TagRepository
         // add code
     }
 
-}
+}*/

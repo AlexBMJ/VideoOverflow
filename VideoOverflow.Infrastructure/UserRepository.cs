@@ -1,10 +1,10 @@
-namespace VideoOverflow.Repository.Infrastructure.Repositories;
-
+namespace VideoOverflow.Infrastructure;
+/*
 public class UserRepository
 {
-    private readonly VideoOverflowContext _context;
+    private readonly IVideoOverflowContext _context;
 
-    public UserRepository(VideoOverflowContext context)
+    public UserRepository(IVideoOverflowContext context)
     {
         _context = context;
     }
@@ -30,4 +30,4 @@ public class UserRepository
         // add code
     }
     
-}
+}*/

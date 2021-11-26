@@ -1,10 +1,10 @@
-namespace VideoOverflow.Repository.Infrastructure.Repositories;
-
+namespace VideoOverflow.Infrastructure;
+/*
 public class TagSynonymRepository
 {
-    private readonly VideoOverflowContext _context;
+    private readonly IVideoOverflowContext _context;
 
-    public TagSynonymRepository(VideoOverflowContext context)
+    public TagSynonymRepository(IVideoOverflowContext context)
     {
         _context = context;
     }
@@ -29,4 +29,4 @@ public class TagSynonymRepository
         // add code
     }
 
-}
+}*/
