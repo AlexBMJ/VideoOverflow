@@ -1,5 +1,7 @@
-namespace Videooverflow.Server.Core;
+
+namespace Videooverflow.Repository.Core;
 
 public interface IResourceRepository
 {
+    Task<Status>
 }
