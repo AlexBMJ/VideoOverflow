@@ -1,7 +1,7 @@
 ﻿
 using Microsoft.Extensions.Configuration;
 
-namespace Repository.Infrastructure.Context;
+namespace VideoOverflow.Repository.Infrastructure.Context;
 
 public class VideoOverflowContextFactory : IDesignTimeDbContextFactory<VideoOverflowContext>
 {

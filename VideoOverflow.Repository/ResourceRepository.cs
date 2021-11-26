@@ -1,6 +1,6 @@
-﻿using Repository.Infrastructure.Context;
+﻿using VideoOverflow.Repository.Infrastructure.Context;
 
-namespace Repository.ResourceRepo;
+namespace VideoOverflow.Repository;
 
 public class ResourceRepository
 {

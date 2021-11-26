@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>Videooverflow.Server-E2A3E0CF-11DD-431A-98DA-FB08B0D41521</UserSecretsId>
     <WebProject_DirectoryAccessLevelKey>0</WebProject_DirectoryAccessLevelKey>
+    <RootNamespace>Server</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Videooverflow.Server' " />
@@ -14,8 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Client\Videooverflow.Client.csproj" />
-    <ProjectReference Include="..\Shared\Videooverflow.Shared.csproj" />
+    <ProjectReference Include="..\VideoOverflow.Client\VideoOverflow.Client.csproj" />
   </ItemGroup>
 
   <ItemGroup>

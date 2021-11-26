@@ -1,6 +1,6 @@
-﻿using Repository.Infrastructure.Entities;
+﻿using VideoOverflow.Repository.Infrastructure.Entities;
 
-namespace Repository.Infrastructure.Context;
+namespace VideoOverflow.Repository.Infrastructure.Context;
 
 public class VideoOverflowContext : DbContext
 {

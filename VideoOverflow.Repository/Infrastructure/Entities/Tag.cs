@@ -1,4 +1,4 @@
-﻿namespace Repository.Infrastructure.Entities;
+﻿namespace VideoOverflow.Repository.Infrastructure.Entities;
 public class Tag
 {
     //Attributes
