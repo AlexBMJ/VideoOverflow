@@ -23,6 +23,7 @@ public class UserRepository : IUserRepository
     public async Task<UserDTO?> Get(int id)
     {
         return await (from u in _context.Users
+            where u.Id == id
             select new UserDTO(u.Id, u.Name, u.Comments.Select(c => c.Content).ToList())).FirstOrDefaultAsync();
     }
 
@@ -44,6 +45,21 @@ public class UserRepository : IUserRepository
     }
     public async Task<Status> Update(UserUpdateDTO resource)
     {
-        throw new NotImplementedException();
+        var entity = await _context.Users.FirstOrDefaultAsync(c => c.Id == resource.Id);
+
+        if (entity == null)
+        {
+            return Status.NotFound;
+        }
+
+        ICollection<Comment> comments = new Collection<Comment>();
+
+        foreach (var comment in resource.Comments)
+        {
+            comments.Add(new Comment(){Content = comment});
+        }
+
+        entity.Comments = comments;
+        return Status.Updated;
     }
 }

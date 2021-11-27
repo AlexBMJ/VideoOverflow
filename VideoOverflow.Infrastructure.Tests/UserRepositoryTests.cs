@@ -1,10 +1,3 @@
-
-
-using System.Collections.Generic;
-using System.Linq;
-using FluentAssertions;
-using FluentAssertions.Equivalency;
-
 namespace VideoOverflow.Infrastructure.Tests;
 
 public class UserRepositoryTests
@@ -44,34 +37,84 @@ public class UserRepositoryTests
          _repo.Push(user4);
          _repo.Push(user5);
          _repo.Push(user6);
+         
+         var userdto1 = new UserDTO(1, "Deniz", new List<string>() {"Awesome video!"});
+         var userdto2 = new UserDTO(2, "Alex", new List<string>() {"I love the guide"});
+         var userdto3 = new UserDTO(3, "Karl", new List<string>() {"My first ever comment", "My second ever comment", "Maybe my third ever comment"});
+         var userdto4 = new UserDTO(4, "Asmus", new List<string>());
+         var userdto5 = new UserDTO(5, "Anton", new List<string>());
+         var userdto6 = new UserDTO(6, "Christan", new List<string>());
 
-        var users = await _repo.GetAll();
+         var expected = new List<UserDTO>() {userdto1, userdto2, userdto3, userdto4, userdto5, userdto6};
         
-        Assert.Collection(users,
-            user => Assert.Equal(new UserDTO(1, "Deniz", new List<string>(){"Awesome video!"}), user),
-            user => Assert.Equal(new UserDTO(2, "Alex", null), user),
-            user => Assert.Equal(new UserDTO(3, "Karl", new List<string>(){"My first ever comment", "My second ever comment", "Maybe my third ever comment"}), user),
-            user => Assert.Equal(new UserDTO(4, "Asmus", new List<string>()), user),
-            user => Assert.Equal(new UserDTO(5, "Anton", new List<string>()), user),
-            user => Assert.Equal(new UserDTO(6, "Christan", new List<string>()), user));
+         var users = await _repo.GetAll();
 
-        
+         for (int i = 0; i < users.Count; i++)
+         {
+             expected.GetEnumerator().Current.Should().BeEquivalentTo(users.GetEnumerator().Current);
+             expected.GetEnumerator().MoveNext();
+             users.GetEnumerator().MoveNext();
+         }
     }
+    
+    [Fact]
+    public async Task GetAll_Returns_Empty_List_For_No_existsing_Users()
+    {
+        var actual = await _repo.GetAll();
+
+        var expected = new ReadOnlyCollection<UserDTO>(new Collection<UserDTO>());
+
+        expected.Should().BeEquivalentTo(actual);
+    }
+    
 
     [Fact]
     public async Task Get_Given_existing_UserID_returns_UserDTO()
     {
-        var user = new UserCreateDTO() {Name = "Deniz", Comments = new List<string>() {"awesome video!"}};
+        var user = new UserCreateDTO() {Name = "Deniz", Comments = new List<string>()};
 
         await _repo.Push(user);
 
         var actual = await _repo.Get(1);
 
-        var expected = new UserDTO(1, "Deniz", new List<string>() {"awesome video!"});
-
-        Assert.Equal(expected.Name, actual.Name);
-        
+        var expected = new UserDTO(1, "Deniz", new List<string>());
         
 
-    } 
+        expected.Should().BeEquivalentTo(actual);
+
+    }
+
+    [Fact]
+    public async Task Get_non_existing_user_returns_null()
+    {
+        var user = await _repo.Get(10);
+        
+        Assert.Null(user);
+    }
+
+    [Fact]
+    public async Task Update_Existing_User_Returns_StatusUpdated()
+    {
+        var user = new UserCreateDTO() {Name = "OndFisk", Comments = new List<string>()};
+
+        await _repo.Push(user);
+
+        var updateUser = new UserUpdateDTO() {Id = 1, Name = "SødFisk", Comments = new List<string>()};
+
+        var actual = await _repo.Update(updateUser);
+        
+        Assert.Equal(Status.Updated, actual);
+    }
+
+    [Fact]
+    public async Task Update_NonExisting_User_Returns_StatusNotFound()
+    {
+        var userUpdate = new UserUpdateDTO() {Id = 100, Name = "Ondfisk"};
+        var actual = await _repo.Update(userUpdate);
+        
+        Assert.Equal(Status.NotFound, actual);
+    }
+    
+    
+    
 }

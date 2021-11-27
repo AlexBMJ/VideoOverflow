@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+
 namespace VideoOverflow.Infrastructure.Tests;
 
 public class CategoryRepositoryTests
@@ -32,6 +34,16 @@ public class CategoryRepositoryTests
 
         Assert.Collection(comments, comment => Assert.Equal(new CategoryDTO(1, "Programming"), comment),
             comment => Assert.Equal(new CategoryDTO(2, "Software Engineering"), comment));
+    }
+
+    [Fact]
+    public async Task GetAll_Returns_Empty_List_For_No_existsing_Categories()
+    {
+        var actual = await _repo.GetAll();
+
+        var expected = new ReadOnlyCollection<CategoryDTO>(new Collection<CategoryDTO>());
+
+        expected.Should().BeEquivalentTo(actual);
     }
 
     [Fact]
