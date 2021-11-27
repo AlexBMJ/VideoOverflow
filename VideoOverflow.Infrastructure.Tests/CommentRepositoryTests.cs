@@ -1,7 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using VideoOverflow.Core;
-
 namespace VideoOverflow.Infrastructure.Tests;
 
 public class CommentRepositoryTests

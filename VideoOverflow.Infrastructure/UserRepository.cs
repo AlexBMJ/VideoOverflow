@@ -1,6 +1,9 @@
+using System.Collections.ObjectModel;
+using Microsoft.VisualBasic;
+
 namespace VideoOverflow.Infrastructure;
-/*
-public class UserRepository
+
+public class UserRepository : IUserRepository
 {
     private readonly IVideoOverflowContext _context;
 
@@ -9,25 +12,38 @@ public class UserRepository
         _context = context;
     }
     
-    
-    public async Task<IEnumerable<UserDetailsDTO>() ReadAll()
+    public async Task<IReadOnlyCollection<UserDTO>> GetAll()
     {
-        // add code 
-    }
-    
-    public async Task<UserDetailsDTO?> ReadAll(int id)
-    {
-        // add code 
+        return (await (from u in _context.Users
+            select new UserDTO(u.Id,
+                u.Name,
+                u.Comments.Select(c => c.Content).ToList())).ToListAsync()).AsReadOnly();
     }
 
-    public async Task<UserDetailsDTO> Create(UserDTO create)
+    public async Task<UserDTO?> Get(int id)
     {
-        // add code
+        return await (from u in _context.Users
+            select new UserDTO(u.Id, u.Name, u.Comments.Select(c => c.Content).ToList())).FirstOrDefaultAsync();
     }
 
-    public async Task<Status> Update(int id, TagUpdateDTO update)
+    public async Task<UserDTO> Push(UserCreateDTO user)
     {
-        // add code
+        var comments = new Collection<Comment>();
+        
+        foreach (var comment in user.Comments)
+        {
+            comments.Add(new Comment(){Content = comment});
+        }
+        
+        var entity = new User() {Name = user.Name, Comments = comments};
+
+        await _context.Users.AddAsync(entity);
+        await _context.SaveChangesAsync();
+
+        return new UserDTO(entity.Id, entity.Name, entity.Comments.Select(c => c.Content).ToList());
     }
-    
-}*/
+    public async Task<Status> Update(UserUpdateDTO resource)
+    {
+        throw new NotImplementedException();
+    }
+}

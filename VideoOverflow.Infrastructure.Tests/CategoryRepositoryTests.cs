@@ -1,8 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
-using VideoOverflow.Core;
-using Xunit.Abstractions;
-
 namespace VideoOverflow.Infrastructure.Tests;
 
 public class CategoryRepositoryTests

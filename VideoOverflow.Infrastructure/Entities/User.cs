@@ -7,5 +7,5 @@ public class User
     public string Name { get; set; }
     
     // Relations
-    public IReadOnlyCollection<Comment> Comments { get; set; }
+    public ICollection<Comment>? Comments { get; set; }
 }
