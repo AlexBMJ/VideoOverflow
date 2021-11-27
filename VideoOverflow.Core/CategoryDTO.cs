@@ -3,7 +3,7 @@ public record CategoryDTO(int Id, string Name);
 
 public record CategoryCreateDTO()
 {
-    public string Name;
+    public string Name { get; init; }
 }
 
 public record CategoryUpdateDTO : CategoryCreateDTO {

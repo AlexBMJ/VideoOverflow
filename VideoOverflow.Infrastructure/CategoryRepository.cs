@@ -1,6 +1,6 @@
 namespace VideoOverflow.Infrastructure;
 
-public class CategoryRepository
+public class CategoryRepository : ICategoryRepository
 {
 
     private readonly IVideoOverflowContext _context;
@@ -14,10 +14,8 @@ public class CategoryRepository
     {
         return (await _context.Categories.Select(category => new CategoryDTO(category.Id, category.Name))
             .ToListAsync()).AsReadOnly();
-    }  
-        
-    
-    
+    }
+
     public async Task<CategoryDTO?> Get(int categoryId)
     {
         return await (from category in _context.Categories
@@ -37,16 +35,18 @@ public class CategoryRepository
 
     public async Task<Status> Update(CategoryUpdateDTO category)
     {
-        var instance = await (from c in _context.Categories
+        var entity = await _context.Categories.FirstOrDefaultAsync(c => c.Id == category.Id);
+            
+            /*await (from c in _context.Categories
             where c.Id == category.Id
-            select c).FirstOrDefaultAsync();
+            select c).FirstOrDefaultAsync();*/
 
-        if (instance == null)
+        if (entity == null)
         {
             return Status.NotFound;
         }
 
-        instance.Name = category.Name;
+        entity.Name = category.Name;
         
         await _context.SaveChangesAsync();
 

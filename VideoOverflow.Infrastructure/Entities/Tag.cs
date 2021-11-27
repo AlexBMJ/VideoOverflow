@@ -6,6 +6,6 @@ public class Tag
     public string Name { get; set; }
 
     //Relations
-    public IReadOnlyCollection<TagSynonym> TagSynonyms { get; set; }
-    public IReadOnlyCollection<Resource> Resources { get; set; }
+    public ICollection<TagSynonym> TagSynonyms { get; set; }
+    public ICollection<Resource> Resources { get; set; }
 }
