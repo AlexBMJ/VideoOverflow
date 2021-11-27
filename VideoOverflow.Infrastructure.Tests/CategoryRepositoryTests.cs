@@ -59,6 +59,20 @@ public class CategoryRepositoryTests
         Assert.Null(option);
     }
 
+    [Fact]
+    public async Task Get_returns_Category_for_given_id()
+    {
+        var category = new CategoryCreateDTO() {Name = "Programming"};
+
+        await _repo.Push(category);
+
+        var expected = new CategoryDTO(1, "Programming");
+
+        var actual = await _repo.Get(1);
+        
+        Assert.Equal(expected, actual);
+    }
+
 
     [Fact]
     public async Task Update_of_existing_category_returns_StateUpdated()

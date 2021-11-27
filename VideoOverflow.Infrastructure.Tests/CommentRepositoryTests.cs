@@ -48,6 +48,20 @@ public class CommentRepositoryTests
         Assert.Equal(1, actual.Id);
         Assert.Equal("Nice Video!", actual.Content);
     }
+    
+    [Fact]
+    public async Task Get_returns_Category_for_given_id()
+    {
+        var category = new CommentCreateDTO() {Content = "A simple comment"};
+
+        await _repo.Push(category);
+
+        var expected = new CommentDTO(1, "A simple comment");
+
+        var actual = await _repo.Get(1);
+        
+        Assert.Equal(expected, actual);
+    }
 
     [Fact]
     public async void Get_returns_null_for_non_existing_id()
