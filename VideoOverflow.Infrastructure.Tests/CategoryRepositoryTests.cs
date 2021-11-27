@@ -4,20 +4,13 @@ namespace VideoOverflow.Infrastructure.Tests;
 
 public class CategoryRepositoryTests
 {
-    private readonly VideoOverflowContext _context;
+    private readonly IVideoOverflowContext _context;
     private readonly CategoryRepository _repo;
     public CategoryRepositoryTests()
     {
-        var connection = new SqliteConnection("Filename=:memory:");
-        connection.Open();
-        var builder = new DbContextOptionsBuilder<VideoOverflowContext>();
-        builder.UseSqlite(connection);
-        var context = new VideoOverflowContext(builder.Options);
-        context.Database.EnsureCreated();
-
-        context.SaveChanges();
+        var repo = new RepositoryTestsSetup();
+        _context = repo.Context;
         
-        _context = context;
         _repo = new CategoryRepository(_context);
     }
     

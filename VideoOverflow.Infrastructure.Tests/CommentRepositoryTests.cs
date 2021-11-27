@@ -7,16 +7,9 @@ public class CommentRepositoryTests
     private readonly CommentRepository _repo;
     public CommentRepositoryTests()
     {
-        var connection = new SqliteConnection("Filename=:memory:");
-        connection.Open();
-        var builder = new DbContextOptionsBuilder<VideoOverflowContext>();
-        builder.UseSqlite(connection);
-        var context = new VideoOverflowContext(builder.Options);
-        context.Database.EnsureCreated();
-
-        context.SaveChanges();
+        var repo = new RepositoryTestsSetup();
+        _context = repo.Context;
         
-        _context = context;
         _repo = new CommentRepository(_context);
     }
     
