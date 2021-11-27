@@ -60,6 +60,9 @@ public class UserRepository : IUserRepository
         }
 
         entity.Comments = comments;
+        
+        await _context.SaveChangesAsync();
+        
         return Status.Updated;
     }
 }
