@@ -12,7 +12,7 @@ public class CommentRepository : ICommentRepository
 
     public async Task<IReadOnlyCollection<CommentDTO>> GetAll()
     {
-        return (await _context.Comments.Select(c => new CommentDTO(c.Id, c.CreatedBy, c.Content))
+        return (await _context.Comments.Select(c => new CommentDTO(c.Id, c.CreatedBy, c.AttachedToResource, c.Content))
             .ToListAsync())
             .AsReadOnly();
     }
@@ -21,17 +21,17 @@ public class CommentRepository : ICommentRepository
     {
         return await (from c in _context.Comments
             where c.Id == commentId
-            select new CommentDTO(c.Id, c.CreatedBy, c.Content)).FirstOrDefaultAsync();
+            select new CommentDTO(c.Id, c.CreatedBy, c.AttachedToResource, c.Content)).FirstOrDefaultAsync();
     }
 
     public async Task<CommentDTO> Push(CommentCreateDTO comment)
     {
-        var createdComment = new Comment() {Content = comment.Content, CreatedBy = comment.CreatedBy};
+        var createdComment = new Comment() {Content = comment.Content, CreatedBy = comment.CreatedBy, AttachedToResource = comment.AttachedToResource};
         
         await _context.Comments.AddAsync(createdComment);
         await _context.SaveChangesAsync();
 
-        return new CommentDTO(createdComment.Id, createdComment.CreatedBy, createdComment.Content);
+        return new CommentDTO(createdComment.Id, createdComment.CreatedBy, createdComment.AttachedToResource, createdComment.Content);
     }
 
     public async Task<Status> Update(CommentUpdateDTO comment)
@@ -45,7 +45,10 @@ public class CommentRepository : ICommentRepository
             return Status.NotFound;
         }
 
-        entity.Content = comment.Content;
+        if (entity.Content != comment.Content)
+        {
+            entity.Content = comment.Content;
+        }
         
         await _context.SaveChangesAsync();
 

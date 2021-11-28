@@ -128,7 +128,7 @@ public class UserRepositoryTests
     }
 
     [Fact]
-    public async Task Update_Existing_User_Changes_Comments_and_Name()
+    public async Task Update_Existing_User_Adds_Comments_and_changes_Name()
     {
         var user = new UserCreateDTO() {Name = "Deniz", Comments = new List<string>() {}};
 

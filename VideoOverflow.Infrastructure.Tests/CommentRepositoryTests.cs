@@ -44,10 +44,10 @@ public class CommentRepositoryTests
 
         var comments = await _repo.GetAll();
 
-        Assert.Collection(comments, comment => Assert.Equal(new CommentDTO(1, 1, "This docker tutorial is smooth"), comment),
-            comment => Assert.Equal(new CommentDTO(2, 1, "Very helpful guide for beginners!"), comment),
-            comment => Assert.Equal(new CommentDTO(3, 2, "Indeed"), comment),
-            comment => Assert.Equal(new CommentDTO(4, 2, "Thank you very much!"), comment));
+        Assert.Collection(comments, comment => Assert.Equal(new CommentDTO(1, 1, 0,"This docker tutorial is smooth"), comment),
+            comment => Assert.Equal(new CommentDTO(2, 1, 0,"Very helpful guide for beginners!"), comment),
+            comment => Assert.Equal(new CommentDTO(3, 2, 0,"Indeed"), comment),
+            comment => Assert.Equal(new CommentDTO(4, 2, 0,"Thank you very much!"), comment));
     }
     
     [Fact]
@@ -69,14 +69,14 @@ public class CommentRepositoryTests
 
         var comments = await _repo.GetAll();
 
-        Assert.Collection(comments, comment => Assert.Equal(new CommentDTO(1, 0, "This docker tutorial is smooth"), comment),
-            comment => Assert.Equal(new CommentDTO(2, 0, "Very helpful guide for beginners!"), comment),
-            comment => Assert.Equal(new CommentDTO(3, 0, "Indeed"), comment),
-            comment => Assert.Equal(new CommentDTO(4, 0, "Thank you very much!"), comment));
+        Assert.Collection(comments, comment => Assert.Equal(new CommentDTO(1, 0, 0,"This docker tutorial is smooth"), comment),
+            comment => Assert.Equal(new CommentDTO(2, 0, 0,"Very helpful guide for beginners!"), comment),
+            comment => Assert.Equal(new CommentDTO(3, 0, 0,"Indeed"), comment),
+            comment => Assert.Equal(new CommentDTO(4, 0, 0,"Thank you very much!"), comment));
     }
 
     [Fact]
-    public async Task GetAll_Returns_Empty_List_For_No_existsing_Comments()
+    public async Task GetAll_Returns_Empty_List_For_Non_existing_Comments()
     {
         var actual = await _repo.GetAll();
 
@@ -97,13 +97,13 @@ public class CommentRepositoryTests
     }
     
     [Fact]
-    public async Task Get_returns_Category_for_given_id()
+    public async Task Get_returns_Comment_for_given_id()
     {
         var category = new CommentCreateDTO() {Content = "A simple comment"};
 
         await _repo.Push(category);
 
-        var expected = new CommentDTO(1, 0, "A simple comment");
+        var expected = new CommentDTO(1, 0, 0,"A simple comment");
 
         var actual = await _repo.Get(1);
         
@@ -139,9 +139,7 @@ public class CommentRepositoryTests
                 actual = commenter;
             }
         }
-        
         Assert.Equal(actual, user);
-
     }
 
 
@@ -168,6 +166,23 @@ public class CommentRepositoryTests
         
         Assert.Equal(Status.NotFound, response);
     }
-    
+
+    [Fact]
+    public async Task Update_changes_content_of_comment_of_givenID()
+    {
+        var comment = new CommentCreateDTO() {Content = "Awesome tutorial!"};
+
+        await _repo.Push(comment);
+
+        var update = new CommentUpdateDTO() {Id = 1, Content = "Maybe it wasn't that good"};
+
+        await _repo.Update(update);
+
+        var expected = new CommentDTO(1, 0, 0, "Maybe it wasn't that good");
+
+        var actual = await _repo.Get(1);
+        
+        Assert.Equal(expected, actual);
+    }
     
 }
