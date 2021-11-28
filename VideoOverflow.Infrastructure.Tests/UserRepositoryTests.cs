@@ -1,4 +1,4 @@
-/*namespace VideoOverflow.Infrastructure.Tests;
+namespace VideoOverflow.Infrastructure.Tests;
 
 public class UserRepositoryTests
 {
@@ -128,6 +128,26 @@ public class UserRepositoryTests
     }
 
     [Fact]
+    public async Task Update_Existing_User_Changes_Comments_and_Name()
+    {
+        var user = new UserCreateDTO() {Name = "Deniz", Comments = new List<string>() {}};
+
+        await _repo.Push(user);
+
+        var userUpdate = new UserUpdateDTO()
+            {Id = 1, Name = "Karl", Comments = new List<string>() {"I changed name from Deniz to Karl and added my first comment"}};
+
+        await _repo.Update(userUpdate);
+        
+
+        var expected = new UserDTO(1, "Karl", new List<string>() {"I changed name from Deniz to Karl and added my first comment"});
+
+        var actual = await _repo.Get(1);
+
+        expected.Should().BeEquivalentTo(actual);
+    }
+
+    [Fact]
     public async Task Update_NonExisting_User_Returns_StatusNotFound()
     {
         var userUpdate = new UserUpdateDTO() {Id = 100, Name = "Ondfisk"};
@@ -135,4 +155,4 @@ public class UserRepositoryTests
         
         Assert.Equal(Status.NotFound, actual);
     }
-}*/
+}

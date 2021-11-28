@@ -50,15 +50,15 @@ public class UserRepository : IUserRepository
         {
             entity.Name = userUpdate.Name;
         }
-        
-        if (entity.Comments != null)
+
+        if (userUpdate.Comments != null)
         {
-            if (userUpdate.Comments != null && userUpdate.Comments.All(entity.Comments.Select(tag => tag.Content).Contains))
+            if (entity.Comments != null)
             {
                 entity.Comments = await GetComments(userUpdate.Id, userUpdate.Comments);
             }
         }
-        
+
         await _context.SaveChangesAsync();
         
         return Status.Updated;
@@ -73,14 +73,13 @@ public class UserRepository : IUserRepository
 
             if (exists == null)
             {
-                var newComment = new Comment() {CreatedBy = userId, Content = comment};
-                await _context.Comments.AddAsync(newComment);
+                exists = new Comment() {CreatedBy = userId, Content = comment};
+                await _context.Comments.AddAsync(exists);
                 await _context.SaveChangesAsync();
             }
-            else
-            {
-                commentsUpdated.Add(exists);
-            }
+            
+            commentsUpdated.Add(exists);
+            
         }
 
         return commentsUpdated;
