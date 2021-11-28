@@ -18,28 +18,22 @@ public class CommentRepositoryTests
     }
     
     [Fact]
-    public async Task GetAll_Returns_All_Comments()
+    public async Task GetAll_Returns_All_Comments_With_Creator()
     {
 
-        var user1 = new User() {Name = "OndFisk"};
-        var user2 = new User() {Name = "SødFisk"};
+        var user1 = new User() {Id = 1, Name = "OndFisk", Comments = new Collection<Comment>()};
+        var user2 = new User() {Id = 2, Name = "SødFisk",  Comments = new Collection<Comment>()};
 
         
-        _context.Users.Add(user1); 
-        _context.Users.Add(user2);
+        var f = _context.Users.Add(user1); 
+        var g = _context.Users.Add(user2);
+        
 
-       
-        var first = (from u in _context.Users where u.Id == 1 select new UserDTO(u.Id, u.Name, u.Comments.Select(c => c.Content).ToList())).FirstOrDefaultAsync();
-        var second = (from u in _context.Users where u.Id == 2 select new UserDTO(u.Id, u.Name, u.Comments.Select(c => c.Content).ToList())).FirstOrDefaultAsync();
-       
-      
+        var user1Comment1 = new CommentCreateDTO() {CreatedBy = f.Entity.Id, Content = "This docker tutorial is smooth"};
+        var user1Comment2 = new CommentCreateDTO() {CreatedBy = f.Entity.Id, Content = "Very helpful guide for beginners!"};
         
-        
-        var user1Comment1 = new CommentCreateDTO() {CreatedBy = first.Id, Content = "This docker tutorial is smooth"};
-        var user1Comment2 = new CommentCreateDTO() {CreatedBy = first.Id, Content = "Very helpful guide for beginners!"};
-        
-        var user2Comment1 = new CommentCreateDTO() {CreatedBy = second.Id, Content = "Indeed"};
-        var user2Comment2 = new CommentCreateDTO() {CreatedBy = second.Id, Content = "Thank you very much!"};
+        var user2Comment1 = new CommentCreateDTO() {CreatedBy = g.Entity.Id, Content = "Indeed"};
+        var user2Comment2 = new CommentCreateDTO() {CreatedBy = g.Entity.Id, Content = "Thank you very much!"};
         
         
         await _repo.Push(user1Comment1);
@@ -54,6 +48,31 @@ public class CommentRepositoryTests
             comment => Assert.Equal(new CommentDTO(2, 1, "Very helpful guide for beginners!"), comment),
             comment => Assert.Equal(new CommentDTO(3, 2, "Indeed"), comment),
             comment => Assert.Equal(new CommentDTO(4, 2, "Thank you very much!"), comment));
+    }
+    
+    [Fact]
+    public async Task GetAll_Returns_All_Comments_Without_Creator()
+    {
+        
+        var comment1 = new CommentCreateDTO() {Content = "This docker tutorial is smooth"};
+        var comment2 = new CommentCreateDTO() {Content = "Very helpful guide for beginners!"};
+        
+        var comment3 = new CommentCreateDTO() {Content = "Indeed"};
+        var comment4 = new CommentCreateDTO() {Content = "Thank you very much!"};
+        
+        
+        await _repo.Push(comment1);
+        await _repo.Push(comment2);
+        await _repo.Push(comment3);
+        await _repo.Push(comment4);
+        
+
+        var comments = await _repo.GetAll();
+
+        Assert.Collection(comments, comment => Assert.Equal(new CommentDTO(1, 0, "This docker tutorial is smooth"), comment),
+            comment => Assert.Equal(new CommentDTO(2, 0, "Very helpful guide for beginners!"), comment),
+            comment => Assert.Equal(new CommentDTO(3, 0, "Indeed"), comment),
+            comment => Assert.Equal(new CommentDTO(4, 0, "Thank you very much!"), comment));
     }
 
     [Fact]
@@ -84,19 +103,45 @@ public class CommentRepositoryTests
 
         await _repo.Push(category);
 
-       // var expected = new CommentDTO(1, "A simple comment");
+        var expected = new CommentDTO(1, 0, "A simple comment");
 
         var actual = await _repo.Get(1);
         
-        // Assert.Equal(expected, actual);
+        Assert.Equal(expected, actual);
     }
 
     [Fact]
-    public async void Get_returns_null_for_non_existing_id()
+    public async Task Get_returns_null_for_non_existing_id()
     {
         var comment = await _repo.Get(4);
         
         Assert.Null(comment);
+    }
+
+    [Fact]
+    public async Task Get_Returns_Creator()
+    {
+        var user = new User() {Id = 1, Name = "SødFisk", Comments = new List<Comment>()};
+
+        await _context.Users.AddAsync(user);
+
+        var comment = new CommentCreateDTO() {CreatedBy = 1, Content = "This comment is created by SødFisk"};
+
+        await _repo.Push(comment);
+
+        var actual = new User();
+
+        
+        foreach (var commenter in _context.Users)
+        {
+            if (commenter.Id == comment.CreatedBy)
+            {
+                actual = commenter;
+            }
+        }
+        
+        Assert.Equal(actual, user);
+
     }
 
 

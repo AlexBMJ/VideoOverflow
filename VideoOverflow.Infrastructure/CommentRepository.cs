@@ -26,7 +26,7 @@ public class CommentRepository : ICommentRepository
 
     public async Task<CommentDTO> Push(CommentCreateDTO comment)
     {
-        var createdComment = new Comment() {Content = comment.Content};
+        var createdComment = new Comment() {Content = comment.Content, CreatedBy = comment.CreatedBy};
         
         await _context.Comments.AddAsync(createdComment);
         await _context.SaveChangesAsync();
