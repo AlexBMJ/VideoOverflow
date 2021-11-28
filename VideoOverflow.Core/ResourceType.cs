@@ -1,6 +1,9 @@
 ﻿namespace VideoOverflow.Core
 {
-    internal class ResourceType
+    public enum ResourceType
     {
-    }
+        TEXTUAL_GUIDE,
+        VIDEO,
+        //add here
+    } 
 }

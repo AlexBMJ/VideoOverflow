@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Frameworks;
+using SQLitePCL;
 using Xunit;
 
 namespace VideoOverflow.Infrastructure.Tests;
@@ -14,14 +16,11 @@ public class ResourceRepositoryTests : IDisposable
 
     public ResourceRepositoryTests()
     {
-        var connection = new SqliteConnection("Filename=:memory");
-        connection.Open();
-        var builder = new DbContextOptionsBuilder<VideoOverflowContext>();
-        builder.UseSqlite(connection);
-        var context = new VideoOverflowContext(builder.Options);
-        context.Database.EnsureCreated();
-
-        var csharp = new Tag { Name = "CSharp" };
+        var setup = new RepositoryTestsSetup();
+        _context = setup.Context;
+        _repo = new ResourceRepository(_context);
+        
+        /*var csharp = new Tag { Name = "CSharp" };
         var docker = new Tag { Name = "Docker" };
         var java = new Tag { Name = "Java" };
 
@@ -59,13 +58,39 @@ public class ResourceRepositoryTests : IDisposable
 
         context.SaveChangesAsync();
 
-        _context = context;
-        _repo = new ResourceRepository(_context);
+     */
+
     }
 
     [Fact]
-    public void CreateNew()
+    public async Task Push_Creates_New_Resource_And_Returns_ResourceDTO_With_Id()
     {
+        var resource = new ResourceCreateDTO()
+        {
+            Created = DateTime.Now,
+            Author = "Deniz",
+            SiteTitle = "My first Page",
+            SiteUrl = "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
+            ContentSource = "LearnIT",
+            Language = "Danish",
+            MaterialType = ResourceType.VIDEO,
+            Categories = new Collection<string>() {"Programming"},
+            Tags = new Collection<string>() {"C#"},
+            Comments = new Collection<string>()
+        };
+
+        var actual = await _repo.Push(resource);
+
+        var expected = new ResourceDTO(1, ResourceType.VIDEO,
+            "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
+            "My first Page",
+            "Deniz",
+            "Danish",
+            new Collection<string>() {"C#"},
+            new Collection<string>() {"Programming"},
+            new Collection<string>());
+
+        expected.Should().BeEquivalentTo(actual);
 
     }
     public void Dispose()
