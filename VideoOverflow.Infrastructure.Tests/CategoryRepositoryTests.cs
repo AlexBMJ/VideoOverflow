@@ -98,4 +98,22 @@ public class CategoryRepositoryTests
         Assert.Equal(Status.NotFound, response);
     }
     
+    [Fact]
+    public async Task Update_changes_name_of_category_of_givenID()
+    {
+        var category = new CategoryCreateDTO() {Name = "Programming"};
+
+        await _repo.Push(category);
+
+        var update = new CategoryUpdateDTO() {Id = 1, Name = "Database"};
+
+        await _repo.Update(update);
+
+        var expected = new CategoryDTO(1, "Database");
+
+        var actual = await _repo.Get(1);
+        
+        Assert.Equal(expected, actual);
+    }
+    
 }

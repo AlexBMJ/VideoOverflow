@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Linq;
+using Microsoft.VisualBasic;
 using Moq;
 
 namespace VideoOverflow.Infrastructure;
@@ -33,10 +34,10 @@ public class TagRepository
     {
         var created = new Tag()
         {
-            Name = tag.Name, TagSynonyms = tag.TagSynonyms
+            Name = tag.Name, TagSynonyms = tag.TagSynonyms == null ? new List<TagSynonym>() : tag.TagSynonyms
                 .Select(c => new TagSynonym() {Name = c}).ToList()
         };
-
+        
         await _context.Tags.AddAsync(created);
         await _context.SaveChangesAsync();
 
@@ -54,11 +55,14 @@ public class TagRepository
             return Status.NotFound;
         }
 
-        var tagSynonyms = new Collection<TagSynonym>();
+        var tagSynonyms =  new Collection<TagSynonym>();
         
-        foreach (var synonym in update.TagSynonyms)
+        if (update.TagSynonyms != null)
         {
-            tagSynonyms.Add(new TagSynonym(){Name = synonym});
+            foreach (var synonym in update.TagSynonyms)
+            {
+                tagSynonyms.Add(new TagSynonym(){Name = synonym});
+            }
         }
         
         entity.Name = update.Name;

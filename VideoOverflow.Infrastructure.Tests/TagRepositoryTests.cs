@@ -281,5 +281,22 @@ public class TagRepositoryTests
         Assert.Equal(Status.Updated, actual);
     }
     
+    [Fact] 
+    public async Task Update_changes_content_of_comment_of_givenID()
+    {
+        var tag = new TagCreateDTO() {Name = "C#"};
+
+        await _repo.Push(tag);
+
+        var update = new TagUpdateDTO() {Id = 1, Name = "Java"};
+
+        await _repo.Update(update);
+
+        var expected = new TagDTO(1, "Java", new List<string>());
+
+        var actual = await _repo.Get(1);
+
+        expected.Should().BeEquivalentTo(actual);
+    }
     
 }
