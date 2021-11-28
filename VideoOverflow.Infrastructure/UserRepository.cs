@@ -29,40 +29,60 @@ public class UserRepository : IUserRepository
 
     public async Task<UserDTO> Push(UserCreateDTO user)
     {
-        var comments = new Collection<Comment>();
         
-        foreach (var comment in user.Comments)
-        {
-            comments.Add(new Comment(){Content = comment});
-        }
-        
-        var entity = new User() {Name = user.Name, Comments = comments};
+        var entity = new User() {Name = user.Name, Comments = new Collection<Comment>()};
 
         await _context.Users.AddAsync(entity);
         await _context.SaveChangesAsync();
 
         return new UserDTO(entity.Id, entity.Name, entity.Comments.Select(c => c.Content).ToList());
     }
-    public async Task<Status> Update(UserUpdateDTO resource)
+    public async Task<Status> Update(UserUpdateDTO userUpdate)
     {
-        var entity = await _context.Users.FirstOrDefaultAsync(c => c.Id == resource.Id);
+        var entity = await _context.Users.FirstOrDefaultAsync(c => c.Id == userUpdate.Id);
 
         if (entity == null)
         {
             return Status.NotFound;
         }
 
-        ICollection<Comment> comments = new Collection<Comment>();
-
-        foreach (var comment in resource.Comments)
+        if (entity.Name != userUpdate.Name)
         {
-            comments.Add(new Comment(){Content = comment});
+            entity.Name = userUpdate.Name;
         }
-
-        entity.Comments = comments;
+        
+        if (entity.Comments != null)
+        {
+            if (userUpdate.Comments != null && userUpdate.Comments.All(entity.Comments.Select(tag => tag.Content).Contains))
+            {
+                entity.Comments = await GetComments(userUpdate.Id, userUpdate.Comments);
+            }
+        }
         
         await _context.SaveChangesAsync();
         
         return Status.Updated;
+    }
+
+    private async Task<ICollection<Comment>> GetComments(int userId, IEnumerable<string> comments)
+    {
+        var commentsUpdated = new Collection<Comment>();
+        foreach (var comment in comments)
+        {
+            var exists = await _context.Comments.FirstOrDefaultAsync(c => c.Content == comment && c.CreatedBy == userId);
+
+            if (exists == null)
+            {
+                var newComment = new Comment() {CreatedBy = userId, Content = comment};
+                await _context.Comments.AddAsync(newComment);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                commentsUpdated.Add(exists);
+            }
+        }
+
+        return commentsUpdated;
     }
 }

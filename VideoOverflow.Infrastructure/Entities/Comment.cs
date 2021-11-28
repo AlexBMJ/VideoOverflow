@@ -3,5 +3,7 @@ public class Comment
 {
     //Attributes
     public int Id { get; set; }
+    
+    public int CreatedBy { get; set; }
     public string Content { get; set; }
 }

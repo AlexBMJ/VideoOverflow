@@ -1,9 +1,10 @@
 namespace VideoOverflow.Core;
 
-public record CommentDTO(int Id, string Content);
+public record CommentDTO(int Id, int CreatedBy, string Content);
 
 public record CommentCreateDTO
 {
+    public int CreatedBy { get; set; }
     public string Content { get; init; }
 }
 
