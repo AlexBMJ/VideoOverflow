@@ -8,16 +8,9 @@ public class UserRepositoryTests
     
     public UserRepositoryTests()
     {
-        var connection = new SqliteConnection("Filename=:memory:");
-        connection.Open();
-        var builder = new DbContextOptionsBuilder<VideoOverflowContext>();
-        builder.UseSqlite(connection);
-        var context = new VideoOverflowContext(builder.Options);
-        context.Database.EnsureCreated();
-
-        context.SaveChanges();
+        var repo = new RepositoryTestsSetup();
         
-        _context = context;
+        _context = repo.Context;
         _repo = new UserRepository(_context);
     }
 
