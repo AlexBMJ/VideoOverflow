@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+
 namespace VideoOverflow.Infrastructure;
  
 
@@ -27,7 +29,20 @@ public class CommentRepository : ICommentRepository
     public async Task<CommentDTO> Push(CommentCreateDTO comment)
     {
         var createdComment = new Comment() {Content = comment.Content, CreatedBy = comment.CreatedBy, AttachedToResource = comment.AttachedToResource};
-        
+
+        var resources = _context.Resources;
+
+        foreach (var resource in resources)
+        {
+            if (resource.Id == comment.AttachedToResource)
+            {
+                if (resource.Comments == null)
+                {
+                    resource.Comments = new Collection<Comment>();
+                }
+                resource.Comments.Add(createdComment);
+            }
+        }
         await _context.Comments.AddAsync(createdComment);
         await _context.SaveChangesAsync();
 

@@ -9,6 +9,7 @@ public class CommentRepositoryTests
 
     private readonly VideoOverflowContext _context;
     private readonly CommentRepository _repo;
+    private DateTime Created = DateTime.Now;
     public CommentRepositoryTests()
     {
         var repo = new RepositoryTestsSetup();
@@ -95,7 +96,63 @@ public class CommentRepositoryTests
         Assert.Equal(1, actual.Id);
         Assert.Equal("Nice Video!", actual.Content);
     }
-    
+
+    [Fact]
+    public async Task Push_Comment_On_Resource_Adds_Comment_To_Resource_By_Existing_User()
+    {
+        var resource = new Resource()
+        {
+            Id = 1,
+            Created = Created,
+            MaterialType = ResourceType.VIDEO,
+            SiteUrl = "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
+            SiteTitle = "My first Page",
+            ContentSource = "Youtube",
+            LixNumber = 1,
+            SkillLevel = 1,
+            Author = "Deniz",
+            Language = "Danish",
+            Tags = new Collection<Tag>() { },
+            Categories = new Collection<Category>() { },
+            Comments = new Collection<Comment>()
+        };
+        
+
+        var user = new User() {Name = "Deniz", Comments = new Collection<Comment>()};
+        
+        var comment = new CommentCreateDTO()
+            {Content = "I just commented on my own post :-)", AttachedToResource = 1, CreatedBy = 1};
+
+        await _context.Users.AddAsync(user);
+        await _context.Resources.AddAsync(resource);
+        await _context.SaveChangesAsync();
+        await _repo.Push(comment);
+
+        var expected = new Resource()
+        {
+            Id = 1,
+            Created = Created,
+            MaterialType = ResourceType.VIDEO,
+            SiteUrl = "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
+            SiteTitle = "My first Page",
+            ContentSource = "Youtube",
+            LixNumber = 1,
+            SkillLevel = 1,
+            Author = "Deniz",
+            Language = "Danish",
+            Tags = new Collection<Tag>() { },
+            Categories = new Collection<Category>() { },
+            Comments = new Collection<Comment>()
+                {new Comment() {Id = 1, CreatedBy = 1, AttachedToResource = 1, Content = "I just commented on my own post :-)"}}
+        };
+
+        var actual = await _context.Resources.Where(c => c.Id == 1).FirstOrDefaultAsync();
+
+        expected.Should().BeEquivalentTo(actual);
+
+
+
+    }
     [Fact]
     public async Task Get_returns_Comment_for_given_id()
     {

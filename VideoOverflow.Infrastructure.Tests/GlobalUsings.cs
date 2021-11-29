@@ -8,4 +8,7 @@ global using VideoOverflow.Core;
 global using System.Collections.Generic;
 global using FluentAssertions;
 global using System.Collections.ObjectModel;
+global using System;
+global using System.Collections.Generic;
+global using System.Linq;
 
