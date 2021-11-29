@@ -36,11 +36,7 @@ public class CategoryRepository : ICategoryRepository
     public async Task<Status> Update(CategoryUpdateDTO category)
     {
         var entity = await _context.Categories.FirstOrDefaultAsync(c => c.Id == category.Id);
-            
-            /*await (from c in _context.Categories
-            where c.Id == category.Id
-            select c).FirstOrDefaultAsync();*/
-
+       
         if (entity == null)
         {
             return Status.NotFound;
