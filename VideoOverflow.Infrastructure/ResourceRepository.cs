@@ -75,9 +75,6 @@ public class ResourceRepository : IResourceRepository
             Categories = await GetCategories(create.Categories)
         };
 
-        //Add derive content source from SiteUrl
-
-
 
         if (resource.Author == null)
         {

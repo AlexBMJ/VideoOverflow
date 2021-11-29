@@ -202,7 +202,7 @@ public class ResourceRepositoryTests : IDisposable
 
         var response = await _repo.Update(update);
 
-        //Assert.Equal(Status.Updated, response);
+        Assert.Equal(Status.Updated, response);
 
         var actual = await _repo.Get(1);
 
@@ -223,7 +223,6 @@ public class ResourceRepositoryTests : IDisposable
             Comments = new List<string>() 
         };
 
-        //Assert.NotNull(actual);
         expected.Should().BeEquivalentTo(actual);
     }
 
