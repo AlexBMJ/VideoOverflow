@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
 
 namespace VideoOverflow.Infrastructure;
 
@@ -48,6 +49,7 @@ public class ResourceRepository : IResourceRepository
             Created = entity.Created,
             Language = entity.Language,
             LixNumber = entity.LixNumber,
+            SkillLevel = entity.SkillLevel,
             Categories = entity.Categories.Select(c => c.Name).ToList(),
             Comments = entity.Comments == null ? new List<string>() : entity.Comments.Select(c => c.Content).ToList(),
             Tags = entity.Tags.Select(c => c.Name).ToList()
@@ -56,6 +58,7 @@ public class ResourceRepository : IResourceRepository
 
     public async Task<ResourceDTO> Push(ResourceCreateDTO create)
     {
+        var contentSource = GetContentSource(create.SiteUrl);
         var resource = new Resource()
         {
             Author = create.Author,
@@ -63,13 +66,18 @@ public class ResourceRepository : IResourceRepository
             MaterialType = create.MaterialType,
             Language = create.Language,
             LixNumber = create.LixNumber,
+            ContentSource = contentSource,
             SiteTitle = create.SiteTitle,
             SiteUrl = create.SiteUrl,
-            ContentSource = create.ContentSource,
             Comments = new Collection<Comment>(),
             Tags = await GetTags(create.Tags),
+            SkillLevel = GetSkillLevel(create.LixNumber),
             Categories = await GetCategories(create.Categories)
         };
+
+        //Add derive content source from SiteUrl
+
+
 
         if (resource.Author == null)
         {
@@ -102,50 +110,25 @@ public class ResourceRepository : IResourceRepository
             return Status.NotFound;
         }
 
-        if (update.Author != null && entity.Author != update.Author)
+        if (update.Author == null)
+        {
+            entity.Author = "Unknown";
+        } 
+        else
         {
             entity.Author = update.Author;
         }
-
-        if (entity.Language != update.Language)
-        {
-            entity.Language = update.Language;
-        }
-
-        if (entity.SiteTitle != update.SiteTitle)
-        {
-            entity.SiteTitle = update.SiteTitle;
-        }
-
-        if (entity.SiteUrl != update.SiteUrl)
-        {
-            entity.SiteUrl = update.SiteUrl;
-        }
-
-        if (entity.Language != update.Language)
-        {
-            entity.Language = update.Language;
-        }
-
-        if (entity.ContentSource != update.ContentSource)
-        {
-            entity.ContentSource = update.ContentSource;
-        }
-
-        if (entity.MaterialType != update.MaterialType)
-        {
-            entity.MaterialType = update.MaterialType;
-        }
-
-        if (update.LixNumber != null && entity.LixNumber != update.LixNumber)
-        {
-            entity.LixNumber = update.LixNumber;
-        }
-
-        if (update.SkillLevel != null && entity.SkillLevel != update.SkillLevel)
-        {
-            entity.SkillLevel = update.SkillLevel;
-        }
+        
+        entity.LixNumber = update.LixNumber;
+        entity.Language = update.Language;
+        entity.MaterialType = update.MaterialType;
+        entity.SiteTitle = update.SiteTitle;
+        entity.Categories = await GetCategories(update.Categories);
+        entity.Tags = await GetTags(update.Tags);
+        entity.SiteUrl = update.SiteUrl;
+        entity.Created = update.Created;
+        entity.SkillLevel = GetSkillLevel(update.LixNumber);
+        entity.ContentSource = GetContentSource(update.SiteUrl);
 
         // Lists
         
@@ -208,5 +191,26 @@ public class ResourceRepository : IResourceRepository
         }
 
         return collectionOfCategories;
+    }
+
+    private int GetSkillLevel(int lix)
+    {
+        if (lix < 25) { return 1; }
+        if (lix < 35) { return 2; }
+        if (lix < 45) { return 3; }
+        if (lix < 55) { return 4; }
+        return 5;
+    }
+    private string GetContentSource(string url)
+    {
+        string pattern = @"^(?:.*:\/\/)?(?:www\.)?(?<site>[^:\/]*).*$";
+        Regex rgx = new Regex(pattern);
+        Match m = rgx.Match(url);
+        var contentSource = "";
+        if (m.Success)
+        {
+            return contentSource = m.Groups[1].Value;
+        }
+        return "FAILED";
     }
 }

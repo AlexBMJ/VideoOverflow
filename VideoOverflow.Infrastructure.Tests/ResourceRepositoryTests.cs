@@ -19,12 +19,10 @@ public class ResourceRepositoryTests : IDisposable
             Author = "Deniz",
             SiteTitle = "My first Page",
             SiteUrl = "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
-            ContentSource = "LearnIT",
             Language = "Danish",
             MaterialType = ResourceType.VIDEO,
             Categories = new Collection<string>() {"Programming"},
             Tags = new Collection<string>() {"C#"},
-            Comments = new Collection<string>()
         };
 
         
@@ -41,7 +39,7 @@ public class ResourceRepositoryTests : IDisposable
             1,
             ResourceType.VIDEO,
             "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
-            "LearnIT",
+            "learnit.itu.dk",
             "My first Page",
             "Deniz",
             "Danish",
@@ -67,10 +65,11 @@ public class ResourceRepositoryTests : IDisposable
         {
             Id = 1,
             Created = Created,
+            SkillLevel = 1,
             MaterialType = ResourceType.VIDEO,
             SiteUrl = "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
             SiteTitle = "My first Page",
-            ContentSource = "LearnIT",
+            ContentSource = "learnit.itu.dk",
             Author = "Deniz",
             Language = "Danish",
             Tags = new Collection<string>() {"C#"},
@@ -96,12 +95,10 @@ public class ResourceRepositoryTests : IDisposable
             Author = "OndFisk",
             SiteTitle = "Opret et Microsoft Teams webinar",
             SiteUrl = "https://docs.microsoft.com/da-dk/dynamics365/marketing/teams-webinar",
-            ContentSource = "Microsoft",
             Language = "Danish",
             MaterialType = ResourceType.TEXTUAL_GUIDE,
             Categories = new Collection<string>() { },
             Tags = new Collection<string>() { },
-            Comments = new Collection<string>()
         };
 
         await _repo.Push(resource2);
@@ -113,7 +110,7 @@ public class ResourceRepositoryTests : IDisposable
             1,
             ResourceType.VIDEO,
             "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
-            "LearnIT",
+            "learnit.itu.dk",
             "My first Page",
             "Deniz",
             "Danish",
@@ -125,7 +122,7 @@ public class ResourceRepositoryTests : IDisposable
             2,
             ResourceType.TEXTUAL_GUIDE,
             "https://docs.microsoft.com/da-dk/dynamics365/marketing/teams-webinar",
-            "Microsoft",
+            "docs.microsoft.com",
             "Opret et Microsoft Teams webinar",
             "OndFisk",
             "Danish",
@@ -156,7 +153,6 @@ public class ResourceRepositoryTests : IDisposable
             MaterialType = ResourceType.TEXTUAL_GUIDE,
             SiteTitle = "My first Page",
             SiteUrl = "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
-            ContentSource = "LearnIT",
             Language = "Danish",
             Categories = new Collection<string>(),
             Tags = new Collection<string>() {"C#", "Java"}
@@ -194,15 +190,19 @@ public class ResourceRepositoryTests : IDisposable
         {
             Id = 1,
             Created = Created,
+            LixNumber = 45,
             Author = "OndFisk",
             SiteTitle = "Changed from my first page",
             SiteUrl = "https://docs.microsoft.com/da-dk/dynamics365/marketing/teams-webinar",
-            ContentSource = "Microsoft",
             Language = "English",
+            Tags = new List<string>() {"C#"},
+            Categories = new List<string>() {"Programming"},
             MaterialType = ResourceType.TEXTUAL_GUIDE
         };
 
-        await _repo.Update(update);
+        var response = await _repo.Update(update);
+
+        //Assert.Equal(Status.Updated, response);
 
         var actual = await _repo.Get(1);
 
@@ -210,11 +210,11 @@ public class ResourceRepositoryTests : IDisposable
         {
             Id = 1,
             Created = Created,
-            LixNumber = null,
-            SkillLevel = null,
+            LixNumber = 45,
+            SkillLevel = 4,
             MaterialType = ResourceType.TEXTUAL_GUIDE,
             SiteUrl = "https://docs.microsoft.com/da-dk/dynamics365/marketing/teams-webinar",
-            ContentSource = "Microsoft",
+            ContentSource = "docs.microsoft.com",
             SiteTitle = "Changed from my first page",
             Author = "OndFisk",
             Language = "English",
@@ -223,7 +223,7 @@ public class ResourceRepositoryTests : IDisposable
             Comments = new List<string>() 
         };
 
-
+        //Assert.NotNull(actual);
         expected.Should().BeEquivalentTo(actual);
     }
 
