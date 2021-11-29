@@ -110,12 +110,12 @@ public class ResourceRepository : IResourceRepository
         if (update.Author == null)
         {
             entity.Author = "Unknown";
-        } 
+        }
         else
         {
             entity.Author = update.Author;
         }
-        
+
         entity.LixNumber = update.LixNumber;
         entity.Language = update.Language;
         entity.MaterialType = update.MaterialType;
@@ -127,29 +127,10 @@ public class ResourceRepository : IResourceRepository
         entity.SkillLevel = GetSkillLevel(update.LixNumber);
         entity.ContentSource = GetContentSource(update.SiteUrl);
 
-        // Lists
-        
-        
-        
-        if (true) // TODO Check for Tags
-        {
-            
-        }
-
-        if (true) // TODO Check for Categories
-        {
-            
-        }
-        
-
         await _context.SaveChangesAsync();
         return Status.Updated;
-        
     }
 
-    /*
-     * Methods to retrieve data from Tag and Category tables
-     */
     public async Task<ICollection<Tag>> GetTags(IEnumerable<string> tags)
     {
         var collectionOfTags = new Collection<Tag>();
@@ -192,12 +173,29 @@ public class ResourceRepository : IResourceRepository
 
     private int GetSkillLevel(int lix)
     {
-        if (lix < 25) { return 1; }
-        if (lix < 35) { return 2; }
-        if (lix < 45) { return 3; }
-        if (lix < 55) { return 4; }
+        if (lix < 25)
+        {
+            return 1;
+        }
+
+        if (lix < 35)
+        {
+            return 2;
+        }
+
+        if (lix < 45)
+        {
+            return 3;
+        }
+
+        if (lix < 55)
+        {
+            return 4;
+        }
+
         return 5;
     }
+
     private string GetContentSource(string url)
     {
         string pattern = @"^(?:.*:\/\/)?(?:www\.)?(?<site>[^:\/]*).*$";
@@ -208,6 +206,7 @@ public class ResourceRepository : IResourceRepository
         {
             return contentSource = m.Groups[1].Value;
         }
+
         return "FAILED";
     }
 }

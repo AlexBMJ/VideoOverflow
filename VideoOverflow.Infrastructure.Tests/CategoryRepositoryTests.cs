@@ -6,14 +6,15 @@ public class CategoryRepositoryTests
 {
     private readonly IVideoOverflowContext _context;
     private readonly CategoryRepository _repo;
+
     public CategoryRepositoryTests()
     {
         var repo = new RepositoryTestsSetup();
         _context = repo.Context;
-        
+
         _repo = new CategoryRepository(_context);
     }
-    
+
     [Fact]
     public async Task GetAll_Returns_All_Categories()
     {
@@ -45,8 +46,8 @@ public class CategoryRepositoryTests
         var category = new CategoryCreateDTO() {Name = "Software Engineering"};
 
         var actual = await _repo.Push(category);
-        
-        
+
+
         Assert.Equal(1, actual.Id);
         Assert.Equal("Software Engineering", actual.Name);
     }
@@ -55,7 +56,7 @@ public class CategoryRepositoryTests
     public async void Get_returns_null_for_non_existing_id()
     {
         var option = await _repo.Get(4);
-        
+
         Assert.Null(option);
     }
 
@@ -69,7 +70,7 @@ public class CategoryRepositoryTests
         var expected = new CategoryDTO(1, "Programming");
 
         var actual = await _repo.Get(1);
-        
+
         Assert.Equal(expected, actual);
     }
 
@@ -84,7 +85,7 @@ public class CategoryRepositoryTests
         var update = new CategoryUpdateDTO() {Id = 1, Name = "Software Engineering"};
 
         var actual = await _repo.Update(update);
-        
+
         Assert.Equal(Status.Updated, actual);
     }
 
@@ -94,10 +95,10 @@ public class CategoryRepositoryTests
         var update = new CategoryUpdateDTO() {Id = 10, Name = "SE"};
 
         var response = await _repo.Update(update);
-        
+
         Assert.Equal(Status.NotFound, response);
     }
-    
+
     [Fact]
     public async Task Update_changes_name_of_category_of_givenID()
     {
@@ -112,8 +113,7 @@ public class CategoryRepositoryTests
         var expected = new CategoryDTO(1, "Database");
 
         var actual = await _repo.Get(1);
-        
+
         Assert.Equal(expected, actual);
     }
-    
 }

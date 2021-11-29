@@ -24,8 +24,6 @@ public class ResourceRepositoryTests : IDisposable
             Categories = new Collection<string>() {"Programming"},
             Tags = new Collection<string>() {"C#"},
         };
-
-        
     }
 
     [Fact]
@@ -96,7 +94,7 @@ public class ResourceRepositoryTests : IDisposable
             SiteTitle = "Opret et Microsoft Teams webinar",
             SiteUrl = "https://docs.microsoft.com/da-dk/dynamics365/marketing/teams-webinar",
             Language = "Danish",
-            MaterialType = ResourceType.TEXTUAL_GUIDE,
+            MaterialType = ResourceType.ARTICLE,
             Categories = new Collection<string>() { },
             Tags = new Collection<string>() { },
         };
@@ -120,7 +118,7 @@ public class ResourceRepositoryTests : IDisposable
 
         var secondResourceDto = new ResourceDTO(
             2,
-            ResourceType.TEXTUAL_GUIDE,
+            ResourceType.ARTICLE,
             "https://docs.microsoft.com/da-dk/dynamics365/marketing/teams-webinar",
             "docs.microsoft.com",
             "Opret et Microsoft Teams webinar",
@@ -150,7 +148,7 @@ public class ResourceRepositoryTests : IDisposable
         var resource = new ResourceCreateDTO()
         {
             Created = Created,
-            MaterialType = ResourceType.TEXTUAL_GUIDE,
+            MaterialType = ResourceType.ARTICLE,
             SiteTitle = "My first Page",
             SiteUrl = "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
             Language = "Danish",
@@ -197,7 +195,7 @@ public class ResourceRepositoryTests : IDisposable
             Language = "English",
             Tags = new List<string>() {"C#"},
             Categories = new List<string>() {"Programming"},
-            MaterialType = ResourceType.TEXTUAL_GUIDE
+            MaterialType = ResourceType.ARTICLE
         };
 
         var response = await _repo.Update(update);
@@ -212,7 +210,7 @@ public class ResourceRepositoryTests : IDisposable
             Created = Created,
             LixNumber = 45,
             SkillLevel = 4,
-            MaterialType = ResourceType.TEXTUAL_GUIDE,
+            MaterialType = ResourceType.ARTICLE,
             SiteUrl = "https://docs.microsoft.com/da-dk/dynamics365/marketing/teams-webinar",
             ContentSource = "docs.microsoft.com",
             SiteTitle = "Changed from my first page",
@@ -220,7 +218,7 @@ public class ResourceRepositoryTests : IDisposable
             Language = "English",
             Tags = new List<string>() {"C#"},
             Categories = new List<string>() {"Programming"},
-            Comments = new List<string>() 
+            Comments = new List<string>()
         };
 
         expected.Should().BeEquivalentTo(actual);

@@ -2,8 +2,8 @@ namespace VideoOverflow.Infrastructure.Tests;
 
 public class RepositoryTestsSetup
 {
-    public VideoOverflowContext Context { get;}
-    
+    public VideoOverflowContext Context { get; }
+
     public RepositoryTestsSetup()
     {
         var connection = new SqliteConnection("Filename=:memory:");
@@ -18,4 +18,3 @@ public class RepositoryTestsSetup
         Context = context;
     }
 }
-    

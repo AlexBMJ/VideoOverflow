@@ -6,5 +6,5 @@ public class TagSynonym
     public string Name { get; set; }
 
     //Relations
-    public ICollection<Tag> Tags { get; set; }
+    public ICollection<Tag>? Tags { get; set; }
 }

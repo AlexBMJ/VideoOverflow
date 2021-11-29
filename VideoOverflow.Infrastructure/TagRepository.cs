@@ -34,10 +34,11 @@ public class TagRepository : ITagRepository
     {
         var created = new Tag()
         {
-            Name = tag.Name, TagSynonyms = tag.TagSynonyms == null ? new List<TagSynonym>() : tag.TagSynonyms
-                .Select(c => new TagSynonym() {Name = c}).ToList()
+            Name = tag.Name,
+            TagSynonyms = await GetTagSynonyms(tag.TagSynonyms)
         };
-        
+
+
         await _context.Tags.AddAsync(created);
         await _context.SaveChangesAsync();
 
@@ -47,29 +48,50 @@ public class TagRepository : ITagRepository
     public async Task<Status> Update(TagUpdateDTO update)
     {
         var entity = await (from c in _context.Tags
-                where c.Id == update.Id
-                select c).FirstOrDefaultAsync();
+            where c.Id == update.Id
+            select c).FirstOrDefaultAsync();
 
         if (entity == null)
         {
             return Status.NotFound;
         }
 
-        var tagSynonyms =  new Collection<TagSynonym>();
-        
+        var tagSynonyms = new Collection<TagSynonym>();
+
         if (update.TagSynonyms != null)
         {
             foreach (var synonym in update.TagSynonyms)
             {
-                tagSynonyms.Add(new TagSynonym(){Name = synonym});
+                tagSynonyms.Add(new TagSynonym() {Name = synonym});
             }
         }
-        
+
         entity.Name = update.Name;
         entity.TagSynonyms = tagSynonyms;
 
         await _context.SaveChangesAsync();
 
         return Status.Updated;
+    }
+
+    public async Task<ICollection<TagSynonym>> GetTagSynonyms(IEnumerable<string> tagSynonyms)
+    {
+        var collectionOfTagsynonyms = new Collection<TagSynonym>();
+
+        foreach (var tagSynonym in tagSynonyms)
+        {
+            var exists = await _context.TagSynonyms.FirstOrDefaultAsync(c => c.Name == tagSynonym);
+
+            if (exists == null)
+            {
+                exists = new TagSynonym() {Name = tagSynonym, Tags = new Collection<Tag>()};
+                await _context.TagSynonyms.AddAsync(exists);
+                await _context.SaveChangesAsync();
+            }
+
+            collectionOfTagsynonyms.Add(exists);
+        }
+
+        return collectionOfTagsynonyms;
     }
 }

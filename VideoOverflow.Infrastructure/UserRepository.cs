@@ -11,7 +11,7 @@ public class UserRepository : IUserRepository
     {
         _context = context;
     }
-    
+
     public async Task<IReadOnlyCollection<UserDTO>> GetAll()
     {
         return (await (from u in _context.Users
@@ -29,7 +29,6 @@ public class UserRepository : IUserRepository
 
     public async Task<UserDTO> Push(UserCreateDTO user)
     {
-        
         var entity = new User() {Name = user.Name, Comments = new Collection<Comment>()};
 
         await _context.Users.AddAsync(entity);
@@ -37,6 +36,7 @@ public class UserRepository : IUserRepository
 
         return new UserDTO(entity.Id, entity.Name, entity.Comments.Select(c => c.Content).ToList());
     }
+
     public async Task<Status> Update(UserUpdateDTO userUpdate)
     {
         var entity = await _context.Users.FirstOrDefaultAsync(c => c.Id == userUpdate.Id);
@@ -60,7 +60,7 @@ public class UserRepository : IUserRepository
         }
 
         await _context.SaveChangesAsync();
-        
+
         return Status.Updated;
     }
 
@@ -69,7 +69,8 @@ public class UserRepository : IUserRepository
         var commentsUpdated = new Collection<Comment>();
         foreach (var comment in comments)
         {
-            var exists = await _context.Comments.FirstOrDefaultAsync(c => c.Content == comment && c.CreatedBy == userId);
+            var exists =
+                await _context.Comments.FirstOrDefaultAsync(c => c.Content == comment && c.CreatedBy == userId);
 
             if (exists == null)
             {
@@ -77,9 +78,8 @@ public class UserRepository : IUserRepository
                 await _context.Comments.AddAsync(exists);
                 await _context.SaveChangesAsync();
             }
-            
+
             commentsUpdated.Add(exists);
-            
         }
 
         return commentsUpdated;

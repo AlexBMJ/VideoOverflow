@@ -12,5 +12,3 @@ public record TagUpdateDTO : TagCreateDTO
 {
     public int Id { get; init; }
 }
-
-    

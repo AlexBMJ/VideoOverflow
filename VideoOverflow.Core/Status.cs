@@ -1,5 +1,7 @@
-﻿namespace VideoOverflow.Core {
-    public enum Status {
+﻿namespace VideoOverflow.Core
+{
+    public enum Status
+    {
         Created,
         Updated,
         Deleted,

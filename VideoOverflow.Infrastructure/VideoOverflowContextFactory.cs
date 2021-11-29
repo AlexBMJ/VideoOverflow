@@ -3,9 +3,8 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace VideoOverflow.Infrastructure;
 
-public class VideoOverflowContextFactory
-{
-    public class Builer : IDesignTimeDbContextFactory<VideoOverflowContext>
+
+    public class VideoOverflowContextFactory : IDesignTimeDbContextFactory<VideoOverflowContext>
     {
         public VideoOverflowContext CreateDbContext(string[] args)
         {
@@ -15,4 +14,3 @@ public class VideoOverflowContextFactory
             return new VideoOverflowContext(optionsBuilder.Options);
         }
     }
-}

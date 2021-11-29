@@ -8,13 +8,15 @@ public class VideoOverflowContext : DbContext, IVideoOverflowContext
     public DbSet<Tag> Tags => Set<Tag>();
     public DbSet<TagSynonym> TagSynonyms => Set<TagSynonym>();
     public DbSet<Category> Categories => Set<Category>();
-    public DbSet<Comment> Comments=> Set<Comment>();
+    public DbSet<Comment> Comments => Set<Comment>();
     public DbSet<User> Users => Set<User>();
-    public DbSet<Resource> Resources=> Set<Resource>();
-    
-    
-    public VideoOverflowContext(DbContextOptions<VideoOverflowContext> options) : base(options) { }
-   
+    public DbSet<Resource> Resources => Set<Resource>();
+
+
+    public VideoOverflowContext(DbContextOptions<VideoOverflowContext> options) : base(options)
+    {
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Many to Many
@@ -29,13 +31,12 @@ public class VideoOverflowContext : DbContext, IVideoOverflowContext
         modelBuilder.Entity<Tag>()
             .HasMany(tag => tag.TagSynonyms)
             .WithMany(tagsynonym => tagsynonym.Tags);
-        
+
         // One to Many
         modelBuilder.Entity<Resource>()
             .HasMany(resource => resource.Comments);
-        
+
         modelBuilder.Entity<User>()
             .HasMany(user => user.Comments);
     }
-
 }

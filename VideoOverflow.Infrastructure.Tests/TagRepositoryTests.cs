@@ -1,5 +1,3 @@
-using Moq;
-
 namespace VideoOverflow.Infrastructure.Tests;
 
 public class TagRepositoryTests
@@ -18,8 +16,6 @@ public class TagRepositoryTests
     [Fact]
     public async Task GetAll_Returns_All_Tags()
     {
-
-
         var tag1 = new TagCreateDTO()
         {
             Name = "CSharp",
@@ -28,7 +24,7 @@ public class TagRepositoryTests
                 "CS", "c#", "c-sharp"
             }
         };
-        
+
         var tag2 = new TagCreateDTO()
         {
             Name = "Java",
@@ -37,7 +33,7 @@ public class TagRepositoryTests
                 "jav", "javaa", "javaaa"
             }
         };
-        
+
         var tag3 = new TagCreateDTO()
         {
             Name = "Docker",
@@ -46,27 +42,23 @@ public class TagRepositoryTests
                 "Dock", "DC", "Just Testing"
             }
         };
-        
 
         await _repo.Push(tag1);
         await _repo.Push(tag2);
         await _repo.Push(tag3);
-        
-            
-            
-            
+
         var tagDTO1 = new TagDTO(1, "CSharp",
             new List<string>()
             {
                 "CS", "c#", "c-sharp"
             });
-        
+
         var tagDTO2 = new TagDTO(2, "Java",
             new List<string>()
             {
                 "jav", "javaa", "javaaa"
             });
-        
+
         var tagDTO3 = new TagDTO(3, "Docker",
             new List<string>()
             {
@@ -89,7 +81,7 @@ public class TagRepositoryTests
 
         expected.Should().BeEquivalentTo(actual);
     }
-    
+
     [Fact]
     public async Task Get_Existing_Tag_Returns_TagDTO_for_given_id()
     {
@@ -103,7 +95,7 @@ public class TagRepositoryTests
                 "P3"
             }
         };
-        
+
         var tag2 = new TagCreateDTO()
         {
             Name = "Pyton",
@@ -117,7 +109,7 @@ public class TagRepositoryTests
 
         var firstTagPushed = await _repo.Push(tag1);
         var actual = await _repo.Push(tag2);
-        
+
 
         var expected = new TagDTO(2,
             "Pyton",
@@ -135,7 +127,7 @@ public class TagRepositoryTests
     public async Task Get_Non_Existing_Tag_Returns_null()
     {
         var actual = await _repo.Get(1000);
-        
+
         Assert.Null(actual);
     }
 
@@ -152,7 +144,7 @@ public class TagRepositoryTests
                 "c#"
             }
         };
-        
+
         var tag2 = new TagCreateDTO()
         {
             Name = "Python",
@@ -180,17 +172,17 @@ public class TagRepositoryTests
         expected.Should().BeEquivalentTo(actual);
         expected2.Should().BeEquivalentTo(actual2);
     }
-    
+
     [Fact]
     public async Task Update_Non_Existing_Tag_Returns_StatusNotFound()
     {
         var update = new TagUpdateDTO() {Id = 2, Name = "I'm trying to do something illegal"};
         var actual = await _repo.Update(update);
-        
+
         Assert.Equal(Status.NotFound, actual);
     }
-    
-    
+
+
     [Fact]
     public async Task Update_Existing_Tag_Returns_StatusUpdated()
     {
@@ -206,32 +198,31 @@ public class TagRepositoryTests
         };
 
         await _repo.Push(tag);
-        
+
         var update = new TagUpdateDTO()
         {
-            Id = 1, 
+            Id = 1,
             Name = "I'm changing name from Csharp to Java",
             TagSynonyms = new List<string>()
             {
                 "J",
                 "test"
             }
-            
         };
-        
+
         var actual = await _repo.Update(update);
-        
+
         Assert.Equal(Status.Updated, actual);
     }
-    
-    [Fact] 
+
+    [Fact]
     public async Task Update_changes_content_of_comment_of_givenID()
     {
-        var tag = new TagCreateDTO() {Name = "C#"};
+        var tag = new TagCreateDTO() {Name = "C#", TagSynonyms = new List<string>()};
 
         await _repo.Push(tag);
 
-        var update = new TagUpdateDTO() {Id = 1, Name = "Java"};
+        var update = new TagUpdateDTO() {Id = 1, Name = "Java", TagSynonyms = new List<string>()};
 
         await _repo.Update(update);
 
@@ -241,5 +232,4 @@ public class TagRepositoryTests
 
         expected.Should().BeEquivalentTo(actual);
     }
-    
 }
