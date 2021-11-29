@@ -14,13 +14,44 @@ public class ResourceRepository : IResourceRepository
     public async Task<IEnumerable<ResourceDTO>> GetAll()
     {
         // Give resourceDTO
-        throw new NotImplementedException();
+        return await _context.Resources.Select(c => new ResourceDTO(
+            c.Id,
+            c.MaterialType,
+            c.SiteUrl,
+            c.ContentSource,
+            c.SiteTitle,
+            c.Author,
+            c.Language,
+            c.Tags.Select(tag => tag.Name).ToList(),
+            c.Categories.Select(category => category.Name).ToList(),
+            c.Comments.Select(comment => comment.Content).ToList())).ToListAsync();
     }
-    
-    public async Task<ResourceDetailsDTO?> Get(int id)
+
+    public async Task<ResourceDetailsDTO?> Get(int resourceId)
     {
+        var entity = await _context.Resources.Where(resource => resource.Id == resourceId).Select(c => c)
+            .FirstOrDefaultAsync();
         // Give ResourceDetailsDTO 
-        throw new NotImplementedException();
+        if (entity == null)
+        {
+            return null;
+        }
+
+        return new ResourceDetailsDTO()
+        {
+            Id = entity.Id,
+            MaterialType = entity.MaterialType,
+            Author = entity.Author,
+            SiteTitle = entity.SiteTitle,
+            ContentSource = entity.ContentSource,
+            SiteUrl = entity.SiteUrl,
+            Created = entity.Created,
+            Language = entity.Language,
+            LixNumber = entity.LixNumber,
+            Categories = entity.Categories.Select(c => c.Name).ToList(),
+            Comments = entity.Comments == null ? new List<string>() : entity.Comments.Select(c => c.Content).ToList(),
+            Tags = entity.Tags.Select(c => c.Name).ToList()
+        };
     }
 
     public async Task<ResourceDTO> Push(ResourceCreateDTO create)
@@ -38,15 +69,20 @@ public class ResourceRepository : IResourceRepository
             Comments = new Collection<Comment>(),
             Tags = await GetTags(create.Tags),
             Categories = await GetCategories(create.Categories)
-
         };
+
+        if (resource.Author == null)
+        {
+            resource.Author = "Unknown";
+        }
+
         await _context.Resources.AddAsync(resource);
         await _context.SaveChangesAsync();
-
 
         return new ResourceDTO(resource.Id,
             resource.MaterialType,
             resource.SiteUrl,
+            resource.ContentSource,
             resource.SiteTitle,
             resource.Author,
             resource.Language,
@@ -56,11 +92,84 @@ public class ResourceRepository : IResourceRepository
         );
     }
 
-    public async Task<Status> Update(int id, ResourceUpdateDTO update)
+    public async Task<Status> Update(ResourceUpdateDTO update)
     {
-        throw new NotImplementedException();
+        var entity = await _context.Resources.Where(resource => resource.Id == update.Id).Select(c => c)
+            .FirstOrDefaultAsync();
+
+        if (entity == null)
+        {
+            return Status.NotFound;
+        }
+
+        if (update.Author != null && entity.Author != update.Author)
+        {
+            entity.Author = update.Author;
+        }
+
+        if (entity.Language != update.Language)
+        {
+            entity.Language = update.Language;
+        }
+
+        if (entity.SiteTitle != update.SiteTitle)
+        {
+            entity.SiteTitle = update.SiteTitle;
+        }
+
+        if (entity.SiteUrl != update.SiteUrl)
+        {
+            entity.SiteUrl = update.SiteUrl;
+        }
+
+        if (entity.Language != update.Language)
+        {
+            entity.Language = update.Language;
+        }
+
+        if (entity.ContentSource != update.ContentSource)
+        {
+            entity.ContentSource = update.ContentSource;
+        }
+
+        if (entity.MaterialType != update.MaterialType)
+        {
+            entity.MaterialType = update.MaterialType;
+        }
+
+        if (update.LixNumber != null && entity.LixNumber != update.LixNumber)
+        {
+            entity.LixNumber = update.LixNumber;
+        }
+
+        if (update.SkillLevel != null && entity.SkillLevel != update.SkillLevel)
+        {
+            entity.SkillLevel = update.SkillLevel;
+        }
+
+        // Lists
+        
+        
+        
+        if (true) // TODO Check for Tags
+        {
+            
+        }
+
+        if (true) // TODO Check for Categories
+        {
+            
+        }
+        
+
+        await _context.SaveChangesAsync();
+        return Status.Updated;
+        
     }
 
+    /*
+     * Methods to retrieve data from Tag and Category tables
+     */
     public async Task<ICollection<Tag>> GetTags(IEnumerable<string> tags)
     {
         var collectionOfTags = new Collection<Tag>();
@@ -74,11 +183,13 @@ public class ResourceRepository : IResourceRepository
                 await _context.Tags.AddAsync(exists);
                 await _context.SaveChangesAsync();
             }
+
             collectionOfTags.Add(exists);
         }
+
         return collectionOfTags;
     }
-    
+
     public async Task<ICollection<Category>> GetCategories(IEnumerable<string> categories)
     {
         var collectionOfCategories = new Collection<Category>();
@@ -92,8 +203,10 @@ public class ResourceRepository : IResourceRepository
                 await _context.Categories.AddAsync(exists);
                 await _context.SaveChangesAsync();
             }
+
             collectionOfCategories.Add(exists);
         }
+
         return collectionOfCategories;
     }
 }

@@ -4,9 +4,10 @@ namespace VideoOverflow.Core;
 public record ResourceDTO(int Id,
     ResourceType MaterialType,
     string SiteUrl,
+    string ContentSource,
     string SiteTitle,
     string? Author,
-    string Language,
+    string? Language,
     ICollection<string> Tags,
     ICollection<string> Categories,
     ICollection<string>? Comments);
@@ -20,10 +21,10 @@ public record ResourceDetailsDTO()
     public string SiteUrl { get; init; }
     public string SiteTitle { get; init; }
     public string? Author { get; init; }
-    public string ContentSource { get; init; }
+    public string? ContentSource { get; init; }
     public int? LixNumber { get; init; }
     public int? SkillLevel { get; init; }
-    public string Langauge { get; init; }
+    public string? Language { get; init; }
     
     //Relations
     public ICollection<string> Tags { get; init; }
