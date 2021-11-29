@@ -5,7 +5,7 @@ using Moq;
 
 namespace VideoOverflow.Infrastructure;
 
-public class TagRepository
+public class TagRepository : ITagRepository
 {
     private readonly IVideoOverflowContext _context;
 

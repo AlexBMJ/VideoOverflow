@@ -13,19 +13,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
+builder.Services.AddDbContext<VideoOverflowContext>(options => options.UseNpgsql(builder
+    .Configuration.GetConnectionString("VideoOverflow")));
+
+
 var app = builder.Build();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();
-    
-    // Map user secrets
-    builder.Services.AddDbContext<VideoOverflowContext>(options => options.UseNpgsql(builder
-        .Configuration.GetConnectionString("VideoOverflow")));
-
-  
-    
-
 
 }
 else
