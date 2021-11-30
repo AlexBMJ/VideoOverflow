@@ -28,11 +28,11 @@
             => (await _repository.Get(id)).ToActionResult();
 
         [Authorize]
-        [HttpPost]
+        [HttpPost]  
         [ProducesResponseType(typeof(ResourceDetailsDTO), 201)]
         public async Task<IActionResult> Post(ResourceCreateDTO resource)
         {
-            var created = await _repository.CreateAsync(resource);
+            var created = await _repository.Push(resource);
 
             return CreatedAtRoute(nameof(Get), new { created.Id }, created);
         }
@@ -42,6 +42,6 @@
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
         public async Task<Status> Put(int id, [FromBody] ResourceUpdateDTO resource)
-               => (await _repository.Update(id, resource));
+               => (await _repository.Update(resource));
     }
 }

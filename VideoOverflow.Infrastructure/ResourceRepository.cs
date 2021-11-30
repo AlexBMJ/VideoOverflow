@@ -28,7 +28,7 @@ public class ResourceRepository : IResourceRepository
             c.Comments.Select(comment => comment.Content).ToList())).ToListAsync();
     }
 
-    public async Task<ResourceDetailsDTO?> Get(int resourceId)
+    public async Task<Option<ResourceDetailsDTO>> Get(int resourceId)
     {
         var entity = await _context.Resources.Where(resource => resource.Id == resourceId).Select(c => c)
             .FirstOrDefaultAsync();
