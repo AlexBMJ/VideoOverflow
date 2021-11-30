@@ -1,8 +1,9 @@
+using System.Collections.ObjectModel;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using VideoOverflow.Infrastructure;
-;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,11 +11,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
 
+builder.Services.AddScoped<IVideoOverflowContext, VideoOverflowContext>();
+builder.Services.AddScoped<IResourceRepository, ResourceRepository>();
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
 builder.Services.AddDbContext<VideoOverflowContext>(options => options.UseNpgsql(builder
     .Configuration.GetConnectionString("VideoOverflow")));
+
+
 
 
 var app = builder.Build();
