@@ -24,4 +24,8 @@
     <Folder Include="wwwroot\css" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\VideoOverflow.Core\VideoOverflow.Core.csproj" />
+  </ItemGroup>
+
 </Project>
