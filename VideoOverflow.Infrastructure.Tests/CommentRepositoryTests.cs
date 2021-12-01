@@ -102,7 +102,7 @@ public class CommentRepositoryTests
         {
             Id = 1,
             Created = Created,
-            MaterialType = ResourceType.VIDEO,
+            MaterialType = ResourceType.Video,
             SiteUrl = "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
             SiteTitle = "My first Page",
             ContentSource = "Youtube",
@@ -130,7 +130,7 @@ public class CommentRepositoryTests
         {
             Id = 1,
             Created = Created,
-            MaterialType = ResourceType.VIDEO,
+            MaterialType = ResourceType.Video,
             SiteUrl = "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
             SiteTitle = "My first Page",
             ContentSource = "Youtube",

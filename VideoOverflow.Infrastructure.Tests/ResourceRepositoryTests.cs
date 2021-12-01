@@ -20,7 +20,7 @@ public class ResourceRepositoryTests : IDisposable
             SiteTitle = "My first Page",
             SiteUrl = "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
             Language = "Danish",
-            MaterialType = ResourceType.VIDEO,
+            MaterialType = ResourceType.Video,
             Categories = new Collection<string>() {"Programming"},
             Tags = new Collection<string>() {"C#"},
         };
@@ -35,7 +35,7 @@ public class ResourceRepositoryTests : IDisposable
 
         var expected = new ResourceDTO(
             1,
-            ResourceType.VIDEO,
+            ResourceType.Video,
             "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
             "learnit.itu.dk",
             "My first Page",
@@ -64,7 +64,7 @@ public class ResourceRepositoryTests : IDisposable
             Id = 1,
             Created = Created,
             SkillLevel = 1,
-            MaterialType = ResourceType.VIDEO,
+            MaterialType = ResourceType.Video,
             SiteUrl = "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
             SiteTitle = "My first Page",
             ContentSource = "learnit.itu.dk",
@@ -94,7 +94,7 @@ public class ResourceRepositoryTests : IDisposable
             SiteTitle = "Opret et Microsoft Teams webinar",
             SiteUrl = "https://docs.microsoft.com/da-dk/dynamics365/marketing/teams-webinar",
             Language = "Danish",
-            MaterialType = ResourceType.ARTICLE,
+            MaterialType = ResourceType.Article,
             Categories = new Collection<string>() { },
             Tags = new Collection<string>() { },
         };
@@ -106,7 +106,7 @@ public class ResourceRepositoryTests : IDisposable
 
         var firstResourceDto = new ResourceDTO(
             1,
-            ResourceType.VIDEO,
+            ResourceType.Video,
             "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
             "learnit.itu.dk",
             "My first Page",
@@ -118,7 +118,7 @@ public class ResourceRepositoryTests : IDisposable
 
         var secondResourceDto = new ResourceDTO(
             2,
-            ResourceType.ARTICLE,
+            ResourceType.Article,
             "https://docs.microsoft.com/da-dk/dynamics365/marketing/teams-webinar",
             "docs.microsoft.com",
             "Opret et Microsoft Teams webinar",
@@ -148,7 +148,7 @@ public class ResourceRepositoryTests : IDisposable
         var resource = new ResourceCreateDTO()
         {
             Created = Created,
-            MaterialType = ResourceType.ARTICLE,
+            MaterialType = ResourceType.Article,
             SiteTitle = "My first Page",
             SiteUrl = "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
             Language = "Danish",
@@ -195,7 +195,7 @@ public class ResourceRepositoryTests : IDisposable
             Language = "English",
             Tags = new List<string>() {"C#"},
             Categories = new List<string>() {"Programming"},
-            MaterialType = ResourceType.ARTICLE
+            MaterialType = ResourceType.Article
         };
 
         var response = await _repo.Update(update);
@@ -210,7 +210,7 @@ public class ResourceRepositoryTests : IDisposable
             Created = Created,
             LixNumber = 45,
             SkillLevel = 4,
-            MaterialType = ResourceType.ARTICLE,
+            MaterialType = ResourceType.Article,
             SiteUrl = "https://docs.microsoft.com/da-dk/dynamics365/marketing/teams-webinar",
             ContentSource = "docs.microsoft.com",
             SiteTitle = "Changed from my first page",
