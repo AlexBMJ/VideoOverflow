@@ -53,7 +53,7 @@ public class ResourceRepositoryTests : IDisposable
     {
         var exists = await _repo.Get(1000);
 
-        Assert.Null(exists);
+        Assert.True(exists.IsNone);
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public class ResourceRepositoryTests : IDisposable
 
         var actual = await _repo.Get(1);
 
-        expected.Should().BeEquivalentTo(actual);
+        expected.Should().BeEquivalentTo(actual.Value);
     }
 
     [Fact]
@@ -221,7 +221,7 @@ public class ResourceRepositoryTests : IDisposable
             Comments = new List<string>()
         };
 
-        expected.Should().BeEquivalentTo(actual);
+        expected.Should().BeEquivalentTo(actual.Value);
     }
 
 
