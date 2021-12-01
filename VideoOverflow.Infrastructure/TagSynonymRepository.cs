@@ -10,17 +10,14 @@ public class TagSynonymRepository : ITagSynonymRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<TagSynonymDTO>> GetAll()
+    public async Task<IReadOnlyCollection<TagSynonymDTO>> GetAll()
     {
         return await _context.TagSynonyms.Select(c => new TagSynonymDTO(c.Id, c.Name)).ToListAsync();
     }
 
     public async Task<TagSynonymDTO?> Get(int id)
     {
-        var entity = await _context.TagSynonyms.Where(c => c.Id == id).Select(c => c).FirstOrDefaultAsync();
-        // add code 
-
-        return entity == null ? null : new TagSynonymDTO(entity.Id, entity.Name);
+        return await _context.TagSynonyms.Where(ts => ts.Id == id).Select(ts => new TagSynonymDTO(ts.Id, ts.Name)).FirstOrDefaultAsync();
     }
 
     public async Task<TagSynonymDTO> Push(TagSynonymCreateDTO create)
@@ -33,7 +30,7 @@ public class TagSynonymRepository : ITagSynonymRepository
 
         await _context.TagSynonyms.AddAsync(created);
         await _context.SaveChangesAsync();
-        // add code
+   
 
         return new TagSynonymDTO(created.Id, created.Name);
     }
@@ -47,7 +44,6 @@ public class TagSynonymRepository : ITagSynonymRepository
         {
             return Status.NotFound;
         }
-
 
         if (update.Name != entity.Name)
         {

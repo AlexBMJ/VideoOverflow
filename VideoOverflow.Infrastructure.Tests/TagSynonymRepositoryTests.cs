@@ -1,60 +1,55 @@
 ﻿namespace VideoOverflow.Infrastructure.Tests;
 
-public class TagSynonymRepositoryTests
+public class TagSynonymRepositoryTests : RepositoryTestsSetup
 {
     private readonly TagSynonymRepository _repo;
-    private readonly VideoOverflowContext _context;
-
-
+    
     public TagSynonymRepositoryTests()
     {
-        var repo = new RepositoryTestsSetup();
-        _context = repo.Context;
-
         _repo = new TagSynonymRepository(_context);
     }
 
 
     [Fact]
-    public async Task GetAll_Returns_All_TagSynonyms()
+    public async Task GetAll_returns_all_TagSynonyms()
     {
-        var tagSynonym1 = new TagSynonymCreateDTO() {Name = "c#"};
-        var tagSynonym2 = new TagSynonymCreateDTO() {Name = "C-Sharp"};
+        var cSharpSynonym = new TagSynonymCreateDTO() {Name = "c#"};
+        var cDashSharpSynonym = new TagSynonymCreateDTO() {Name = "C-Sharp"};
 
-        await _repo.Push(tagSynonym1);
-        await _repo.Push(tagSynonym2);
+        await _repo.Push(cSharpSynonym);
+        await _repo.Push(cDashSharpSynonym);
 
-        var comments = await _repo.GetAll();
+        var actual = await _repo.GetAll();
 
-        Assert.Collection(comments, comment => Assert.Equal(new TagSynonymDTO(1, "c#"), comment),
-            comment => Assert.Equal(new TagSynonymDTO(2, "C-Sharp"), comment));
+        var expected = new Collection<TagSynonymDTO>() {
+            new TagSynonymDTO(1, "c#"),
+            new TagSynonymDTO(2, "C-Sharp")
+        };
+
+        expected.Should().BeEquivalentTo(actual);
     }
 
     [Fact]
-    public async Task GetAll_Returns_Empty_List_For_No_existsing_TagSynonyms()
+    public async Task GetAll_returns_empty_list_for_no_existing_TagSynonyms()
     {
         var actual = await _repo.GetAll();
-
-        var expected = new ReadOnlyCollection<CategoryDTO>(new Collection<CategoryDTO>());
-
-        expected.Should().BeEquivalentTo(actual);
+        
+        actual.Should().BeEmpty();
     }
 
 
     [Fact]
     public async void Get_returns_null_for_non_existing_id()
     {
-        var option = await _repo.Get(4);
-
-        Assert.Null(option);
+        Assert.Null(await _repo.Get(4));
     }
 
     [Fact]
-    public async Task Get_returns_Category_for_given_id()
+    public async Task Get_returns_tagSynonym()
     {
-        var tagSynonym = new TagSynonymCreateDTO() {Name = "sharp"};
+        var sharpSynonym = new TagSynonymCreateDTO() {Name = "sharp"};
 
-        await _repo.Push(tagSynonym);
+        await _repo.Push(sharpSynonym);
 
         var expected = new TagSynonymDTO(1, "sharp");
 
@@ -65,21 +60,21 @@ public class TagSynonymRepositoryTests
 
 
     [Fact]
-    public async Task Update_of_existing_category_returns_StateUpdated()
+    public async Task Update_of_existing_tagSynonym_returns_Updated()
     {
-        var tagSynonym = new TagSynonymCreateDTO() {Name = "sharp"};
+        var sharpSynonym = new TagSynonymCreateDTO() {Name = "sharp"};
 
-        await _repo.Push(tagSynonym);
+        await _repo.Push(sharpSynonym);
 
-        var update = new TagSynonymUpdateDTO() {Id = 1, Name = "c-sharp"};
+        var synonymUpdate = new TagSynonymUpdateDTO() {Id = 1, Name = "c-sharp"};
 
-        var actual = await _repo.Update(update);
+        var actual = await _repo.Update(synonymUpdate);
 
         Assert.Equal(Status.Updated, actual);
     }
 
     [Fact]
-    public async Task Update_returns_NotFound_for_non_existing_category()
+    public async Task Update_returns_NotFound_for_non_existing_tagSynonym()
     {
         var update = new TagSynonymUpdateDTO() {Id = 10, Name = "c-sharp"};
 
@@ -89,11 +84,11 @@ public class TagSynonymRepositoryTests
     }
 
     [Fact]
-    public async Task Update_changes_name_of_category_of_givenID()
+    public async Task Update_changes_name_of_tagSynonym()
     {
-        var tagSynonym = new TagSynonymCreateDTO() {Name = "C-sharp"};
+        var cSharpSynonym = new TagSynonymCreateDTO() {Name = "C-sharp"};
 
-        await _repo.Push(tagSynonym);
+        await _repo.Push(cSharpSynonym);
 
         var update = new TagSynonymUpdateDTO() {Id = 1, Name = "sharp-C"};
 
