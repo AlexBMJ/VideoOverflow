@@ -30,8 +30,12 @@ public class ResourceRepository : IResourceRepository
 
     public async Task<Option<ResourceDetailsDTO>> Get(int resourceId)
     {
-         await _context.Resources.Where(resource => resource.Id == resourceId).
-            Select(entity => new ResourceDetailsDTO()
+        var entity = await _context.Resources.Where(resource => resource.Id == resourceId).Select(c => c)
+            .FirstOrDefaultAsync();
+
+        return entity == null
+            ? null
+            : new ResourceDetailsDTO()
             {
                 Id = entity.Id,
                 MaterialType = entity.MaterialType,
@@ -42,17 +46,13 @@ public class ResourceRepository : IResourceRepository
                 Created = entity.Created,
                 Language = entity.Language,
                 LixNumber = entity.LixNumber,
-                SkillLevel = entity.SkillLevel,
+                SkillLevel = GetSkillLevel(entity.LixNumber),
                 Categories = entity.Categories.Select(category => category.Name).ToList(),
-                Comments = entity.Comments == null ? new Collection<string>() : entity.Comments.Select(comment => comment.Content).ToList(),
+                Comments = entity.Comments == null
+                    ? new Collection<string>()
+                    : entity.Comments.Select(comment => comment.Content).ToList(),
                 Tags = entity.Tags.Select(c => c.Name).ToList()
-            })
-            .FirstOrDefaultAsync();
-
-        return new ResourceDetailsDTO()
-        {
-            
-        };
+            };
     }
 
     public async Task<ResourceDTO> Push(ResourceCreateDTO create)

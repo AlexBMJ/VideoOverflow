@@ -96,6 +96,7 @@ public class ResourceRepositoryTests : RepositoryTestsSetup
         await _context.SaveChangesAsync();
 
         var resource = await _context.Resources.FindAsync(1);
+        resource.Comments = GetComments(1);
 
         var expected = new ResourceDetailsDTO()
         {
@@ -113,11 +114,10 @@ public class ResourceRepositoryTests : RepositoryTestsSetup
             Comments = new Collection<string>() {"I just added this comment"}
         };
 
-        resource.Comments = GetComments(expected.Id);
+       
 
         var actual = await _repo.Get(1);
-
-
+        
         expected.Should().BeEquivalentTo(actual.Value);
     }
 
@@ -180,14 +180,24 @@ public class ResourceRepositoryTests : RepositoryTestsSetup
         actual.Should().BeEmpty();
     }
 
-    [Fact]
-    public async Task ResourceLixLevel_equals_55_returns_4_skillLevel()
+    [Theory]
+    [InlineData(55, 5)]
+    [InlineData(45, 4)]
+    [InlineData(35, 3)]
+    [InlineData(25, 2)]
+    public async Task ResourceLixLevel_returns_skillLevel(int lixLevel, int expectedSkillLevel)
     {
-        //await _repo.Push(resource);
+        await _repo.Push(_resource);
 
-        var actual = await (from tag in _context.Tags select tag.Name).ToListAsync();
+        var entity = await _context.Resources.FindAsync(1);
 
-        var expected = new Collection<string>() {"C#", "Java"};
+        entity.LixNumber = lixLevel;
+
+        var expected =  _repo.Get(1).Result.Value.SkillLevel;
+        var actual = expectedSkillLevel;
+
+        Assert.Equal(expected, actual);
+        
     }
 
     [Fact]
