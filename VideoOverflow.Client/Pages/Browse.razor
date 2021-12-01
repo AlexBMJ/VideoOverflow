@@ -1,0 +1,22 @@
+@page "/Browse"
+@using VideoOverflow.Core
+@using System.Text.RegularExpressions
+@using VideoOverflow.Core.Utils
+
+<h3>Browse</h3>
+
+<MudTextField  @bind-Value="_search" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Secondary" />
+<MudItem xs="12" sm="6" md="4">
+    <MudSelect T="string" Label="Category" Strict="true" Variant="Variant.Outlined" Format="F2" AnchorOrigin="Origin.BottomCenter" AdornmentIcon="@Icons.Filled.Category">
+        @foreach (var ctg in Enum.GetValues<CategoryType>()) {
+            <MudSelectItem T="string" Value="@SeparateEnumWords(ctg.ToString())"/>
+        }
+    </MudSelect>
+</MudItem>
+
+@code {
+    private string _search;
+
+    private static string SeparateEnumWords(string str) 
+        => str == str.ToUpper() ? str : Word.SeparateWords(str);
+}
