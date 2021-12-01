@@ -29,10 +29,8 @@ public class CommentRepository : ICommentRepository
     {
         var createdComment = new Comment()
             {Content = comment.Content, CreatedBy = comment.CreatedBy, AttachedToResource = comment.AttachedToResource};
-
-        var resources = _context.Resources;
-
-        foreach (var resource in resources)
+        
+        foreach (var resource in _context.Resources)
         {
             if (resource.Id == comment.AttachedToResource)
             {
@@ -40,8 +38,15 @@ public class CommentRepository : ICommentRepository
                 {
                     resource.Comments = new Collection<Comment>();
                 }
-
                 resource.Comments.Add(createdComment);
+            }
+        }
+
+        foreach (var user in _context.Users)
+        {
+            if (user.Id == comment.CreatedBy)
+            {
+                user.Comments.Add(createdComment);
             }
         }
 
@@ -66,6 +71,28 @@ public class CommentRepository : ICommentRepository
         if (entity.Content != comment.Content)
         {
             entity.Content = comment.Content;
+            
+            foreach (var resource in _context.Resources)
+            {
+                foreach (var resourceComment in resource.Comments)
+                {
+                    if (resourceComment.AttachedToResource == comment.AttachedToResource)
+                    {
+                        resourceComment.Content = comment.Content;
+                    }
+                }
+            }
+
+            foreach (var user in _context.Users)
+            {
+                foreach (var userComment in user.Comments)
+                {
+                    if (userComment.CreatedBy == comment.CreatedBy)
+                    {
+                        userComment.Content = comment.Content;
+                    }
+                }
+            }
         }
 
         await _context.SaveChangesAsync();
