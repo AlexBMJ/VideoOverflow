@@ -113,7 +113,7 @@ public class ResourceRepository : IResourceRepository
         {
             entity.Author = update.Author;
         }
-        
+
         entity.LixNumber = update.LixNumber;
         entity.Language = update.Language;
         entity.MaterialType = update.MaterialType;
@@ -129,27 +129,27 @@ public class ResourceRepository : IResourceRepository
         return Status.Updated;
     }
 
-    public async Task<ICollection<Tag>> GetTags(IEnumerable<string> tags)
+    private async Task<ICollection<Tag>> GetTags(IEnumerable<string> tags)
     {
         var collectionOfTags = new Collection<Tag>();
         foreach (var tag in tags)
         {
-            var exists = await _context.Tags.FirstOrDefaultAsync(c => c.Name == tag);
+            var existsTag = await _context.Tags.FirstOrDefaultAsync(t => t.Name == tag);
 
-            if (exists == null)
+            if (existsTag == null)
             {
-                exists = new Tag() {Name = tag};
-                await _context.Tags.AddAsync(exists);
+                existsTag = new Tag() {Name = tag, TagSynonyms = new Collection<TagSynonym>()};
+                await _context.Tags.AddAsync(existsTag);
                 await _context.SaveChangesAsync();
             }
 
-            collectionOfTags.Add(exists);
+            collectionOfTags.Add(existsTag);
         }
 
         return collectionOfTags;
     }
 
-    public async Task<ICollection<Category>> GetCategories(IEnumerable<string> categories)
+    private async Task<ICollection<Category>> GetCategories(IEnumerable<string> categories)
     {
         var collectionOfCategories = new Collection<Category>();
         foreach (var category in categories)
@@ -190,6 +190,7 @@ public class ResourceRepository : IResourceRepository
         {
             return 4;
         }
+
         return 5;
     }
 
@@ -199,7 +200,7 @@ public class ResourceRepository : IResourceRepository
         Regex rgx = new Regex(pattern);
         Match m = rgx.Match(url);
         var contentSource = "";
-        
+
         return contentSource = m.Groups[1].Value;
     }
 }

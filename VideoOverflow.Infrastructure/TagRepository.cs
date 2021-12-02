@@ -33,7 +33,6 @@ public class TagRepository : ITagRepository
             TagSynonyms = await GetTagSynonyms(tag.TagSynonyms)
         };
 
-
         await _context.Tags.AddAsync(created);
         await _context.SaveChangesAsync();
 
@@ -50,19 +49,9 @@ public class TagRepository : ITagRepository
         {
             return Status.NotFound;
         }
-
-        var tagSynonyms = new Collection<TagSynonym>();
-
-        if (update.TagSynonyms != null)
-        {
-            foreach (var synonym in update.TagSynonyms)
-            {
-                tagSynonyms.Add(new TagSynonym() {Name = synonym});
-            }
-        }
-
+        
         entity.Name = update.Name;
-        entity.TagSynonyms = tagSynonyms;
+        entity.TagSynonyms = await GetTagSynonyms(update.TagSynonyms);
 
         await _context.SaveChangesAsync();
 
