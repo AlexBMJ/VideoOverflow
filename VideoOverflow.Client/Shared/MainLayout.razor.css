@@ -1,21 +1,17 @@
 .page {
     position: relative;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     min-height: 100vh;
+    overflow-x: hidden;
 }
 
 main {
     flex: 1;
+    min-width: 320px;
 }
 
-@media (min-width: 641px) {
-    .page {
-        flex-direction: row;
-    }
-
-    .sidebar {
-        position: sticky;
-        top: 0;
-    }
+.sidebar {
+    position: sticky;
+    top: 0;
 }
