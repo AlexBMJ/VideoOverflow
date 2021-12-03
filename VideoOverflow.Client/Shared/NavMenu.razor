@@ -1,5 +1,5 @@
 ﻿<MudLayout>
-    <MudDrawer @bind-Open="@open" Elevation="2">
+    <MudDrawer @bind-Open="@_open" Elevation="2" Variant="DrawerVariant.Persistent">
         <MudNavMenu>
             <MudLayout Style="height: 3.45rem;">
                 <MudIcon Icon="VideoOverflow.Client/wwwroot/icon.svg"></MudIcon>
@@ -10,16 +10,14 @@
             <MudNavLink Href="/browse">Browse</MudNavLink>
         </MudNavMenu>
     </MudDrawer>
-    <MudMainContent>
-    </MudMainContent>
+    <div></div>
 </MudLayout>
 
 @code {
-    private bool open = true;
+    private bool _open = true;
 
-    public void Toggle()
-    {
-        open = !open;
+    public void Toggle() {
+        _open = !_open;
         StateHasChanged();
     }
 }
