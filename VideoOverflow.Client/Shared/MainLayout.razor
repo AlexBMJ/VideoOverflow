@@ -1,16 +1,17 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager NavManager
 
 <div class="page">
     <div class="sidebar">
-        <NavMenu @ref="_navMenu"/>
+        <NavMenu @ref="_navMenu" />
     </div>
-
+    
     <main>
         <MudAppBar Style="position: sticky; top: 0;">
             <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit"
                            Edge="Edge.Start" OnClick="@(() => _navMenu?.Toggle())"/>
             <MudSpacer/>
-            <img src="icon.svg" height="40px"/>
+            <img src="icon.svg" height="40px" alt="Logo"/>
             <MudSpacer/>
             <LoginDisplay/>
         </MudAppBar>
@@ -23,4 +24,8 @@
 @code {
     private NavMenu? _navMenu;
 
+    protected override void OnInitialized()
+    {
+        NavManager.NavigateTo("/home");
+    }
 }
