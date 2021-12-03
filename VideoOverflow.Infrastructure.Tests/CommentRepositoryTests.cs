@@ -20,18 +20,15 @@ public class CommentRepositoryTests : RepositoryTestsSetup
         var secondUserEntry = _context.Users.Add(secondUser);
 
 
-        var firstComment = new CommentCreateDTO()
-            {CreatedBy = firstUserEntry.Entity.Id, Content = "This docker tutorial is smooth"};
-        var secondComment = new CommentCreateDTO()
-            {CreatedBy = firstUserEntry.Entity.Id, Content = "Very helpful guide for beginners!"};
-        var thirdComment = new CommentCreateDTO() {CreatedBy = secondUserEntry.Entity.Id, Content = "Indeed"};
-        var fourthComment = new CommentCreateDTO()
-            {CreatedBy = secondUserEntry.Entity.Id, Content = "Thank you very much!"};
+        var dockerComment = new CommentCreateDTO() {CreatedBy = firstUserEntry.Entity.Id, Content = "This docker tutorial is smooth"};
+        var beginnerComment = new CommentCreateDTO() {CreatedBy = firstUserEntry.Entity.Id, Content = "Very helpful guide for beginners!"};
+        var responseComment = new CommentCreateDTO() {CreatedBy = secondUserEntry.Entity.Id, Content = "Indeed"};
+        var greetComment = new CommentCreateDTO() {CreatedBy = secondUserEntry.Entity.Id, Content = "Thank you very much!"};
 
-        await _repo.Push(firstComment);
-        await _repo.Push(secondComment);
-        await _repo.Push(thirdComment);
-        await _repo.Push(fourthComment);
+        await _repo.Push(dockerComment);
+        await _repo.Push(beginnerComment);
+        await _repo.Push(responseComment);
+        await _repo.Push(greetComment);
 
         var actual = await _repo.GetAll();
 
@@ -141,8 +138,7 @@ public class CommentRepositoryTests : RepositoryTestsSetup
 
         var user = new User() {Name = "Deniz", Comments = new Collection<Comment>()};
 
-        var comment = new CommentCreateDTO()
-            {Content = "I just commented on my own post :-)", AttachedToResource = 1, CreatedBy = 1};
+        var comment = new CommentCreateDTO() {Content = "I just commented on my own post :-)", AttachedToResource = 1, CreatedBy = 1};
 
         await _context.Users.AddAsync(user);
         await _context.Resources.AddAsync(resource);

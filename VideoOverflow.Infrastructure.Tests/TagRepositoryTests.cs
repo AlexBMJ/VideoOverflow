@@ -143,8 +143,7 @@ public class TagRepositoryTests : RepositoryTestsSetup
 
         Assert.Equal(Status.NotFound, actual);
     }
-
-
+    
     [Fact]
     public async Task Update_existing_tag_returns_Updated()
     {
@@ -180,9 +179,9 @@ public class TagRepositoryTests : RepositoryTestsSetup
     [Fact]
     public async Task Update_changes_name_of_tag()
     {
-        var tag = new TagCreateDTO() {Name = "C#", TagSynonyms = new List<string>()};
+        var tagCreate = new TagCreateDTO() {Name = "C#", TagSynonyms = new List<string>()};
 
-        await _repo.Push(tag);
+        await _repo.Push(tagCreate);
 
         var tagUpdate = new TagUpdateDTO() {Id = 1, Name = "Java", TagSynonyms = new List<string>()};
 

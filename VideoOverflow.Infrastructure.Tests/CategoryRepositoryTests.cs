@@ -14,11 +14,11 @@ public class CategoryRepositoryTests : RepositoryTestsSetup
     [Fact]
     public async Task GetAll_returns_all_categories()
     {
-        var category1 = new CategoryCreateDTO() {Name = "Programming"};
-        var category2 = new CategoryCreateDTO() {Name = "Software Engineering"};
+        var programming = new CategoryCreateDTO() {Name = "Programming"};
+        var softwareEngineering = new CategoryCreateDTO() {Name = "Software Engineering"};
 
-        await _repo.Push(category1);
-        await _repo.Push(category2);
+        await _repo.Push(programming);
+        await _repo.Push(softwareEngineering);
 
         var comments = await _repo.GetAll();
 
@@ -31,9 +31,7 @@ public class CategoryRepositoryTests : RepositoryTestsSetup
     {
         var actual = await _repo.GetAll();
 
-        var expected = new ReadOnlyCollection<CategoryDTO>(new Collection<CategoryDTO>());
-
-        expected.Should().BeEquivalentTo(actual);
+        actual.Should().BeEmpty();
     }
 
     [Fact]
@@ -42,8 +40,7 @@ public class CategoryRepositoryTests : RepositoryTestsSetup
         var category = new CategoryCreateDTO() {Name = "Software Engineering"};
 
         var actual = await _repo.Push(category);
-
-
+        
         Assert.Equal(1, actual.Id);
         Assert.Equal("Software Engineering", actual.Name);
     }
@@ -51,9 +48,9 @@ public class CategoryRepositoryTests : RepositoryTestsSetup
     [Fact]
     public async void Get_returns_null_for_non_existing_id()
     {
-        var option = await _repo.Get(4);
+        var exists = await _repo.Get(4);
 
-        Assert.Null(option);
+        Assert.Null(exists);
     }
 
     [Fact]

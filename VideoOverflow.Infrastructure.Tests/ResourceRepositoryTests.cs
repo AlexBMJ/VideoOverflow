@@ -112,9 +112,7 @@ public class ResourceRepositoryTests : RepositoryTestsSetup
             Categories = new Collection<string>() {"Programming"},
             Comments = new Collection<string>() {"I just added this comment"}
         };
-
-       
-
+        
         var actual = await _repo.Get(1);
         
         expected.Should().BeEquivalentTo(actual.Value);
@@ -184,7 +182,7 @@ public class ResourceRepositoryTests : RepositoryTestsSetup
     [InlineData(45, 4)]
     [InlineData(35, 3)]
     [InlineData(25, 2)]
-    public async Task ResourceLixLevel_returns_skillLevel(int lixLevel, int expectedSkillLevel)
+    public async Task Resource_given_LixLevel_returns_skillLevel(int lixLevel, int expectedSkillLevel)
     {
         await _repo.Push(_resource);
 
@@ -236,14 +234,7 @@ public class ResourceRepositoryTests : RepositoryTestsSetup
     [Fact]
     public async Task Update_returns_NotFound_for_no_existing_resource()
     {
-        await _repo.Push(_resource);
-
-        var update = new ResourceUpdateDTO()
-        {
-            Id = 100
-        };
-
-        var actual = await _repo.Update(update);
+        var actual = await _repo.Update(new ResourceUpdateDTO() {Id = 100});
 
         Assert.Equal(Status.NotFound, actual);
     }
@@ -261,7 +252,7 @@ public class ResourceRepositoryTests : RepositoryTestsSetup
             Author = "OndFisk",
             SiteTitle = "Changed from my first page",
             SiteUrl = "https://docs.microsoft.com/da-dk/dynamics365/marketing/teams-webinar",
-            Language = "English",
+            Language = "Danish",
             Tags = new Collection<string>() {"C#"},
             Categories = new Collection<string>() {"Programming"},
             MaterialType = ResourceType.ARTICLE
