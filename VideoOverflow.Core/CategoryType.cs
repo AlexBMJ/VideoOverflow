@@ -6,5 +6,12 @@ public enum CategoryType
     SoftwareEngineering,
     Containerization,
     UML,
-    Testing
+    Testing,
+    Database,
+    DistributedSystems,
+    UX,
+    UI,
+    Algorithms,
+    Datastructures,
+    VersionControl
 }
