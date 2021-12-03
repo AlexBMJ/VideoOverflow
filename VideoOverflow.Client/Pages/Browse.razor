@@ -17,15 +17,19 @@
 
 <MudDivider/>
 
-<MudTable Items="_phElements" Hover="true" Bordered="true" Class="my-4" Dense="true">
+<MudTable Items="_phElements" Hover="true" Bordered="true" Class="my-4">
     <RowTemplate>
-        <MudTd>@context.SiteTitle</MudTd>
-        <MudTd>@context.SiteUrl</MudTd>
-        <MudTd>@context.Author</MudTd>
         <MudTd>
-            @foreach (var tag in context.Tags) {
-                <MudChip Color="Color.Primary">@tag</MudChip>
-            }
+            <MudGrid>
+                <MudItem xl="2" lg="2" md="2" Class="d-flex align-center">@context.SiteTitle</MudItem>
+                <MudItem xl="4" lg="4" md="4" Class="d-flex align-center">@context.SiteUrl</MudItem>
+                <MudItem xl="2" lg="2" md="2" Class="d-flex align-center">@context.Author</MudItem>
+                <MudItem xl="4" lg="4" md="4" Class="d-flex flex-wrap align-center">
+                    @foreach (var tag in context.Tags) {
+                        <MudChip Color="Color.Primary">@tag</MudChip>
+                    }
+                </MudItem>
+            </MudGrid>
         </MudTd>
     </RowTemplate>
 </MudTable>
@@ -48,4 +52,5 @@
 
     private static string SeparateEnumWords(string str) 
         => str == str.ToUpper() ? str : Word.SeparateWords(str);
+
 }
