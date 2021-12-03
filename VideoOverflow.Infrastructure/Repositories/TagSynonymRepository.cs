@@ -1,4 +1,6 @@
-namespace VideoOverflow.Infrastructure;
+
+
+namespace VideoOverflow.Infrastructure.repositories;
 
 public class TagSynonymRepository : ITagSynonymRepository
 {

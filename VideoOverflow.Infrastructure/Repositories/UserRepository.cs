@@ -1,7 +1,6 @@
-using System.Collections.ObjectModel;
-using Microsoft.VisualBasic;
+using VideoOverflow.Core.DTOs;
 
-namespace VideoOverflow.Infrastructure;
+namespace VideoOverflow.Infrastructure.repositories;
 
 public class UserRepository : IUserRepository
 {

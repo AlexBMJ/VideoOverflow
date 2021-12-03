@@ -1,4 +1,3 @@
-using Npgsql.Replication.PgOutput;
 
 namespace VideoOverflow.Infrastructure.Tests;
 

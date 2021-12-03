@@ -1,7 +1,7 @@
-﻿using System.Collections.ObjectModel;
+﻿
 using System.Text.RegularExpressions;
 
-namespace VideoOverflow.Infrastructure;
+namespace VideoOverflow.Infrastructure.repositories;
 
 public class ResourceRepository : IResourceRepository
 {

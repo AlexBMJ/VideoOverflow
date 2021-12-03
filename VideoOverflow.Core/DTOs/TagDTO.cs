@@ -1,4 +1,4 @@
-namespace VideoOverflow.Core;
+namespace VideoOverflow.Core.DTOs;
 
 public record TagDTO(int Id, string Name, ICollection<string>? TagSynonyms);
 

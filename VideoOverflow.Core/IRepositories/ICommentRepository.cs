@@ -1,4 +1,6 @@
-namespace VideoOverflow.Core;
+using VideoOverflow.Core.DTOs;
+
+namespace VideoOverflow.Core.IRepositories;
 
 public interface ICommentRepository
 {

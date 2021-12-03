@@ -1,6 +1,6 @@
+using VideoOverflow.Core.DTOs;
 
-namespace VideoOverflow.Core;
-
+namespace VideoOverflow.Core.IRepositories;
 public interface IResourceRepository
 {
     public Task<IEnumerable<ResourceDTO>> GetAll();

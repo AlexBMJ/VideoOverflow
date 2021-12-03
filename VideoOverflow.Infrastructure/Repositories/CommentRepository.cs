@@ -1,6 +1,4 @@
-using System.Collections.ObjectModel;
-
-namespace VideoOverflow.Infrastructure;
+namespace VideoOverflow.Infrastructure.repositories;
 
 public class CommentRepository : ICommentRepository
 {

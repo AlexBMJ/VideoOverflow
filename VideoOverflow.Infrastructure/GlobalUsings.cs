@@ -4,3 +4,5 @@ global using VideoOverflow.Infrastructure.Entities;
 global using VideoOverflow.Core;
 global using System.Collections.ObjectModel;
 global using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+global using VideoOverflow.Core.DTOs;
+global using VideoOverflow.Core.IRepositories;

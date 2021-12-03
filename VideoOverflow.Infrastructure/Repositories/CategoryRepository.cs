@@ -1,4 +1,4 @@
-namespace VideoOverflow.Infrastructure;
+namespace VideoOverflow.Infrastructure.repositories;
 
 public class CategoryRepository : ICategoryRepository
 {

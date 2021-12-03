@@ -1,5 +1,4 @@
-namespace VideoOverflow.Infrastructure;
-
+namespace VideoOverflow.Infrastructure.repositories;
 public class TagRepository : ITagRepository
 {
     private readonly IVideoOverflowContext _context;
