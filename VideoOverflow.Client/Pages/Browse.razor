@@ -1,20 +1,49 @@
 @page "/Browse"
 @using VideoOverflow.Core
-@using System.Text.RegularExpressions
 @using VideoOverflow.Core.Utils
 
-<h3>Browse</h3>
+<MudGrid Justify="Justify.Center" Spacing="1" Class="my-4">
+    <MudItem lg="8" md="8" sm="7" xs="12">
+        <MudTextField @bind-Value="_search" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Secondary"/>
+    </MudItem>
+    <MudItem lg="3" md="3" sm="3" xs="12">
+        <MudSelect T="string" Label="Category" Strict="true" Variant="Variant.Outlined" Format="F2" AnchorOrigin="Origin.BottomCenter" AdornmentIcon="@Icons.Filled.Category">
+            @foreach (var ctg in Enum.GetValues<CategoryType>()) {
+                <MudSelectItem T="string" Value="@SeparateEnumWords(ctg.ToString())"/>
+            }
+        </MudSelect>
+    </MudItem>
+</MudGrid>
 
-<MudTextField  @bind-Value="_search" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Secondary" />
-<MudItem xs="12" sm="6" md="4">
-    <MudSelect T="string" Label="Category" Strict="true" Variant="Variant.Outlined" Format="F2" AnchorOrigin="Origin.BottomCenter" AdornmentIcon="@Icons.Filled.Category">
-        @foreach (var ctg in Enum.GetValues<CategoryType>()) {
-            <MudSelectItem T="string" Value="@SeparateEnumWords(ctg.ToString())"/>
-        }
-    </MudSelect>
-</MudItem>
+<MudDivider/>
+
+<MudTable Items="_phElements" Hover="true" Bordered="true" Class="my-4" Dense="true">
+    <RowTemplate>
+        <MudTd>@context.SiteTitle</MudTd>
+        <MudTd>@context.SiteUrl</MudTd>
+        <MudTd>@context.Author</MudTd>
+        <MudTd>
+            @foreach (var tag in context.Tags) {
+                <MudChip Color="Color.Primary">@tag</MudChip>
+            }
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+
 
 @code {
+    private static ResourceDTO phResource = new(0,
+        ResourceType.Video,
+        "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "youtube.com",
+        "Docker Tutorial",
+        "Dockerman47",
+        "English",
+        new[] { "Docker", "Tutorial", "Testitest", "Tagitag" },
+        new[] { "Containerization" },
+        Array.Empty<string>()
+        );
+    private ResourceDTO[] _phElements = {phResource,phResource};
     private string _search;
 
     private static string SeparateEnumWords(string str) 
