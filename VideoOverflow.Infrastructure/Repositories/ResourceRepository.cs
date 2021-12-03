@@ -173,7 +173,8 @@ public class ResourceRepository : IResourceRepository
     {
         if (lix < 25)
         {
-            return 1;
+            return 1; 
+            
         }
 
         if (lix < 35)

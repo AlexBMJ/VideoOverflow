@@ -2,7 +2,10 @@ using System.Collections.ObjectModel;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
+using Server;
+using VideoOverflow.Core.IRepositories;
 using VideoOverflow.Infrastructure;
+using VideoOverflow.Infrastructure.repositories;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -52,6 +55,8 @@ app.UseAuthorization();
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
+
+await app.FillDatabase();
 
 app.Run();
 

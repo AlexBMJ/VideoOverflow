@@ -125,7 +125,7 @@ public class ResourceRepositoryTests : RepositoryTestsSetup
     {
         await _repo.Push(_resource);
 
-        var mircrosoftResource = new ResourceCreateDTO()
+        var microsoftResource = new ResourceCreateDTO()
         {
             Created = Created,
             Author = "OndFisk",
@@ -137,7 +137,7 @@ public class ResourceRepositoryTests : RepositoryTestsSetup
             Tags = new Collection<string>() { },
         };
 
-        await _repo.Push(mircrosoftResource);
+        await _repo.Push(microsoftResource);
 
         var actual = await _repo.GetAll();
 
@@ -202,21 +202,11 @@ public class ResourceRepositoryTests : RepositoryTestsSetup
     [Fact]
     public async Task Push_resource_with_new_tags_creates_new_tags_in_DB()
     {
-        var resource = new ResourceCreateDTO()
-        {
-            Created = Created,
-            MaterialType = ResourceType.ARTICLE,
-            SiteTitle = "My first Page",
-            SiteUrl = "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
-            Language = "Danish",
-            Categories = new Collection<string>(),
-            Tags = new Collection<string>() {"C#", "Java"}
-        };
-        await _repo.Push(resource);
+        await _repo.Push(_resource);
 
         var actual = await _context.Tags.Select(c => c.Name).ToListAsync();
 
-        var expected = new Collection<string>() {"C#", "Java"};
+        var expected = new Collection<string>() {"C#"};
 
         expected.Should().BeEquivalentTo(actual);
     }
@@ -239,25 +229,8 @@ public class ResourceRepositoryTests : RepositoryTestsSetup
         await _repo.Push(resource);
 
         var actual = await _repo.Get(1);
-
-        var expected = new ResourceDetailsDTO()
-        {
-            Id = 1,
-            Created = Created,
-            MaterialType = ResourceType.ARTICLE,
-            SiteTitle = "My first Page",
-            SkillLevel = 1,
-            ContentSource = "learnit.itu.dk",
-            LixNumber = 0,
-            SiteUrl = "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
-            Language = "Danish",
-            Categories = new Collection<string>(),
-            Tags = new Collection<string>() {"C#", "Java"},
-            Author = "Unknown",
-            Comments = new Collection<string>()
-        };
-
-        expected.Should().BeEquivalentTo(actual.Value);
+        
+        "Unknown".Should().BeEquivalentTo(actual.Value.Author);
     }
 
     [Fact]
