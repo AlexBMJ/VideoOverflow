@@ -68,18 +68,17 @@ public static class DataFactory
             new TagSynonym() {Name = "JS", Tags = FindTags(context, new Collection<string>() {"JavaScript"})}
         );
 
-        // Add resources
-        await GenerateResources(context);
-
         // Get the created comments
         var comments = GenerateComments(context, context.Resources.Count(), context.Users.Count());
         
+        // Add resources
+        await GenerateResources(context);
+        
         // Attach the comments to list of users and resources
-        await AttachCommentsToResourceAndUsers(context, comments.Result);
+        await AttachCommentsToUsers(context, comments.Result);
     }
 
-    private static async Task<Collection<Comment>> GenerateComments(VideoOverflowContext context, int resourceSize,
-        int userSize)
+    private static async Task<Collection<Comment>> GenerateComments(VideoOverflowContext context, int resourceSize, int userSize)
     {
         var commentContent = new Collection<string>()
         {
@@ -108,20 +107,8 @@ public static class DataFactory
         return comments;
     }
 
-    private static async Task AttachCommentsToResourceAndUsers(VideoOverflowContext context,
-        Collection<Comment> comments)
+    private static async Task AttachCommentsToUsers(VideoOverflowContext context, Collection<Comment> comments)
     {
-        foreach (var resource in context.Resources)
-        {
-            foreach (var comment in comments)
-            {
-                if (comment.AttachedToResource == resource.Id)
-                {
-                    resource.Comments.Add(comment);
-                }
-            }
-        }
-
         foreach (var user in context.Users)
         {
             foreach (var comment in comments)
