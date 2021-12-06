@@ -6,6 +6,7 @@ namespace VideoOverflow.Infrastructure;
 public class VideoOverflowContext : DbContext, IVideoOverflowContext
 {
     public DbSet<Tag> Tags => Set<Tag>();
+    public DbSet<Word> Words => Set<Word>();
     public DbSet<TagSynonym> TagSynonyms => Set<TagSynonym>();
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Comment> Comments => Set<Comment>();
