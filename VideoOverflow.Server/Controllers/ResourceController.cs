@@ -1,4 +1,6 @@
-﻿namespace Server.Controllers
+﻿
+
+namespace Server.Controllers
 {
     [Authorize]
     [ApiController]
@@ -29,19 +31,19 @@
 
         [Authorize]
         [HttpPost]  
-        [ProducesResponseType(typeof(ResourceDetailsDTO), 201)]
+        [ProducesResponseType(typeof(ResourceDTO), 201)]
         public async Task<IActionResult> Post(ResourceCreateDTO resource)
         {
             var created = await _repository.Push(resource);
-
-            return CreatedAtRoute(nameof(Get), new { created.Id }, created);
+    
+            return CreatedAtAction(nameof(Get), new { created.Id }, created);
         }
 
         [Authorize]
-        [HttpPut("{id}")]
+        [HttpPut]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public async Task<Status> Put(int id, [FromBody] ResourceUpdateDTO resource)
-               => (await _repository.Update(resource));
+        public async Task<IActionResult> Put([FromBody] ResourceUpdateDTO resource)
+               => (await _repository.Update(resource)).ToActionResult();
     }
 }

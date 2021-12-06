@@ -57,7 +57,7 @@ public class ResourceRepository : IResourceRepository
 
     public async Task<ResourceDTO> Push(ResourceCreateDTO create)
     {
-        var resource = new Resource()
+        var resource = new Resource
         {
             Author = create.Author,
             Created = create.Created,
@@ -77,7 +77,7 @@ public class ResourceRepository : IResourceRepository
         if (resource.Author == null)
         {
             resource.Author = "Unknown";
-        }
+        }   
 
         await _context.Resources.AddAsync(resource);
         await _context.SaveChangesAsync();
