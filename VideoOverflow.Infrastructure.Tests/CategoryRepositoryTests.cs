@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 
 namespace VideoOverflow.Infrastructure.Tests;
 
-public class CategoryRepositoryTests : RepositoryTestsSetup
+public class CategoryRepositoryTests : RepositoryTestsSetup, IDisposable
 {
     private readonly CategoryRepository _repo;
 

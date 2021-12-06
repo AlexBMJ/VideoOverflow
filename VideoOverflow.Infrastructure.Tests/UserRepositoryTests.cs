@@ -1,6 +1,6 @@
 namespace VideoOverflow.Infrastructure.Tests;
 
-public class UserRepositoryTests : RepositoryTestsSetup
+public class UserRepositoryTests : RepositoryTestsSetup, IDisposable
 {
     private readonly UserRepository _repo;
 

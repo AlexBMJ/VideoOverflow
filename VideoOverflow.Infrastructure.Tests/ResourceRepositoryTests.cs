@@ -1,7 +1,7 @@
 
 namespace VideoOverflow.Infrastructure.Tests;
 
-public class ResourceRepositoryTests : RepositoryTestsSetup
+public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
 {
     private readonly ResourceRepository _repo;
     private readonly ResourceCreateDTO _resource;

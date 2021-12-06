@@ -1,6 +1,6 @@
 ﻿namespace VideoOverflow.Infrastructure.Tests;
 
-public class TagSynonymRepositoryTests : RepositoryTestsSetup
+public class TagSynonymRepositoryTests : RepositoryTestsSetup, IDisposable
 {
     private readonly TagSynonymRepository _repo;
     

@@ -1,6 +1,6 @@
 namespace VideoOverflow.Infrastructure.Tests;
 
-public class CommentRepositoryTests : RepositoryTestsSetup
+public class CommentRepositoryTests : RepositoryTestsSetup, IDisposable
 {
     private readonly CommentRepository _repo;
 
