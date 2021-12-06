@@ -22,7 +22,7 @@ public class QueryParserTests
     {
         _tagRepo.Push(new TagCreateDTO() {Name = "Hi", TagSynonyms = new List<string>()});
         _tagRepo.Push(new TagCreateDTO() {Name = "John", TagSynonyms = new List<string>()});
-        var parser = new QueryParser(_tagRepo);
+        var parser = new QueryParser(_tagRepo, _wordRepo);
         var expected = new List<string>() {"hi", "john"};
         var actual = parser.Parse("Hi John").ToList();
         Assert.Equal(expected.Count, actual.Count);
@@ -34,7 +34,7 @@ public class QueryParserTests
     public void QueryParser_returns_hi_given_Hi_John_and_tags_Hi()
     {
         _tagRepo.Push(new TagCreateDTO() {Name = "Hi", TagSynonyms = new List<string>()});
-        var parser = new QueryParser(_tagRepo);
+        var parser = new QueryParser(_tagRepo, _wordRepo);
         var expected = new List<string>() {"hi"};
         var actual = parser.Parse("Hi John").ToList();
         Assert.Equal(expected.Count, actual.Count);
@@ -45,9 +45,20 @@ public class QueryParserTests
     {
         _tagRepo.Push(new TagCreateDTO() {Name = "Hi", TagSynonyms = new List<string>()});
         _tagRepo.Push(new TagCreateDTO() {Name = "John", TagSynonyms = new List<string>()});
-        var parser = new QueryParser(_tagRepo);
+        var parser = new QueryParser(_tagRepo, _wordRepo);
         var expected = "Hi John";
         var actual = parser.SuggestQuery("He Jon");
+        Assert.Equal(expected, actual);
+    }
+    
+    [Fact]
+    public void QueryParser_suggests_Hi_Johnny_given_Hi_Jonny_and_tag_Johnny_and_word_Hi()
+    {
+        _wordRepo.Push(new WordCreateDTO(){Hash = "Hi".GetHashCode(), String = "Hi"});
+        _tagRepo.Push(new TagCreateDTO() {Name = "Johnny", TagSynonyms = new List<string>()});
+        var parser = new QueryParser(_tagRepo, _wordRepo);
+        var expected = "Hi Johnny";
+        var actual = parser.SuggestQuery("Hi Jonny");
         Assert.Equal(expected, actual);
     }
 }

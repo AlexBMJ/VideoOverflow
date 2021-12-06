@@ -1,16 +1,19 @@
+using System.Text;
+using Fastenshtein;
 namespace VideoOverflow.Core;
-
 public class QueryParser
 {
-    private ITagRepository _repo;
-    public QueryParser(ITagRepository repo)
+    private ITagRepository _tagRepo;
+    private IWordRepository _wordRepo;
+    public QueryParser(ITagRepository tagRepo, IWordRepository wordRepo)
     {
-        _repo = repo;
+        _tagRepo = tagRepo;
+        _wordRepo = wordRepo;
     }
 
     public IEnumerable<string> Parse(string query)
     {
-        var tags = _repo.GetAll().Result;
+        var tags = _tagRepo.GetAll().Result;
         var tagNames = new HashSet<string>();
         foreach (var dto in tags)
         {
@@ -28,6 +31,53 @@ public class QueryParser
 
     public string SuggestQuery(string query)
     {
-        return "Hi John";
+        var tagDTOs = _tagRepo.GetAll().Result;
+        var tags = new HashSet<string>();
+        foreach (var dto in tagDTOs)
+        {
+            tags.Add(dto.Name);
+        }
+        var wordDTOs = _wordRepo.GetAll().Result;
+        var words = new HashSet<string>();
+        foreach (var dto in wordDTOs)
+        {
+            words.Add(dto.String);
+        }
+
+        var sb = new StringBuilder();
+        foreach (var word in query.Split(" "))
+        {
+            if (!tags.Contains(word) && !words.Contains(word))
+            {
+                sb = sb.Append(ClosestTag(word));
+            }
+            else
+            {
+                sb = sb.Append(word);
+            }
+
+            sb = sb.Append(' ');
+        }
+
+        sb = sb.Remove(sb.Length - 1, 1);
+        return sb.ToString();
+    }
+
+    private string ClosestTag(string word)
+    {
+        var tagDTOs = _tagRepo.GetAll().Result;
+        var minDist = int.MaxValue;
+        var min = word;
+        foreach (var dto in tagDTOs)
+        {
+            var name = dto.Name;
+            var dist = Levenshtein.Distance(name, word);
+            if (dist < minDist)
+            {
+                minDist = dist;
+                min = name;
+            }
+        }
+        return min;
     }
 }
