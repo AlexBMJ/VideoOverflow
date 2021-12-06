@@ -72,13 +72,13 @@ public static class DataFactory
         await GenerateResources(context);
         
         // Get the created comments
-        var comments = GenerateComments(context);
+        GenerateComments(context);
         
         // Attach the comments to list of users and resources
-        await AttachCommentsToUsers(context, comments.Result);
+        await AttachCommentsToUsersAndResources(context);
     }
 
-    private static async Task<Collection<Comment>> GenerateComments(VideoOverflowContext context)
+    private static async Task GenerateComments(VideoOverflowContext context)
     {
         var commentContent = new Collection<string>()
         {
@@ -92,8 +92,6 @@ public static class DataFactory
 
         var randomNumberGenerator = new Random();
 
-        var comments = new Collection<Comment>();
-
         for (int i = 0; i < 2000; i++)
         {
             await context.Comments.AddAsync(new Comment()
@@ -103,15 +101,13 @@ public static class DataFactory
                 AttachedToResource = randomNumberGenerator.Next(1, context.Resources.Count())
             });
         }
-
-        return comments;
     }
 
-    private static async Task AttachCommentsToUsers(VideoOverflowContext context, Collection<Comment> comments)
+    private static async Task AttachCommentsToUsersAndResources(VideoOverflowContext context)
     {
         foreach (var user in context.Users)
         {
-            foreach (var comment in comments)
+            foreach (var comment in context.Comments)
             {
                 if (comment.CreatedBy == user.Id)
                 {
@@ -122,7 +118,7 @@ public static class DataFactory
         
         foreach (var resource in context.Resources)
         {
-            foreach (var comment in comments)
+            foreach (var comment in context.Comments)
             {
                 if (comment.CreatedBy == resource.Id)
                 {
