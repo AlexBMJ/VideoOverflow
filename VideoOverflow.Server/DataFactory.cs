@@ -68,17 +68,17 @@ public static class DataFactory
             new TagSynonym() {Name = "JS", Tags = FindTags(context, new Collection<string>() {"JavaScript"})}
         );
 
-        // Get the created comments
-        var comments = GenerateComments(context, context.Resources.Count(), context.Users.Count());
-        
         // Add resources
         await GenerateResources(context);
+        
+        // Get the created comments
+        var comments = GenerateComments(context);
         
         // Attach the comments to list of users and resources
         await AttachCommentsToUsers(context, comments.Result);
     }
 
-    private static async Task<Collection<Comment>> GenerateComments(VideoOverflowContext context, int resourceSize, int userSize)
+    private static async Task<Collection<Comment>> GenerateComments(VideoOverflowContext context)
     {
         var commentContent = new Collection<string>()
         {
@@ -99,8 +99,8 @@ public static class DataFactory
             await context.Comments.AddAsync(new Comment()
             {
                 Content = commentContent[randomNumberGenerator.Next(0, commentContent.Count - 1)],
-                CreatedBy = randomNumberGenerator.Next(1, userSize),
-                AttachedToResource = randomNumberGenerator.Next(1, resourceSize)
+                CreatedBy = randomNumberGenerator.Next(1, context.Users.Count()),
+                AttachedToResource = randomNumberGenerator.Next(1, context.Resources.Count())
             });
         }
 
@@ -116,6 +116,17 @@ public static class DataFactory
                 if (comment.CreatedBy == user.Id)
                 {
                     user.Comments.Add(comment);
+                }
+            }
+        }
+        
+        foreach (var resource in context.Resources)
+        {
+            foreach (var comment in comments)
+            {
+                if (comment.CreatedBy == resource.Id)
+                {
+                    resource.Comments.Add(comment);
                 }
             }
         }
@@ -224,7 +235,7 @@ public static class DataFactory
                 Categories = FindCategories(context, categories[i]),
                 Created = createdDates[i],
                 MaterialType = materialTypes[i],
-                Comments = FindComments(context, i + 1),
+                Comments = new Collection<Comment>(),
                 ContentSource = GetContentSource(siteUrls[i]),
                 Language = languages[i],
                 Tags = FindTags(context, tags[i]),
@@ -234,21 +245,6 @@ public static class DataFactory
         }
 
         await context.SaveChangesAsync();
-    }
-
-    private static Collection<Comment> FindComments(VideoOverflowContext context, int resourceId)
-    {
-        var comments = new Collection<Comment>();
-
-        foreach (var comment in context.Comments)
-        {
-            if (comment.AttachedToResource == resourceId)
-            {
-                comments.Add(comment);
-            }
-        }
-
-        return comments;
     }
 
     private static Collection<Tag> FindTags(VideoOverflowContext context, Collection<string> tagNames)
