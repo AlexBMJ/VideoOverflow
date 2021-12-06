@@ -17,19 +17,20 @@ namespace Server.Controllers
             _repository = repository;
         }
 
-        [AllowAnonymous]
+        [Authorize]
         [HttpGet]
         public async Task<IEnumerable<ResourceDTO>> GetAll()
             => await _repository.GetAll();
 
-        [AllowAnonymous]
+        [Authorize]
         [ProducesResponseType(404)]
         [ProducesResponseType(typeof(ResourceDetailsDTO), 200)]
         [HttpGet("{id}")]
         public async Task<ActionResult<ResourceDetailsDTO>> Get(int id)
             => (await _repository.Get(id)).ToActionResult();
 
-        [Authorize]
+        
+        [Authorize(Roles = "Developer")]
         [HttpPost]  
         [ProducesResponseType(typeof(ResourceDTO), 201)]
         public async Task<IActionResult> Post(ResourceCreateDTO resource)
@@ -39,7 +40,7 @@ namespace Server.Controllers
             return CreatedAtAction(nameof(Get), new { created.Id }, created);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Developer")]
         [HttpPut]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
