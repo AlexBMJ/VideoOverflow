@@ -297,8 +297,7 @@ public static class DataFactory
         string pattern = @"^(?:.*:\/\/)?(?:www\.)?(?<site>[^:\/]*).*$";
         Regex rgx = new Regex(pattern);
         Match m = rgx.Match(url);
-        var contentSource = "";
 
-        return contentSource = m.Groups[1].Value;
+        return m.Groups[1].Value;
     }
 }
