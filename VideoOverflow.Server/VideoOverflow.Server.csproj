@@ -35,10 +35,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Resources\frequency_dictionary_en_82_765.txt" />
-    <Resource Include="Resources\frequency_dictionary_en_82_765.txt">
+    <Content Include="Resources\*.*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    </Content>
   </ItemGroup>
 
 </Project>
