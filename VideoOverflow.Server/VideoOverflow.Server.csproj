@@ -31,6 +31,14 @@
 
   <ItemGroup>
     <Folder Include="Controllers" />
+    <Folder Include="Resources" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\frequency_dictionary_en_82_765.txt" />
+    <Resource Include="Resources\frequency_dictionary_en_82_765.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

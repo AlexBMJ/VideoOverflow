@@ -1,6 +1,6 @@
 using System.Text;
 using Fastenshtein;
-namespace VideoOverflow.Core;
+namespace Server;
 public class QueryParser
 {
     private ITagRepository _tagRepo;
@@ -19,6 +19,8 @@ public class QueryParser
         {
             tagNames.Add(dto.Name.ToLower());
         }
+        
+        //SymSpell(query)
         
         foreach (var word in query.ToLower().Split(" "))
         {

@@ -1,4 +1,4 @@
-namespace VideoOverflow.Core.Tests;
+namespace VideoOverflow.Server.Tests;
 
 public class QueryParserTestsSetup
 {
