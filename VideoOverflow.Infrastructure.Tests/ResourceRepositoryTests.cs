@@ -305,6 +305,51 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
 
         expected.Should().BeEquivalentTo(actual.Value);
     }
+    
+    [Fact]
+    public async Task Push_given_negative_lixNumber_sets_lixNumber_to_0_and_returns_skillLevel_equals_1()
+    {
+
+        var resource = new ResourceCreateDTO()
+        {
+            Created = Created,
+            Author = "Deniz",
+            SiteTitle = "My first Page",
+            LixNumber = -121212,
+            SiteUrl = "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
+            Language = "Danish",
+            MaterialType = ResourceType.VIDEO,
+            Categories = new Collection<string>() {"Programming"},
+            Tags = new Collection<string>() {"C#"}
+        };
+
+        await _repo.Push(resource);
+
+        var expectedObj = await _repo.Get(1);
+        
+        Assert.Equal(expectedObj.Value.LixNumber, 0);
+        Assert.Equal(expectedObj.Value.SkillLevel, 1);
+    }
+    
+    [Fact]
+    public async Task Push_given_invalid_url_throws_exception()
+    {
+
+        var resource = new ResourceCreateDTO()
+        {
+            Created = Created,
+            Author = "Deniz",
+            SiteTitle = "My first Page",
+            LixNumber = -121212,
+            SiteUrl = "ThisIsAnInvalidURL.com",
+            Language = "Danish",
+            MaterialType = ResourceType.VIDEO,
+            Categories = new Collection<string>() {"Programming"},
+            Tags = new Collection<string>() {"C#"}
+        };
+        
+        await Assert.ThrowsAsync<Exception>(() => _repo.Push(resource));
+    }
 
     private ICollection<Comment> GetComments(int resourceId)
     {

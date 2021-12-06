@@ -57,13 +57,18 @@ public class ResourceRepository : IResourceRepository
 
     public async Task<ResourceDTO> Push(ResourceCreateDTO create)
     {
+        if (!isValidUrl(create.SiteUrl))
+        {
+            throw new Exception("Invalid URL!!");
+        }
+        
         var resource = new Resource
         {
-            Author = create.Author,
+            Author = create.Author == null ? "Unknown" : create.Author,
             Created = create.Created,
             MaterialType = create.MaterialType,
             Language = create.Language,
-            LixNumber = create.LixNumber,
+            LixNumber = create.LixNumber < 0 ? 0 : create.LixNumber,
             ContentSource = GetContentSource(create.SiteUrl),
             SiteTitle = create.SiteTitle,
             SiteUrl = create.SiteUrl,
@@ -72,12 +77,6 @@ public class ResourceRepository : IResourceRepository
             SkillLevel = GetSkillLevel(create.LixNumber),
             Categories = await GetCategories(create.Categories)
         };
-
-
-        if (resource.Author == null)
-        {
-            resource.Author = "Unknown";
-        }   
 
         await _context.Resources.AddAsync(resource);
         await _context.SaveChangesAsync();
@@ -194,14 +193,15 @@ public class ResourceRepository : IResourceRepository
 
         return 5;
     }
+    
+    private bool isValidUrl(string url)
+    {
+        return new Regex(@"(https?:\/\/|www\.)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)").Match(url).Success;
+
+    }
 
     private string GetContentSource(string url)
     {
-        string pattern = @"^(?:.*:\/\/)?(?:www\.)?(?<site>[^:\/]*).*$";
-        Regex rgx = new Regex(pattern);
-        Match m = rgx.Match(url);
-        var contentSource = "";
-
-        return contentSource = m.Groups[1].Value;
+        return new Regex(@"^(?:.*:\/\/)?(?:www\.)?(?<site>[^:\/]*).*$").Match(url).Groups[1].Value;
     }
 }
