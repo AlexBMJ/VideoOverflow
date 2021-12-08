@@ -7,14 +7,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
 
-//builder.Services.AddScoped<IVideoOverflowContext, VideoOverflowContext>();
-//builder.Services.AddScoped<IResourceRepository, ResourceRepository>();
+builder.Services.AddScoped<IVideoOverflowContext, VideoOverflowContext>();
+builder.Services.AddScoped<IResourceRepository, ResourceRepository>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
-//builder.Services.AddDbContext<VideoOverflowContext>(options => options.UseNpgsql(builder
-   // .Configuration.GetConnectionString("VideoOverflow")));
+builder.Services.AddDbContext<VideoOverflowContext>(options => options.UseNpgsql(builder
+    .Configuration.GetConnectionString("VideoOverflow")));
 
 
 
