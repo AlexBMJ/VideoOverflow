@@ -286,6 +286,6 @@ public static class DataFactory
 
     private static string GetContentSource(string url)
     {
-        return new Regex(@"^(?:.*:\/\/)?(?:www\.)?(?<site>[^:\/]*).*$").Match(url).Groups[0].Value;
+        return new Regex(@"^(?:.*:\/\/)?(?:www\.)?(?<site>[^:\/]*).*$").Match(url).Groups[1].Value;
     }
 }
