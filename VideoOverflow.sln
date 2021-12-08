@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoOverflow.Infrastructur
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoOverflow.Infrastructure", "VideoOverflow.Infrastructure\VideoOverflow.Infrastructure.csproj", "{C2D627BB-432F-476D-9ECE-BE3A4BDB5F92}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoOverflow.Server.Tests", "VideoOverflow.Server.Tests\VideoOverflow.Server.Tests.csproj", "{8A2CE16D-64D3-4488-AED7-95961611094A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,18 @@ Global
 		{C2D627BB-432F-476D-9ECE-BE3A4BDB5F92}.Release|x64.Build.0 = Release|Any CPU
 		{C2D627BB-432F-476D-9ECE-BE3A4BDB5F92}.Release|x86.ActiveCfg = Release|Any CPU
 		{C2D627BB-432F-476D-9ECE-BE3A4BDB5F92}.Release|x86.Build.0 = Release|Any CPU
+		{8A2CE16D-64D3-4488-AED7-95961611094A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A2CE16D-64D3-4488-AED7-95961611094A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A2CE16D-64D3-4488-AED7-95961611094A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8A2CE16D-64D3-4488-AED7-95961611094A}.Debug|x64.Build.0 = Debug|Any CPU
+		{8A2CE16D-64D3-4488-AED7-95961611094A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8A2CE16D-64D3-4488-AED7-95961611094A}.Debug|x86.Build.0 = Debug|Any CPU
+		{8A2CE16D-64D3-4488-AED7-95961611094A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A2CE16D-64D3-4488-AED7-95961611094A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A2CE16D-64D3-4488-AED7-95961611094A}.Release|x64.ActiveCfg = Release|Any CPU
+		{8A2CE16D-64D3-4488-AED7-95961611094A}.Release|x64.Build.0 = Release|Any CPU
+		{8A2CE16D-64D3-4488-AED7-95961611094A}.Release|x86.ActiveCfg = Release|Any CPU
+		{8A2CE16D-64D3-4488-AED7-95961611094A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

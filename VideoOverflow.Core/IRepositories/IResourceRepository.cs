@@ -1,11 +1,10 @@
+using VideoOverflow.Core.DTOs;
 
-namespace VideoOverflow.Core;
-
+namespace VideoOverflow.Core.IRepositories;
 public interface IResourceRepository
 {
     public Task<IEnumerable<ResourceDTO>> GetAll();
-    public Task<ResourceDetailsDTO?> Get(int id);
+    public Task<Option<ResourceDetailsDTO>> Get(int id);
     public Task<ResourceDTO> Push(ResourceCreateDTO create);
     public Task<Status> Update(ResourceUpdateDTO update);
-
 }

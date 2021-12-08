@@ -1,0 +1,10 @@
+global using Xunit;
+global using Microsoft.Extensions.Logging;       
+global using Moq;                                
+global using Server.Controllers;                 
+global using VideoOverflow.Core.DTOs;
+global using System.Collections.ObjectModel;
+global using Microsoft.AspNetCore.Mvc;
+global using VideoOverflow.Core;
+global using VideoOverflow.Core.IRepositories;
+global using static VideoOverflow.Core.Status;

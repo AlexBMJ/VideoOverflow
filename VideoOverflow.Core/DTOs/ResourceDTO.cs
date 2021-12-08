@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace VideoOverflow.Core;
+namespace VideoOverflow.Core.DTOs;
 
-public record ResourceDTO(int Id,
+public record ResourceDTO(
+    int Id,
     ResourceType MaterialType,
     string SiteUrl,
     string ContentSource,

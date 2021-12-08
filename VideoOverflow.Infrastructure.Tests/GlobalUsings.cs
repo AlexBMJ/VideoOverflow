@@ -12,4 +12,7 @@ global using System;
 global using System.Collections.Generic;
 global using System.Linq;
 global using VideoOverflow.Infrastructure.Entities;
+global using VideoOverflow.Infrastructure.repositories;
+global using VideoOverflow.Core.DTOs;
+
 

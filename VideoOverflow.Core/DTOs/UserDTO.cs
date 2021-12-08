@@ -1,4 +1,4 @@
-namespace VideoOverflow.Core;
+namespace VideoOverflow.Core.DTOs;
 
 public record UserDTO(int Id, string Name, ICollection<string>? Comments);
 

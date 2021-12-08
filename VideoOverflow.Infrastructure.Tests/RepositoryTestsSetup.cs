@@ -2,9 +2,10 @@ namespace VideoOverflow.Infrastructure.Tests;
 
 public class RepositoryTestsSetup
 {
-    public VideoOverflowContext Context { get; }
+    protected readonly VideoOverflowContext _context;
+    protected readonly DateTime Created = new (2021,11,30, 13,11,11);
 
-    public RepositoryTestsSetup()
+    protected RepositoryTestsSetup()
     {
         var connection = new SqliteConnection("Filename=:memory:");
         connection.Open();
@@ -15,6 +16,6 @@ public class RepositoryTestsSetup
 
         context.SaveChanges();
 
-        Context = context;
+        _context = context;
     }
 }
