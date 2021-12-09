@@ -4,61 +4,47 @@ using Fastenshtein;
 namespace Server;
 public class QueryParser
 {
-    private ITagRepository _tagRepo;
-    private IWordRepository _wordRepo;
-    public QueryParser(ITagRepository tagRepo, IWordRepository wordRepo)
-    {
+    private readonly ITagRepository _tagRepo;
+    private readonly IWordRepository _wordRepo;
+    public QueryParser(ITagRepository tagRepo, IWordRepository wordRepo) {
         _tagRepo = tagRepo;
         _wordRepo = wordRepo;
     }
 
-    public IEnumerable<string> Parse(string query)
-    {
+    public IEnumerable<string> Parse(string query) {
         var tags = _tagRepo.GetAll().Result;
         var tagNames = new HashSet<string>();
-        foreach (var dto in tags)
-        {
+        foreach (var dto in tags) {
             tagNames.Add(dto.Name.ToLower());
         }
         
-        //SymSpell(query)
-        
-        foreach (var word in query.ToLower().Split(" "))
-        {
-            if (tagNames.Contains(word))
-            {
+        foreach (var word in query.ToLower().Split(" ")) {
+            if (tagNames.Contains(word)) {
                 yield return word;
             }
         }
     }
 
-    public string SuggestQuery(string query)
-    {
+    public string SuggestQuery(string query) {
         var tagDTOs = _tagRepo.GetAll().Result;
         var tags = new HashSet<string>();
-        foreach (var dto in tagDTOs)
-        {
+        foreach (var dto in tagDTOs) {
             tags.Add(dto.Name);
         }
         var wordDTOs = _wordRepo.GetAll().Result;
         var words = new HashSet<string>();
-        foreach (var dto in wordDTOs)
-        {
+        foreach (var dto in wordDTOs) {
             words.Add(dto.String);
         }
 
         var sb = new StringBuilder();
-        foreach (var word in query.Split(" "))
-        {
-            if (!tags.Contains(word) && !words.Contains(word))
-            {
+        foreach (var word in query.Split(" ")) {
+            if (!tags.Contains(word) && !words.Contains(word)) {
                 sb = sb.Append(ClosestTag(word));
             }
-            else
-            {
+            else {
                 sb = sb.Append(word);
             }
-
             sb = sb.Append(' ');
         }
 
@@ -66,13 +52,11 @@ public class QueryParser
         return sb.ToString();
     }
 
-    private string ClosestTag(string word)
-    {
+    private string ClosestTag(string word) {
         var tagDTOs = _tagRepo.GetAll().Result;
         var minDist = int.MaxValue;
         var min = word;
-        foreach (var dto in tagDTOs)
-        {
+        foreach (var dto in tagDTOs) {
             var name = dto.Name;
             var dist = Levenshtein.Distance(name, word);
             if (dist < minDist)
