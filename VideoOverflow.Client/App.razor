@@ -1,5 +1,4 @@
 ﻿@using Client.Shared
-@using MudBlazor.Utilities
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
@@ -37,7 +36,9 @@
         Palette = new Palette
         {
             AppbarBackground = "#FF8E47",
-            DrawerBackground = "#FCFCFC"
+            DrawerBackground = "#FCFCFC",
+            Secondary = "#326273",
+            Tertiary = "#5C9EAD"
         }
     };
 
