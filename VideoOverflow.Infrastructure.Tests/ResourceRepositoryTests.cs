@@ -272,7 +272,7 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
         {
             Id = 1,
             Author = null,
-            LixNumber = 11,
+            LixNumber = 45,
             Language = "English",
             MaterialType = ResourceType.Article,
             SiteUrl = "https://docs.microsoft.com/da-dk/dynamics365/marketing/teams-webinar",
