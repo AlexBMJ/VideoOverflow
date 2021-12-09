@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using VideoOverflow.Core;
 using VideoOverflow.Infrastructure;
-;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +18,8 @@ builder.Services.AddDbContext<VideoOverflowContext>(options => options.UseNpgsql
     .Configuration.GetConnectionString("VideoOverflow")));
 builder.Services.AddScoped<IVideoOverflowContext, VideoOverflowContext>();
 builder.Services.AddScoped<IResourceRepository, ResourceRepository>();
+
+
 
 var app = builder.Build();
 
@@ -48,6 +50,8 @@ app.UseAuthorization();
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
+
+//await app.FillDatabase();
 
 app.Run();
 
