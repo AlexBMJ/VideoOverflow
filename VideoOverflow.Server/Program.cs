@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
+using VideoOverflow.Core;
 using VideoOverflow.Infrastructure;
 ;
 
@@ -15,7 +16,8 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddDbContext<VideoOverflowContext>(options => options.UseNpgsql(builder
     .Configuration.GetConnectionString("VideoOverflow")));
-
+builder.Services.AddScoped<IVideoOverflowContext, VideoOverflowContext>();
+builder.Services.AddScoped<IResourceRepository, ResourceRepository>();
 
 var app = builder.Build();
 
