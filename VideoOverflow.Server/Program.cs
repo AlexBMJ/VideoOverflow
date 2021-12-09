@@ -30,7 +30,10 @@ builder.Services.AddRazorPages();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddDbContext<VideoOverflowContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("VideoOverflow")));
+Console.WriteLine("HIT!!!");
+
+Console.WriteLine(builder.Configuration.GetConnectionString("VideoOverflow"));
+builder.Services.AddDbContext<VideoOverflowContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("VideOverflow")));
 builder.Services.AddScoped<IVideoOverflowContext, VideoOverflowContext>();
 builder.Services.AddScoped<IResourceRepository, ResourceRepository>();
 
@@ -66,7 +69,7 @@ app.MapFallbackToFile("index.html");
 
 if (!app.Environment.IsEnvironment("Integration"))
 {
-    await app.FillDatabase();
+    //await app.FillDatabase();
 }
 
 app.Run();
