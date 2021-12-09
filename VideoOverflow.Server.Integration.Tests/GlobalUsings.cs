@@ -1,0 +1,14 @@
+﻿global using System.Security.Claims;
+global using System.Text.Encodings.Web;
+global using Microsoft.AspNetCore.Authentication;
+global using Microsoft.Extensions.Logging;
+global using Microsoft.Extensions.Options;
+global using Microsoft.AspNetCore.Authorization;
+global using Microsoft.AspNetCore.Mvc.Authorization;
+global using Microsoft.AspNetCore.Mvc.Testing;
+global using Microsoft.Data.Sqlite;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.Extensions.Hosting;
+global using Microsoft.VisualStudio.TestPlatform.TestHost;
+global using Server;
+global using VideoOverflow.Infrastructure;
