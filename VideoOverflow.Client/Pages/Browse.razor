@@ -1,5 +1,6 @@
 @page "/Browse"
 @using VideoOverflow.Core
+@using VideoOverflow.Core.DTOs
 @inject HttpClient _http
 
 <PageTitle>Browse</PageTitle>
@@ -21,17 +22,17 @@
 
 <MudTable T="SettableTuple<bool, ResourceDTO>" Items="_resources" Bordered="true" Class="my-4">
     <RowTemplate>
-        <MudGrid>
+        <MudGrid Style="width: calc(100% + 12px)">
             <MudItem>
                 <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowRight" aria-label="closed" OnClick="@(() => ShowDetails(context.Item2.Id))"/>
             </MudItem>
             <MudItem xl="1" lg="1" md="1" Class="d-flex align-center">
                 <MudIcon Icon="@GetMaterialIcon(context.Item2.MaterialType)"/>
             </MudItem>
-            <MudItem xl="3" lg="3" md="3" Class="d-flex align-center">@context.Item2.SiteTitle</MudItem>
-            <MudItem xl="2" lg="2" md="2" Class="d-flex align-center">@context.Item2.Language</MudItem>
+            <MudItem xl="3" lg="3" md="2" Class="d-flex align-center">@context.Item2.SiteTitle</MudItem>
+            <MudItem xl="2" lg="2" md="1" Class="d-flex align-center">@context.Item2.Language</MudItem>
             <MudItem xl="2" lg="2" md="2" Class="d-flex align-center">@context.Item2.Author</MudItem>
-            <MudItem xl="4" lg="4" md="4" Class="d-flex flex-wrap align-center">
+            <MudItem xl="4" lg="4" md="5" Class="d-flex flex-wrap align-center">
                 @foreach (var tag in context.Item2.Tags) {
                     <MudChip Class="mud-theme-tertiary" Style="cursor: pointer;">@tag</MudChip>
                 }
