@@ -216,9 +216,9 @@ public static class DataFactory
 
         var materialTypes = new Collection<ResourceType>()
         {
-            ResourceType.VIDEO, ResourceType.VIDEO, ResourceType.VIDEO, ResourceType.ARTICLE,
-            ResourceType.ARTICLE, ResourceType.ARTICLE, ResourceType.VIDEO, ResourceType.ARTICLE,
-            ResourceType.VIDEO, ResourceType.VIDEO, ResourceType.ARTICLE
+            ResourceType.Video, ResourceType.Video, ResourceType.Video, ResourceType.Article,
+            ResourceType.Article, ResourceType.Article, ResourceType.Video, ResourceType.Article,
+            ResourceType.Video, ResourceType.Video, ResourceType.Article
         };
 
         for (int i = 0; i < siteTitles.Count; i++)
