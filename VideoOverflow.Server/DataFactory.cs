@@ -106,28 +106,23 @@ public static class DataFactory
         }
     }
 
-    private static async Task AttachCommentsToUsersAndResources(VideoOverflowContext context)
-    {
-        foreach (var user in context.Users)
-        {
-            foreach (var comment in context.Comments)
-            {
-                if (comment.CreatedBy == user.Id)
-                {
-                    user.Comments.Add(comment);
-                }
-            }
+    private static async Task AttachCommentsToUsersAndResources(VideoOverflowContext context) {
+        var comments = from user in context.Users
+            join comment in context.Comments
+                on user.Id equals comment.Id
+            select new { Owner = user, Comment = comment };
+
+        foreach (var comment in comments) {
+            comment.Owner.Comments?.Add(comment.Comment);
         }
         
-        foreach (var resource in context.Resources)
-        {
-            foreach (var comment in context.Comments)
-            {
-                if (comment.CreatedBy == resource.Id)
-                {
-                    resource.Comments.Add(comment);
-                }
-            }
+        var resources = from resource in context.Resources
+            join comment in context.Comments
+                on resource.Id equals comment.CreatedBy
+            select new { CreatedBy = resource, Comment = comment };
+
+        foreach (var resource in resources) {
+            resource.CreatedBy.Comments?.Add(resource.Comment);
         }
 
         await context.SaveChangesAsync();
