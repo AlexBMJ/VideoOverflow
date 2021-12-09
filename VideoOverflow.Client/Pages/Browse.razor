@@ -1,6 +1,5 @@
 @page "/Browse"
 @using VideoOverflow.Core
-@using VideoOverflow.Core.Utils
 @inject HttpClient _http
 
 <PageTitle>Browse</PageTitle>
@@ -11,8 +10,8 @@
     </MudItem>
     <MudItem lg="3" md="3" sm="3" xs="12">
         <MudSelect T="string" Label="Category" Strict="true" Variant="Variant.Outlined" Format="F2" AnchorOrigin="Origin.BottomCenter" AdornmentIcon="@Icons.Filled.Category">
-            @foreach (var ctg in Enum.GetValues<CategoryType>()) {
-                <MudSelectItem T="string" Value="@SeparateEnumWords(ctg.ToString())"/>
+            @foreach (var ctg in _categories) {
+                <MudSelectItem T="string" Value="@ctg"/>
             }
         </MudSelect>
     </MudItem>
@@ -99,6 +98,7 @@
 @code {
     private string _search;
     private IList<SettableTuple<bool, ResourceDTO>>? _resources;
+    private string[] _categories = Array.Empty<string>();
     
     private static ResourceDTO phResource = new(0,
         ResourceType.Video,
@@ -131,10 +131,11 @@
     protected override async Task OnInitializedAsync() {
         //var resources = await _http.GetFromJsonAsync<ResourceDTO[]>("api/Resource");
         _resources = _phElements.Select(r => new SettableTuple<bool, ResourceDTO>(false, r)).ToList();
+        
+        var categories = await _http.GetFromJsonAsync<string[]>("api/Category");
+        if (categories != null)
+            _categories = categories;
     }
-
-    private static string SeparateEnumWords(string str) 
-        => str == str.ToUpper() ? str : Word.SeparateWords(str);
 
     private string GetMaterialIcon(ResourceType material) {
         return material switch
