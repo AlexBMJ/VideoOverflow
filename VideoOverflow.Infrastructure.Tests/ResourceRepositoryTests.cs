@@ -279,7 +279,7 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
             Categories = new Collection<string>(),
             Tags = new Collection<string>(),
             SiteTitle = "Changed to this topic",
-            Created = Created
+            Created = DateTime.Parse("2020-04-12")
         };
 
         await _repo.Update(updated);
@@ -289,7 +289,7 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
         var expected = new ResourceDetailsDTO()
         {
             Id = 1,
-            Created = Created,
+            Created = DateTime.Parse("2020-04-12"),
             LixNumber = 11,
             SkillLevel = 1,
             MaterialType = ResourceType.ARTICLE,

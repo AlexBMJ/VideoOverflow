@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
+using FluentAssertions.Extensions;
 using Microsoft.VisualBasic;
 using VideoOverflow.Infrastructure.Context;
 using VideoOverflow.Infrastructure.Entities;
@@ -23,6 +24,7 @@ public static class DataFactory
     private static async Task CreateDemoData(VideoOverflowContext context)
     {
         await context.Database.MigrateAsync();
+        await context.Database.EnsureCreatedAsync();
 
         // Add users to the database
         await context.Users.AddRangeAsync(
@@ -172,17 +174,18 @@ public static class DataFactory
 
         var createdDates = new Collection<DateTime>()
         {
-            new DateTime(2020, 9, 29),
-            new DateTime(2019, 9, 23),
-            new DateTime(2020, 8, 14),
-            new DateTime(2021, 11, 15),
-            new DateTime(2021, 7, 0),
-            new DateTime(2021, 11, 10),
-            new DateTime(2018, 11, 5),
-            new DateTime(2020, 12, 23),
-            new DateTime(2019, 3, 20),
-            new DateTime(2020, 10, 28),
-            new DateTime(2021, 10, 10)
+            DateTime.Parse("2020-09-29").AsUtc(),
+            DateTime.Parse("2019-09-23").AsUtc(),
+            DateTime.Parse("2020-08-14").AsUtc(),
+            DateTime.Parse("2021-11-15").AsUtc(),
+            DateTime.Parse("2021-07-01").AsUtc(),
+            DateTime.Parse("2021-11-10").AsUtc(),
+            DateTime.Parse("2018-11-05").AsUtc(),
+            DateTime.Parse("2020-12-23").AsUtc(),
+            DateTime.Parse("2019-03-20").AsUtc(),
+            DateTime.Parse("2020-10-28").AsUtc(),
+            DateTime.Parse("2021-10-10").AsUtc(),
+            
         };
 
         var categories = new Collection<Collection<string>>()
