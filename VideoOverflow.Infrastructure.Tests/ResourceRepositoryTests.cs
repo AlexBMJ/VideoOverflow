@@ -102,7 +102,7 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
             Id = 1,
             Created = Created,
             SkillLevel = 1,
-            MaterialType = ResourceType.VIDEO,
+            MaterialType = ResourceType.Video,
             SiteUrl = "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
             SiteTitle = "My first Page",
             ContentSource = "learnit.itu.dk",
@@ -274,7 +274,7 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
             Author = null,
             LixNumber = 11,
             Language = "English",
-            MaterialType = ResourceType.ARTICLE,
+            MaterialType = ResourceType.Article,
             SiteUrl = "https://docs.microsoft.com/da-dk/dynamics365/marketing/teams-webinar",
             Categories = new Collection<string>(),
             Tags = new Collection<string>(),
@@ -318,7 +318,7 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
             LixNumber = -121212,
             SiteUrl = "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
             Language = "Danish",
-            MaterialType = ResourceType.VIDEO,
+            MaterialType = ResourceType.Video,
             Categories = new Collection<string>() {"Programming"},
             Tags = new Collection<string>() {"C#"}
         };
@@ -343,7 +343,7 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
             LixNumber = -121212,
             SiteUrl = "ThisIsAnInvalidURL.com",
             Language = "Danish",
-            MaterialType = ResourceType.VIDEO,
+            MaterialType = ResourceType.Video,
             Categories = new Collection<string>() {"Programming"},
             Tags = new Collection<string>() {"C#"}
         };
