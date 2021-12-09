@@ -4,7 +4,7 @@ docker run --name postgres_db -p 5001:5432 -v postgres_data -e POSTGRES_PASSWORD
 $connectionString = "Server=localhost;Database=$database;UserId=postgres;Password=$password"
 Set-Clipboard $password
 
-Write-Host "Setting up connectionString"
+Write-Host "Setting up connectionString...."
     cd .\VideoOverflow.Server\
     dotnet user-secrets set "VideoOverflow" "$connectionString"
     
