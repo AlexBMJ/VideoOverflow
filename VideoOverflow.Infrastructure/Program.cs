@@ -1,4 +1,6 @@
-﻿namespace VideoOverflow.Infrastructure;
+﻿using VideoOverflow.Infrastructure.Context;
+
+namespace VideoOverflow.Infrastructure;
 public class Program
 {
     static void Main(string[] args)

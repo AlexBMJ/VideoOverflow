@@ -1,4 +1,6 @@
-﻿namespace VideoOverflow.Server.Integration.Tests;
+﻿
+
+namespace VideoOverflow.Server.Integration.Tests;
 
 internal sealed class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {

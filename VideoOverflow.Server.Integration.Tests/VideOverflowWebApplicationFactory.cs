@@ -1,6 +1,4 @@
-﻿using System.Formats.Asn1;
-using Microsoft.Extensions.DependencyInjection;
-
+﻿using VideoOverflow.Infrastructure.Context;
 
 namespace VideoOverflow.Server.Integration.Tests;
 
@@ -54,9 +52,11 @@ public class VideoOverflowWebApplicationFactory : WebApplicationFactory<Program>
         
         builder.UseEnvironment("Integration");
 
-        builder.Build().FillDatabase();
+        builder.Build();
             
         return base.CreateHost(builder);
     }
     
 }
+
+public class Program{}
