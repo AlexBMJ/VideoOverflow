@@ -24,7 +24,7 @@ public class ResourceTests : IClassFixture<VideoOverflowWebApplicationFactory>
     [Fact]
     public async Task Get_returns_resources()
     {
-        var resources = await _client.GetFromJsonAsync<ResourceDTO[]>("/api/resources");
+        var resources = await _client.GetFromJsonAsync<ResourceDTO[]>("api/resources");
 
         resources.Should().NotBeNull();
         resources.Should().HaveCount(12);
@@ -35,9 +35,25 @@ public class ResourceTests : IClassFixture<VideoOverflowWebApplicationFactory>
         
     }
 
-    [Fact]
-    public async Task continue_test()
+    [Theory]
+    [InlineData("edureka!")]
+    [InlineData("dotNET")]
+    [InlineData("Docker")]
+    [InlineData("Java")]
+    [InlineData("TechTarget")]
+    [InlineData("wikipedia")]
+    [InlineData("Andy Sterkowitz")]
+    [InlineData("geeksforgeeks")]
+    [InlineData("Programming with Mosh")]
+    [InlineData("Martin Kleppman")]
+    [InlineData("Unknown")]
+    public async Task Get_returns_all_authors(string author)
     {
-      
+        var resources = await _client.GetFromJsonAsync<ResourceDTO[]>("api/Resources");
+
+        foreach (var resourceDto in resources)
+        {
+            Assert.Equal(author, resourceDto.Author);
+        }
     }
 }

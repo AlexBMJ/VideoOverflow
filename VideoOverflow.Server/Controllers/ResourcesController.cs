@@ -1,6 +1,4 @@
-﻿
-
-namespace Server.Controllers
+﻿namespace Server.Controllers
 {
     [Authorize]
     [ApiController]

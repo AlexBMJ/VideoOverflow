@@ -35,12 +35,11 @@ public class VideoOverflowWebApplicationFactory : WebApplicationFactory<Program>
             })
             .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
             
-            
             var connection = new SqliteConnection("Filename=:memory:");
 
             services.AddDbContext<VideoOverflowContext>(options =>
             {
-                options.UseNpgsql(connection);
+                options.UseSqlite(connection);
             });
 
             var provider = services.BuildServiceProvider();
@@ -48,16 +47,12 @@ public class VideoOverflowWebApplicationFactory : WebApplicationFactory<Program>
             using var appContext = scope.ServiceProvider.GetRequiredService<VideoOverflowContext>();
             appContext.Database.OpenConnection();
             appContext.Database.EnsureCreated();
-
         });
         
         builder.UseEnvironment("Integration");
 
         builder.Build();
-            
+        
         return base.CreateHost(builder);
     }
-    
 }
-
-public class Program{}

@@ -75,10 +75,13 @@ public static class DataFactory
         await GenerateResources(context);
         
         // Get the created comments
-        GenerateComments(context);
+        await GenerateComments(context);
         
         // Attach the comments to list of users and resources
         await AttachCommentsToUsersAndResources(context);
+
+        await context.SaveChangesAsync();
+
     }
 
     private static async Task GenerateComments(VideoOverflowContext context)
