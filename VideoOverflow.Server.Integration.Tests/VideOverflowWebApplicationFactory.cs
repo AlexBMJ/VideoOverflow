@@ -4,6 +4,7 @@ namespace VideoOverflow.Server.Integration.Tests;
 
 public class VideoOverflowWebApplicationFactory : WebApplicationFactory<Program>
 {
+    /* This method has been taken from: https://github.com/ondfisk/BDSA2021/blob/main/MyApp.Server.Integration.Tests/CustomWebApplicationFactory.cs */
     protected override IHost CreateHost(IHostBuilder builder)
     {
         builder.ConfigureServices(services =>

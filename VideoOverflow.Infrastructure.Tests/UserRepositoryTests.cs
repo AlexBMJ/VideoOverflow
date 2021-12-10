@@ -187,6 +187,7 @@ public class UserRepositoryTests : RepositoryTestsSetup, IDisposable
         Assert.Equal(Status.NotFound, actual);
     }
     
+    /* Dispose code has been taken from  https://github.com/ondfisk/BDSA2021/blob/main/MyApp.Infrastructure.Tests/CityRepositoryTests.cs*/
     private bool _disposed;
     protected virtual void Dispose(bool disposing)
     {

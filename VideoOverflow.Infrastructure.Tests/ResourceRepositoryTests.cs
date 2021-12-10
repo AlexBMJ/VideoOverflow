@@ -366,6 +366,7 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
         return collection;
     }
     
+    /* Dispose code has been taken from  https://github.com/ondfisk/BDSA2021/blob/main/MyApp.Infrastructure.Tests/CityRepositoryTests.cs*/
     private bool _disposed;
     protected virtual void Dispose(bool disposing)
     {
@@ -382,7 +383,7 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
 
     public void Dispose()
     {
-        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+       
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }

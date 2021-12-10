@@ -170,28 +170,7 @@ public class ResourceRepository : IResourceRepository
 
     private int GetSkillLevel(int lix)
     {
-        if (lix < 25)
-        {
-            return 1; 
-            
-        }
-
-        if (lix < 35)
-        {
-            return 2;
-        }
-
-        if (lix < 45)
-        {
-            return 3;
-        }
-
-        if (lix < 55)
-        {
-            return 4;
-        }
-
-        return 5;
+        return lix < 25 ? 1 : lix < 35 ? 2 : lix < 45 ? 3 : lix < 55 ? 4 : 5;
     }
     
     private bool isValidUrl(string url)

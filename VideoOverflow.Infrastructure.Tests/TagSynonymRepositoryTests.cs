@@ -101,6 +101,7 @@ public class TagSynonymRepositoryTests : RepositoryTestsSetup, IDisposable
         Assert.Equal(expected, actual);
     }
     
+    /* Dispose code has been taken from  https://github.com/ondfisk/BDSA2021/blob/main/MyApp.Infrastructure.Tests/CityRepositoryTests.cs*/
     private bool _disposed;
     protected virtual void Dispose(bool disposing)
     {

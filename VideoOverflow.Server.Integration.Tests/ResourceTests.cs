@@ -6,6 +6,7 @@ using Xunit;
 
 namespace VideoOverflow.Server.Integration.Tests;
 
+/* Test setup has been taken from: https://github.com/ondfisk/BDSA2021/blob/main/MyApp.Server.Integration.Tests/CharacterTests.cs */
 public class ResourceTests : IClassFixture<VideoOverflowWebApplicationFactory>
 {
     private readonly HttpClient _client;

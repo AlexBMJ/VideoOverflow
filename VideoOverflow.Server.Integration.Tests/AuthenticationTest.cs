@@ -2,6 +2,8 @@
 
 namespace VideoOverflow.Server.Integration.Tests;
 
+
+/* This code has directly been taken from: https://github.com/ondfisk/BDSA2021/blob/main/MyApp.Server.Integration.Tests/TestAuthHandler.cs */
 internal sealed class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
     public TestAuthHandler(
