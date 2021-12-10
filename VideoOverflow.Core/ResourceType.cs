@@ -2,8 +2,8 @@
 {
     public enum ResourceType
     {
-        VIDEO,
-        ARTICLE,
-        BOOKS
+        Video,
+        Article,
+        Book
     } 
 }

@@ -1,0 +1,171 @@
+@page "/Browse"
+@using VideoOverflow.Core
+@using VideoOverflow.Core.DTOs
+@inject HttpClient _http
+
+<PageTitle>Browse</PageTitle>
+
+<MudGrid Justify="Justify.Center" Spacing="1" Class="my-4">
+    <MudItem lg="8" md="8" sm="7" xs="12">
+        <MudTextField @bind-Value="_search" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Secondary"/>
+    </MudItem>
+    <MudItem lg="3" md="3" sm="3" xs="12">
+        <MudSelect T="string" Label="Category" Strict="true" Variant="Variant.Outlined" Format="F2" AnchorOrigin="Origin.BottomCenter" AdornmentIcon="@Icons.Filled.Category">
+            @foreach (var ctg in _categories) {
+                <MudSelectItem T="string" Value="@ctg"/>
+            }
+        </MudSelect>
+    </MudItem>
+</MudGrid>
+
+<MudDivider/>
+
+<MudTable T="SettableTuple<bool, ResourceDTO>" Items="_resources" Bordered="true" Class="my-4">
+    <RowTemplate>
+        <MudGrid Style="width: calc(100% + 12px)">
+            <MudItem>
+                <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowRight" aria-label="closed" OnClick="@(() => ShowDetails(context.Item2.Id))"/>
+            </MudItem>
+            <MudItem xl="1" lg="1" md="1" Class="d-flex align-center">
+                <MudIcon Icon="@GetMaterialIcon(context.Item2.MaterialType)"/>
+            </MudItem>
+            <MudItem xl="3" lg="3" md="2" Class="d-flex align-center">@context.Item2.SiteTitle</MudItem>
+            <MudItem xl="2" lg="2" md="1" Class="d-flex align-center">@context.Item2.Language</MudItem>
+            <MudItem xl="2" lg="2" md="2" Class="d-flex align-center">@context.Item2.Author</MudItem>
+            <MudItem xl="4" lg="4" md="5" Class="d-flex flex-wrap align-center">
+                @foreach (var tag in context.Item2.Tags) {
+                    <MudChip Class="mud-theme-tertiary" Style="cursor: pointer;">@tag</MudChip>
+                }
+            </MudItem>
+        </MudGrid>
+    </RowTemplate>
+    <ChildRowContent>
+    	@if (context.Item1) {
+            <MudTr>
+                <td colspan="4">
+                    <MudGrid>
+                        <MudItem xl="5" lg="3" md="3">
+                            <MudCard Elevation="0">
+                                <MudCardHeader>
+                                    <CardHeaderContent>
+                                        <MudText Typo="Typo.body1">Comments</MudText>
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                                <MudCardContent Class="pa-4">
+                                    <MudTable Items="context.Item2.Comments" Context="comment" Height="10em"
+                                              Elevation="0">
+                                        <RowTemplate>
+                                            <MudText Class="py-2">@comment</MudText>
+                                            <MudDivider/>
+                                        </RowTemplate>
+                                    </MudTable>
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
+                        <MudItem>
+                            <MudCard Elevation="0">
+                                <MudCardHeader>
+                                    <CardHeaderContent>
+                                        <MudText Typo="Typo.body1">Categories</MudText>
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                                <MudCardContent Class="pa-4">
+                                    @foreach (var category in context.Item2.Categories) {
+                                        <MudChip Class="mud-theme-secondary">@category</MudChip>
+                                    }
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
+                        <MudItem>
+                            <MudCard Elevation="0">
+                                <MudCardHeader>
+                                    <CardHeaderContent>
+                                        <MudText Typo="Typo.body1">External Site</MudText>
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                                <MudCardContent Class="pa-4" Style="">
+                                    <MudLink Href="@context.Item2.SiteUrl">@context.Item2.SiteUrl</MudLink>
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
+                    </MudGrid>
+                </td>
+            </MudTr>
+	    }
+    </ChildRowContent>
+</MudTable>
+
+
+@code {
+    private string _search;
+    private IList<SettableTuple<bool, ResourceDTO>>? _resources;
+    private string[] _categories = Array.Empty<string>();
+    
+    private static ResourceDTO phResource = new(0,
+        ResourceType.Video,
+        "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "youtube.com",
+        "Docker Tutorial",
+        "Dockerman47",
+        "English",
+        new[] { "Docker", "Tutorial", "Testitest", "Tagitag" },
+        new[] { "Containerization" },
+        new List<string>{"TestiComment oi listen here u bonker mate. You want a ciggy m8.", "Bruhcomment47"
+            ,"TestiComment", "Bruhcomment47","TestiComment", "Bruhcomment47"
+            ,"TestiComment", "Bruhcomment47","TestiComment", "Bruhcomment47"
+        }
+        );
+    private static ResourceDTO phResource2 = new(1,
+        ResourceType.Video,
+        "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "youtube.com",
+        "Docker Tutorial",
+        "Dockerman47",
+        "English",
+        new[] { "Docker", "Tutorial", "Testitest", "Tagitag" },
+        new[] { "Containerization" },
+        Array.Empty<string>()
+        );
+    
+    private ResourceDTO[] _phElements = {phResource,phResource2};
+
+    protected override async Task OnInitializedAsync() {
+        //var resources = await _http.GetFromJsonAsync<ResourceDTO[]>("api/Resource");
+        _resources = _phElements.Select(r => new SettableTuple<bool, ResourceDTO>(false, r)).ToList();
+        
+        var categories = await _http.GetFromJsonAsync<string[]>("api/Category");
+        if (categories != null)
+            _categories = categories;
+    }
+
+    private string GetMaterialIcon(ResourceType material) {
+        return material switch
+        {
+            ResourceType.Article => Icons.Filled.Article,
+            ResourceType.Book => Icons.Filled.MenuBook,
+            ResourceType.Video => Icons.Filled.VideoLibrary,
+            _ => throw new ArgumentOutOfRangeException(nameof(material), material, null)
+        };
+    }
+
+    private void ShowDetails(int id) {
+        var resource = _resources?.FirstOrDefault(r => r.Item2.Id == id);
+        if (resource == null) return;
+        var resourceIndex = _resources?.IndexOf(resource) ?? -1;
+        if (resourceIndex == -1) return;
+        var re = _resources?[resourceIndex];
+        if (re == null) return;
+        re.Item1 = !re.Item1;
+    }
+
+    private class SettableTuple<T,T2> {
+        public T Item1 { get; set; }
+        public T2 Item2 { get; set; }
+
+        public SettableTuple(T i1, T2 i2) {
+            Item1 = i1;
+            Item2 = i2;
+        }
+    }
+
+}

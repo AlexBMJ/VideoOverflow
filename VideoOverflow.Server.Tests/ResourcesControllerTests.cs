@@ -11,7 +11,7 @@ public class ResourcesControllerTests
             var logger = new Mock<ILogger<ResourceController>>();
             var toCreate = new ResourceCreateDTO();
             var created = new ResourceDTO(
-                1, ResourceType.VIDEO,
+                1, ResourceType.Video,
                 "https://www.youtube.com",
                 "youtube",
                 "Youtube",
