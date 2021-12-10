@@ -24,10 +24,10 @@ public class ResourceTests : IClassFixture<VideoOverflowWebApplicationFactory>
     [Fact]
     public async Task Get_returns_resources()
     {
-        var resources = await _client.GetFromJsonAsync<ResourceDTO[]>("api/resources");
+        var resources = await _client.GetFromJsonAsync<ResourceDTO[]>("api/Resources");
 
         resources.Should().NotBeNull();
-        resources.Should().HaveCount(12);
+        resources.Should().HaveCount(11);
         resources.Should()
             .Contain(
                 resource => resource.SiteUrl == "https://www.youtube.com/watch?v=PQsJR8ci3J0&ab_channel=edureka%21");
@@ -35,25 +35,21 @@ public class ResourceTests : IClassFixture<VideoOverflowWebApplicationFactory>
         
     }
 
-    [Theory]
-    [InlineData("edureka!")]
-    [InlineData("dotNET")]
-    [InlineData("Docker")]
-    [InlineData("Java")]
-    [InlineData("TechTarget")]
-    [InlineData("wikipedia")]
-    [InlineData("Andy Sterkowitz")]
-    [InlineData("geeksforgeeks")]
-    [InlineData("Programming with Mosh")]
-    [InlineData("Martin Kleppman")]
-    [InlineData("Unknown")]
-    public async Task Get_returns_all_authors(string author)
+    [Fact]
+    public async Task Get_returns_all_authors()
     {
         var resources = await _client.GetFromJsonAsync<ResourceDTO[]>("api/Resources");
 
-        foreach (var resourceDto in resources)
+
+        var expectedAuthors = new[]
         {
-            Assert.Equal(author, resourceDto.Author);
+            "edureka!", "dotNET", "Docker", "Java", "TechTarget", "wikipedia",
+            "Andy Sterkowitz", "geeksforgeeks", "Programming with Mosh", "Martin Kleppman", "Unknown"
+        };
+
+        for (int i = 0; i < resources.Length; i++)
+        {
+                Assert.Equal(expectedAuthors[i], resources[i].Author);
         }
     }
 }
