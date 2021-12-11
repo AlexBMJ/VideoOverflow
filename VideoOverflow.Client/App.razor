@@ -24,3 +24,22 @@
         </NotFound>
     </Router>
 </CascadingAuthenticationState>
+
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+<MudThemeProvider Theme="Overflow"/>
+
+@code {
+
+    MudTheme Overflow = new()
+    {
+        Palette = new Palette
+        {
+            AppbarBackground = "#FF8E47",
+            DrawerBackground = "#FCFCFC",
+            Secondary = "#326273",
+            Tertiary = "#5C9EAD"
+        }
+    };
+
+}

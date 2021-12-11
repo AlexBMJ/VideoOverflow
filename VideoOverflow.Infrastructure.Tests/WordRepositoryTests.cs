@@ -1,15 +1,11 @@
 namespace VideoOverflow.Infrastructure.Tests;
 
-public class WordRepositoryTests
+public class WordRepositoryTests : RepositoryTestsSetup
 {
-    private readonly VideoOverflowContext _context;
     private readonly WordRepository _repo;
 
     public WordRepositoryTests()
     {
-        var repo = new RepositoryTestsSetup();
-        _context = repo.Context;
-
         _repo = new WordRepository(_context);
     }
 

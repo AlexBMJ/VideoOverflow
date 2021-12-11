@@ -5,6 +5,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
+using VideoOverflow.Core;
+using VideoOverflow.Infrastructure;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +20,9 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddDbContext<VideoOverflowContext>(options => options.UseNpgsql(builder
     .Configuration.GetConnectionString("VideoOverflow")));
+builder.Services.AddScoped<IVideoOverflowContext, VideoOverflowContext>();
+builder.Services.AddScoped<IResourceRepository, ResourceRepository>();
+
 
 
 var app = builder.Build();
@@ -48,6 +54,8 @@ app.UseAuthorization();
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
+
+//await app.FillDatabase();
 
 app.Run();
 

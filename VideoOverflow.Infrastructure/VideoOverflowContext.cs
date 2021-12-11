@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using VideoOverflow.Infrastructure.Entities;
-
-namespace VideoOverflow.Infrastructure;
+﻿namespace VideoOverflow.Infrastructure;
 
 public class VideoOverflowContext : DbContext, IVideoOverflowContext
 {
@@ -46,5 +43,12 @@ public class VideoOverflowContext : DbContext, IVideoOverflowContext
 
         modelBuilder.Entity<User>()
             .HasMany(user => user.Comments);
+        
+        // Convert Enum to string
+        
+        modelBuilder
+            .Entity<Resource>()
+            .Property(e => e.MaterialType)
+            .HasConversion(new EnumToStringConverter<ResourceType>());
     }
 }

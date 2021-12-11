@@ -1,22 +1,18 @@
 namespace VideoOverflow.Infrastructure.Tests;
 
-public class TagRepositoryTests
+public class TagRepositoryTests : RepositoryTestsSetup, IDisposable
 {
-    private readonly VideoOverflowContext _context;
     private readonly TagRepository _repo;
 
     public TagRepositoryTests()
     {
-        var repo = new RepositoryTestsSetup();
-        _context = repo.Context;
-
         _repo = new TagRepository(_context);
     }
 
     [Fact]
-    public async Task GetAll_Returns_All_Tags()
+    public async Task GetAll_returns_all_tags()
     {
-        var tag1 = new TagCreateDTO()
+        var cSharpTag = new TagCreateDTO()
         {
             Name = "CSharp",
             TagSynonyms = new List<string>()
@@ -25,7 +21,7 @@ public class TagRepositoryTests
             }
         };
 
-        var tag2 = new TagCreateDTO()
+        var javaTag = new TagCreateDTO()
         {
             Name = "Java",
             TagSynonyms = new List<string>()
@@ -34,7 +30,7 @@ public class TagRepositoryTests
             }
         };
 
-        var tag3 = new TagCreateDTO()
+        var dockerTag = new TagCreateDTO()
         {
             Name = "Docker",
             TagSynonyms = new List<string>()
@@ -43,23 +39,23 @@ public class TagRepositoryTests
             }
         };
 
-        await _repo.Push(tag1);
-        await _repo.Push(tag2);
-        await _repo.Push(tag3);
+        await _repo.Push(cSharpTag);
+        await _repo.Push(javaTag);
+        await _repo.Push(dockerTag);
 
-        var tagDTO1 = new TagDTO(1, "CSharp",
+        var cSharpDTO = new TagDTO(1, "CSharp",
             new List<string>()
             {
                 "CS", "c#", "c-sharp"
             });
 
-        var tagDTO2 = new TagDTO(2, "Java",
+        var javaDTO = new TagDTO(2, "Java",
             new List<string>()
             {
                 "jav", "javaa", "javaaa"
             });
 
-        var tagDTO3 = new TagDTO(3, "Docker",
+        var dockerDTO = new TagDTO(3, "Docker",
             new List<string>()
             {
                 "Dock", "DC", "Just Testing"
@@ -67,25 +63,23 @@ public class TagRepositoryTests
 
         var actual = await _repo.GetAll();
 
-        var expected = new Collection<TagDTO>() {tagDTO1, tagDTO2, tagDTO3};
+        var expected = new Collection<TagDTO>() {cSharpDTO, javaDTO, dockerDTO};
 
         expected.Should().BeEquivalentTo(actual);
     }
 
     [Fact]
-    public async Task GetAll_Returns_Empty_For_Empty_Table()
+    public async Task GetAll_returns_empty_for_no_tags_in_DB()
     {
         var actual = await _repo.GetAll();
 
-        var expected = new Collection<TagDTO>();
-
-        expected.Should().BeEquivalentTo(actual);
+        new Collection<TagDTO>().Should().BeEquivalentTo(actual);
     }
 
     [Fact]
-    public async Task Get_Existing_Tag_Returns_TagDTO_for_given_id()
+    public async Task Get_existing_tag_returns_TagDTO()
     {
-        var tag1 = new TagCreateDTO()
+        var pythonTag = new TagCreateDTO()
         {
             Name = "Python",
             TagSynonyms = new List<string>()
@@ -96,23 +90,10 @@ public class TagRepositoryTests
             }
         };
 
-        var tag2 = new TagCreateDTO()
-        {
-            Name = "Pyton",
-            TagSynonyms = new List<string>()
-            {
-                "PY",
-                "PYTH",
-                "P3"
-            }
-        };
+        var actual = await _repo.Push(pythonTag);
 
-        var firstTagPushed = await _repo.Push(tag1);
-        var actual = await _repo.Push(tag2);
-
-
-        var expected = new TagDTO(2,
-            "Pyton",
+        var expected = new TagDTO(1,
+            "Python",
             new List<string>()
             {
                 "PY",
@@ -124,17 +105,15 @@ public class TagRepositoryTests
     }
 
     [Fact]
-    public async Task Get_Non_Existing_Tag_Returns_null()
+    public async Task Get_non_existing_tag_returns_null()
     {
-        var actual = await _repo.Get(1000);
-
-        Assert.Null(actual);
+        Assert.Null(await _repo.Get(1000));
     }
 
     [Fact]
-    public async Task Push_Creates_Id_In_DB_and_returns_TagDTO_for_created_entity()
+    public async Task Push_returns_TagDTO()
     {
-        var tag = new TagCreateDTO()
+        var cSharpTag = new TagCreateDTO()
         {
             Name = "C#",
             TagSynonyms = new List<string>()
@@ -145,17 +124,7 @@ public class TagRepositoryTests
             }
         };
 
-        var tag2 = new TagCreateDTO()
-        {
-            Name = "Python",
-            TagSynonyms = new List<string>()
-            {
-                "PY"
-            }
-        };
-
-        var actual = await _repo.Push(tag);
-        var actual2 = await _repo.Push(tag2);
+        var actual = await _repo.Push(cSharpTag);
 
         var expected = new TagDTO(1, "C#", new List<string>()
         {
@@ -164,29 +133,21 @@ public class TagRepositoryTests
             "c#"
         });
 
-        var expected2 = new TagDTO(2, "Python", new List<string>()
-        {
-            "PY"
-        });
-
         expected.Should().BeEquivalentTo(actual);
-        expected2.Should().BeEquivalentTo(actual2);
     }
 
     [Fact]
-    public async Task Update_Non_Existing_Tag_Returns_StatusNotFound()
+    public async Task Update_non_existing_Tag_returns_NotFound()
     {
-        var update = new TagUpdateDTO() {Id = 2, Name = "I'm trying to do something illegal"};
-        var actual = await _repo.Update(update);
+        var actual = await _repo.Update(new TagUpdateDTO() {Id = 2, Name = "I'm trying to do something illegal"});
 
         Assert.Equal(Status.NotFound, actual);
     }
-
-
+    
     [Fact]
-    public async Task Update_Existing_Tag_Returns_StatusUpdated()
+    public async Task Update_existing_tag_returns_Updated()
     {
-        var tag = new TagCreateDTO()
+        var cSharpTag = new TagCreateDTO()
         {
             Name = "Csharp",
             TagSynonyms = new List<string>()
@@ -197,39 +158,60 @@ public class TagRepositoryTests
             }
         };
 
-        await _repo.Push(tag);
+        await _repo.Push(cSharpTag);
 
-        var update = new TagUpdateDTO()
+        var updateCSharpTag = new TagUpdateDTO()
         {
             Id = 1,
             Name = "I'm changing name from Csharp to Java",
             TagSynonyms = new List<string>()
             {
-                "J",
-                "test"
+                "Jav4",
+                "Jav"
             }
         };
 
-        var actual = await _repo.Update(update);
+        var actual = await _repo.Update(updateCSharpTag);
 
         Assert.Equal(Status.Updated, actual);
     }
 
     [Fact]
-    public async Task Update_changes_content_of_comment_of_givenID()
+    public async Task Update_changes_name_of_tag()
     {
-        var tag = new TagCreateDTO() {Name = "C#", TagSynonyms = new List<string>()};
+        var tagCreate = new TagCreateDTO() {Name = "C#", TagSynonyms = new List<string>()};
 
-        await _repo.Push(tag);
+        await _repo.Push(tagCreate);
 
-        var update = new TagUpdateDTO() {Id = 1, Name = "Java", TagSynonyms = new List<string>()};
+        var tagUpdate = new TagUpdateDTO() {Id = 1, Name = "Java", TagSynonyms = new List<string>()};
 
-        await _repo.Update(update);
+        await _repo.Update(tagUpdate);
 
         var expected = new TagDTO(1, "Java", new List<string>());
 
         var actual = await _repo.Get(1);
 
         expected.Should().BeEquivalentTo(actual);
+    }
+    
+    private bool _disposed;
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                _context.Dispose();
+            }
+
+            _disposed = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }
