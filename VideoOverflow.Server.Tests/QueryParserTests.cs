@@ -2,21 +2,17 @@ using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Linq;
 using FluentAssertions;
+using VideoOverflow.Infrastructure.Tests;
 
 namespace VideoOverflow.Server.Tests;
 
-public class QueryParserTests
-{
-    private readonly VideoOverflowContext _context;
+public class QueryParserTests : RepositoryTestsSetup {
     private readonly TagRepository _tagRepo;
     private readonly ResourceRepository _resourceRepo;
 
     public QueryParserTests() {
-        var repo = new QueryParserTestsSetup();
-        _context = repo.Context;
-
-        _tagRepo = new TagRepository(_context);
-        _resourceRepo = new ResourceRepository(_context);
+        _tagRepo = new TagRepository(Context);
+        _resourceRepo = new ResourceRepository(Context);
     }
     
     [Fact]
