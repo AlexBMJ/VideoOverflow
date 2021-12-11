@@ -4,12 +4,12 @@
     [ApiController]
     [Route("api/[controller]")]
     [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]
-    public class ResourcesController : ControllerBase
+    public class ResourceController : ControllerBase
     {
-        private readonly ILogger<ResourcesController> _logger;
+        private readonly ILogger<ResourceController> _logger;
         private readonly IResourceRepository _repository;
 
-        public ResourcesController(ILogger<ResourcesController> logger, IResourceRepository repository)
+        public ResourceController(ILogger<ResourceController> logger, IResourceRepository repository)
         {
             _logger = logger;
             _repository = repository;
@@ -43,6 +43,6 @@
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> Put([FromBody] ResourceUpdateDTO resource)
-               => (await _repository.Update(resource)).ToActionResult();
+            => (await _repository.Update(resource)).ToActionResult();
     }
 }
