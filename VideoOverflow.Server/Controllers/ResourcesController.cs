@@ -1,17 +1,15 @@
-﻿
-
-namespace Server.Controllers
+﻿namespace Server.Controllers
 {
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]
-    public class ResourceController : ControllerBase
+    public class ResourcesController : ControllerBase
     {
-        private readonly ILogger<ResourceController> _logger;
+        private readonly ILogger<ResourcesController> _logger;
         private readonly IResourceRepository _repository;
 
-        public ResourceController(ILogger<ResourceController> logger, IResourceRepository repository)
+        public ResourcesController(ILogger<ResourcesController> logger, IResourceRepository repository)
         {
             _logger = logger;
             _repository = repository;

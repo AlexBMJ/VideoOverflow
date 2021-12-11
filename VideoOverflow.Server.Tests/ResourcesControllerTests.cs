@@ -8,7 +8,7 @@ public class ResourcesControllerTests
         public async Task Post_creates_Resource()
         {
             // Arrange
-            var logger = new Mock<ILogger<ResourceController>>();
+            var logger = new Mock<ILogger<ResourcesController>>();
             var toCreate = new ResourceCreateDTO();
             var created = new ResourceDTO(
                 1, ResourceType.Video,
@@ -23,7 +23,7 @@ public class ResourcesControllerTests
             );
             var repository = new Mock<IResourceRepository>();
             repository.Setup(m => m.Push(toCreate)).ReturnsAsync(created);
-            var controller = new ResourceController(logger.Object, repository.Object);
+            var controller = new ResourcesController(logger.Object, repository.Object);
 
             // Act
             var result = await controller.Post(toCreate) as CreatedAtActionResult;
@@ -38,11 +38,11 @@ public class ResourcesControllerTests
         public async Task GetAll_returns_All_Resources_from_repo()
         {
             // Arrange
-            var logger = new Mock<ILogger<ResourceController>>();
+            var logger = new Mock<ILogger<ResourcesController>>();
             var expected = Array.Empty<ResourceDTO>();
             var repository = new Mock<IResourceRepository>();
             repository.Setup(m => m.GetAll()).ReturnsAsync(expected);
-            var controller = new ResourceController(logger.Object, repository.Object);
+            var controller = new ResourcesController(logger.Object, repository.Object);
 
             // Act
             var actual = await controller.GetAll();
@@ -56,11 +56,11 @@ public class ResourcesControllerTests
         public async Task Get_existing_resource()
         {
             // Arrange
-            var logger = new Mock<ILogger<ResourceController>>();
+            var logger = new Mock<ILogger<ResourcesController>>();
             var repository = new Mock<IResourceRepository>();
             var resource = new ResourceDetailsDTO();
             repository.Setup(m => m.Get(1)).ReturnsAsync(resource);
-            var controller = new ResourceController(logger.Object, repository.Object);
+            var controller = new ResourcesController(logger.Object, repository.Object);
 
             // Act
             var response = await controller.Get(1);
@@ -74,10 +74,10 @@ public class ResourcesControllerTests
         public async Task Get_given_non_existing_returns_NotFound()
         {
             // Arrange
-            var logger = new Mock<ILogger<ResourceController>>();
+            var logger = new Mock<ILogger<ResourcesController>>();
             var repository = new Mock<IResourceRepository>();
             repository.Setup(m => m.Get(21221121)).ReturnsAsync(default(ResourceDetailsDTO));
-            var controller = new ResourceController(logger.Object, repository.Object);
+            var controller = new ResourcesController(logger.Object, repository.Object);
 
             // Act
             var response = await controller.Get(42);
@@ -93,11 +93,11 @@ public class ResourcesControllerTests
         public async Task Put_updates_Resource()
         {
             // Arrange
-            var logger = new Mock<ILogger<ResourceController>>();
+            var logger = new Mock<ILogger<ResourcesController>>();
             var resource = new ResourceUpdateDTO();
             var repository = new Mock<IResourceRepository>();
             repository.Setup(m => m.Update(resource)).ReturnsAsync(Updated);
-            var controller = new ResourceController(logger.Object, repository.Object);
+            var controller = new ResourcesController(logger.Object, repository.Object);
 
             // Act
             var response = await controller.Put(resource);
@@ -110,11 +110,11 @@ public class ResourcesControllerTests
         public async Task Put_given_unknown_resource_returns_NotFound()
         {
             // Arrange
-            var logger = new Mock<ILogger<ResourceController>>();
+            var logger = new Mock<ILogger<ResourcesController>>();
             var resource = new ResourceUpdateDTO();
             var repository = new Mock<IResourceRepository>();
             repository.Setup(m => m.Update(resource)).ReturnsAsync(NotFound);
-            var controller = new ResourceController(logger.Object, repository.Object);
+            var controller = new ResourcesController(logger.Object, repository.Object);
 
             // Act
             var response = await controller.Put(resource);
