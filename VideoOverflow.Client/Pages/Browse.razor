@@ -10,9 +10,9 @@
         <MudTextField @bind-Value="_search" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Secondary"/>
     </MudItem>
     <MudItem lg="3" md="3" sm="3" xs="12">
-        <MudSelect T="string" Label="Category" Strict="true" Variant="Variant.Outlined" Format="F2" AnchorOrigin="Origin.BottomCenter" AdornmentIcon="@Icons.Filled.Category">
+        <MudSelect T="CategoryDTO" Label="Category" Strict="true" Variant="Variant.Outlined" Format="F2" AnchorOrigin="Origin.BottomCenter" AdornmentIcon="@Icons.Filled.Category">
             @foreach (var ctg in _categories) {
-                <MudSelectItem T="string" Value="@ctg"/>
+                <MudSelectItem T="string" Value="@ctg.Name"/>
             }
         </MudSelect>
     </MudItem>
@@ -99,7 +99,7 @@
 @code {
     private string _search;
     private IList<SettableTuple<bool, ResourceDTO>>? _resources;
-    private string[] _categories = Array.Empty<string>();
+    private IList<CategoryDTO> _categories = new List<CategoryDTO>();
     
     private static ResourceDTO phResource = new(0,
         ResourceType.Video,
@@ -130,10 +130,10 @@
     private ResourceDTO[] _phElements = {phResource,phResource2};
 
     protected override async Task OnInitializedAsync() {
-        //var resources = await _http.GetFromJsonAsync<ResourceDTO[]>("api/Resource");
-        _resources = _phElements.Select(r => new SettableTuple<bool, ResourceDTO>(false, r)).ToList();
+        var resources = await _http.GetFromJsonAsync<ResourceDTO[]>("api/Resource");
+        _resources = resources.Select(r => new SettableTuple<bool, ResourceDTO>(false, r)).ToList();
         
-        var categories = await _http.GetFromJsonAsync<string[]>("api/Category");
+        var categories = await _http.GetFromJsonAsync<CategoryDTO[]>("api/Category");
         if (categories != null)
             _categories = categories;
     }
