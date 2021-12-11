@@ -1,68 +1,40 @@
 using System.Collections.Generic;
 using System.Text;
 using Fastenshtein;
+using VideoOverflow.Infrastructure.Entities;
+
 namespace Server;
 public class QueryParser
 {
     private readonly ITagRepository _tagRepo;
-    private readonly IWordRepository _wordRepo;
-    public QueryParser(ITagRepository tagRepo, IWordRepository wordRepo) {
+    private readonly IResourceRepository _resourceRepo;
+    public QueryParser(ITagRepository tagRepo, IResourceRepository resourceRepo) {
         _tagRepo = tagRepo;
-        _wordRepo = wordRepo;
+        _resourceRepo = resourceRepo;
     }
 
-    public IEnumerable<string> Parse(string query) {
-        var tags = _tagRepo.GetAll().Result;
-        var tagNames = new HashSet<string>();
-        foreach (var dto in tags) {
-            tagNames.Add(dto.Name.ToLower());
-        }
-        
-        foreach (var word in query.ToLower().Split(" ")) {
-            if (tagNames.Contains(word)) {
-                yield return word;
-            }
-        }
-    }
-
-    public string SuggestQuery(string query) {
-        var tagDTOs = _tagRepo.GetAll().Result;
-        var tags = new HashSet<string>();
-        foreach (var dto in tagDTOs) {
-            tags.Add(dto.Name);
-        }
-        var wordDTOs = _wordRepo.GetAll().Result;
-        var words = new HashSet<string>();
-        foreach (var dto in wordDTOs) {
-            words.Add(dto.String);
-        }
-
-        var sb = new StringBuilder();
+    public IEnumerable<TagDTO> ParseTags(string query) {
+        var ids = new HashSet<int>();
         foreach (var word in query.Split(" ")) {
-            if (!tags.Contains(word) && !words.Contains(word)) {
-                sb = sb.Append(ClosestTag(word));
+            var tags = _tagRepo.GetTagByNameAndSynonym(word).Result;
+            foreach (var tag in tags) {
+                if (ids.Contains(tag.Id)) continue;
+                ids.Add(tag.Id);
+                yield return tag;
             }
-            else {
-                sb = sb.Append(word);
-            }
-            sb = sb.Append(' ');
         }
-
-        sb = sb.Remove(sb.Length - 1, 1);
-        return sb.ToString();
     }
 
-    private string ClosestTag(string word) {
-        var tagDTOs = _tagRepo.GetAll().Result;
+    private string ParseAllWords(string query, IEnumerable<string> tags) {
+        var resourceDTO = _resourceRepo.GetAll().Result;
         var minDist = int.MaxValue;
-        var min = word;
-        foreach (var dto in tagDTOs) {
-            var name = dto.Name;
-            var dist = Levenshtein.Distance(name, word);
-            if (dist < minDist)
-            {
+        var min = query;
+        foreach (var dto in resourceDTO) {
+            var title = dto.SiteTitle;
+            var dist = Levenshtein.Distance(title, query);
+            if (dist < minDist) {
                 minDist = dist;
-                min = name;
+                min = title;
             }
         }
         return min;

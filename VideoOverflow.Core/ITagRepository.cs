@@ -4,6 +4,9 @@ public interface ITagRepository
 {
     
     public Task<IReadOnlyCollection<TagDTO>> GetAll();
+    
+    public Task<TagDTO?> GetTagByName(string tagName);
+    public Task<IReadOnlyCollection<TagDTO>> GetTagByNameAndSynonym(string name);
 
     public Task<TagDTO?> Get(int tagId);
 

@@ -10,9 +10,14 @@ public class TagSynonymRepository : ITagSynonymRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<TagSynonymDTO>> GetAll()
+    public async Task<IReadOnlyCollection<TagSynonymDTO>> GetAll()
     {
-        return await _context.TagSynonyms.Select(c => new TagSynonymDTO(c.Id, c.Name)).ToListAsync();
+        return await _context.TagSynonyms.Select(c => new TagSynonymDTO(c.Id, c.Name, c.Tags.Select(t=>t.Name).ToList())).ToListAsync();
+    }
+
+    public async Task<TagSynonymDTO?> GetTagSynByName(string tagSyn) {
+        return await _context.TagSynonyms.Where(t => t.Name.Equals(tagSyn))
+            .Select(c => new TagSynonymDTO(c.Id, c.Name, c.Tags.Select(t=>t.Name).ToList())).FirstOrDefaultAsync();
     }
 
     public async Task<TagSynonymDTO?> Get(int id)
@@ -20,7 +25,7 @@ public class TagSynonymRepository : ITagSynonymRepository
         var entity = await _context.TagSynonyms.Where(c => c.Id == id).Select(c => c).FirstOrDefaultAsync();
         // add code 
 
-        return entity == null ? null : new TagSynonymDTO(entity.Id, entity.Name);
+        return entity == null ? null : new TagSynonymDTO(entity.Id, entity.Name, entity.Tags.Select(t=>t.Name).ToList());
     }
 
     public async Task<TagSynonymDTO> Push(TagSynonymCreateDTO create)
@@ -35,7 +40,7 @@ public class TagSynonymRepository : ITagSynonymRepository
         await _context.SaveChangesAsync();
         // add code
 
-        return new TagSynonymDTO(created.Id, created.Name);
+        return new TagSynonymDTO(created.Id, created.Name, created.Tags.Select(t=>t.Name).ToList());
     }
 
     public async Task<Status> Update(TagSynonymUpdateDTO update)

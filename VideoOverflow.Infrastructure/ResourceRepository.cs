@@ -28,6 +28,10 @@ public class ResourceRepository : IResourceRepository
             c.Comments.Select(comment => comment.Content).ToList())).ToListAsync();
     }
 
+    public Task<IEnumerable<ResourceDTO>> GetByTags() {
+        throw new NotImplementedException();
+    }
+
     public async Task<ResourceDetailsDTO?> Get(int resourceId)
     {
         var entity = await _context.Resources.Where(resource => resource.Id == resourceId).Select(c => c)

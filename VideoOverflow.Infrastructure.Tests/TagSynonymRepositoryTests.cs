@@ -24,10 +24,10 @@ public class TagSynonymRepositoryTests
         await _repo.Push(tagSynonym1);
         await _repo.Push(tagSynonym2);
 
-        var comments = await _repo.GetAll();
+        var actual = await _repo.GetAll();
+        var expected = new List<TagSynonymDTO>() { new TagSynonymDTO(1, "c#", new List<string>()), new TagSynonymDTO(2, "C-Sharp", new List<string>()) };
 
-        Assert.Collection(comments, comment => Assert.Equal(new TagSynonymDTO(1, "c#"), comment),
-            comment => Assert.Equal(new TagSynonymDTO(2, "C-Sharp"), comment));
+        expected.Should().BeEquivalentTo(actual);
     }
 
     [Fact]
@@ -56,11 +56,11 @@ public class TagSynonymRepositoryTests
 
         await _repo.Push(tagSynonym);
 
-        var expected = new TagSynonymDTO(1, "sharp");
+        var expected = new TagSynonymDTO(1, "sharp", new List<string>());
 
         var actual = await _repo.Get(1);
 
-        Assert.Equal(expected, actual);
+        expected.Should().BeEquivalentTo(actual);
     }
 
 
@@ -99,10 +99,10 @@ public class TagSynonymRepositoryTests
 
         await _repo.Update(update);
 
-        var expected = new TagSynonymDTO(1, "sharp-C");
+        var expected = new TagSynonymDTO(1, "sharp-C", new List<string>());
 
         var actual = await _repo.Get(1);
 
-        Assert.Equal(expected, actual);
+        expected.Should().BeEquivalentTo(actual);
     }
 }

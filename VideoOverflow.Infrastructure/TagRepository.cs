@@ -18,6 +18,17 @@ public class TagRepository : ITagRepository
             .ToListAsync();
     }
 
+    public async Task<TagDTO?> GetTagByName(string tagName) {
+        return await _context.Tags.Where(t => t.Name.Equals(tagName))
+            .Select(c => new TagDTO(c.Id, c.Name, c.TagSynonyms.Select(c => c.Name).ToList())).FirstOrDefaultAsync();
+    }
+    
+    public async Task<IReadOnlyCollection<TagDTO>> GetTagByNameAndSynonym(string name) {
+        return await _context.Tags.Where(
+            t => t.Name.Equals(name) || t.TagSynonyms.Any(s => s.Name.Equals(name)))
+                .Select(c => new TagDTO(c.Id, c.Name, c.TagSynonyms.Select(a => a.Name).ToList())).ToListAsync();
+    }
+    
     public async Task<TagDTO?> Get(int tagId)
     {
         return await _context.Tags.Where(c => c.Id == tagId)
