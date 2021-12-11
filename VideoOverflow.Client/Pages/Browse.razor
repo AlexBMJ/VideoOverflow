@@ -10,9 +10,9 @@
         <MudTextField @bind-Value="_search" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Secondary"/>
     </MudItem>
     <MudItem lg="3" md="3" sm="3" xs="12">
-        <MudSelect T="CategoryDTO" Label="Category" Strict="true" Variant="Variant.Outlined" Format="F2" AnchorOrigin="Origin.BottomCenter" AdornmentIcon="@Icons.Filled.Category">
+        <MudSelect T="string" Label="Category" Strict="true" Variant="Variant.Outlined" Format="F2" AnchorOrigin="Origin.BottomCenter" AdornmentIcon="@Icons.Filled.Category">
             @foreach (var ctg in _categories) {
-                <MudSelectItem T="string" Value="@ctg.Name"/>
+                <MudSelectItem Value="@ctg.Name"/>
             }
         </MudSelect>
     </MudItem>
@@ -100,34 +100,6 @@
     private string _search;
     private IList<SettableTuple<bool, ResourceDTO>>? _resources;
     private IList<CategoryDTO> _categories = new List<CategoryDTO>();
-    
-    private static ResourceDTO phResource = new(0,
-        ResourceType.Video,
-        "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-        "youtube.com",
-        "Docker Tutorial",
-        "Dockerman47",
-        "English",
-        new[] { "Docker", "Tutorial", "Testitest", "Tagitag" },
-        new[] { "Containerization" },
-        new List<string>{"TestiComment oi listen here u bonker mate. You want a ciggy m8.", "Bruhcomment47"
-            ,"TestiComment", "Bruhcomment47","TestiComment", "Bruhcomment47"
-            ,"TestiComment", "Bruhcomment47","TestiComment", "Bruhcomment47"
-        }
-        );
-    private static ResourceDTO phResource2 = new(1,
-        ResourceType.Video,
-        "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-        "youtube.com",
-        "Docker Tutorial",
-        "Dockerman47",
-        "English",
-        new[] { "Docker", "Tutorial", "Testitest", "Tagitag" },
-        new[] { "Containerization" },
-        Array.Empty<string>()
-        );
-    
-    private ResourceDTO[] _phElements = {phResource,phResource2};
 
     protected override async Task OnInitializedAsync() {
         var resources = await _http.GetFromJsonAsync<ResourceDTO[]>("api/Resource");
