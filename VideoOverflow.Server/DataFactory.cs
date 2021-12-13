@@ -14,7 +14,8 @@ public static class DataFactory
         using (var scope = host.Services.CreateScope())
         {
             var context = scope.ServiceProvider.GetRequiredService<VideoOverflowContext>();
-
+            await context.Database.EnsureDeletedAsync();
+            await context.Database.EnsureCreatedAsync();
             await CreateDemoData(context);
         }
 
