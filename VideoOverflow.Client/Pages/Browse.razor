@@ -106,11 +106,10 @@
     protected override async Task OnInitializedAsync() {
         var resources = await _http.GetFromJsonAsync<ResourceDTO[]>("api/Resource");
         _resources = resources?.Select(r => new SettableTuple<bool, ResourceDTO>(false, r)).ToList();
-        Console.WriteLine(_resources?.Count);
-        
-        /*var categories = await _http.GetFromJsonAsync<string[]>("api/Category");
+
+        var categories = await _http.GetFromJsonAsync<string[]>("api/Category");
         if (categories != null)
-            _categories = categories;*/
+            _categories = categories;
     }
 
     private string GetMaterialIcon(ResourceType material) {
