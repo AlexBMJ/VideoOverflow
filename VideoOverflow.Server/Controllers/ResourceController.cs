@@ -1,6 +1,4 @@
-﻿
-
-namespace Server.Controllers
+﻿namespace Server.Controllers
 {
     [Authorize]
     [ApiController]
@@ -45,6 +43,6 @@ namespace Server.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> Put([FromBody] ResourceUpdateDTO resource)
-               => (await _repository.Update(resource)).ToActionResult();
+            => (await _repository.Update(resource)).ToActionResult();
     }
 }

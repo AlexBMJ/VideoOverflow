@@ -13,7 +13,7 @@
     <MudItem lg="3" md="3" sm="3" xs="12">
         <MudSelect T="string" Label="Category" Strict="true" Variant="Variant.Outlined" Format="F2" AnchorOrigin="Origin.BottomCenter" AdornmentIcon="@Icons.Filled.Category">
             @foreach (var ctg in _categories) {
-                <MudSelectItem T="string" Value="@ctg"/>
+                <MudSelectItem Value="@ctg.Name"/>
             }
         </MudSelect>
     </MudItem>
@@ -100,14 +100,15 @@
 @code {
     private string _search;
     private IList<SettableTuple<bool, ResourceDTO>>? _resources;
-    private string[] _categories = Array.Empty<string>();
+    private IList<CategoryDTO> _categories = new List<CategoryDTO>();
     private string _correctionSuggestion;
 
     protected override async Task OnInitializedAsync() {
         var resources = await _http.GetFromJsonAsync<ResourceDTO[]>("api/Resource");
         _resources = resources?.Select(r => new SettableTuple<bool, ResourceDTO>(false, r)).ToList();
+        
+        var categories = await _http.GetFromJsonAsync<CategoryDTO[]>("api/Category");
 
-        var categories = await _http.GetFromJsonAsync<string[]>("api/Category");
         if (categories != null)
             _categories = categories;
     }

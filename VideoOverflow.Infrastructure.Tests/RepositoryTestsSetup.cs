@@ -1,9 +1,11 @@
+using VideoOverflow.Infrastructure.Context;
+
 namespace VideoOverflow.Infrastructure.Tests;
 
 public class RepositoryTestsSetup
 {
     protected readonly VideoOverflowContext _context;
-    protected readonly DateTime Created = new (2021,11,30, 13,11,11);
+    protected readonly DateTime Created = DateTime.Parse("2020-09-29");
 
     protected RepositoryTestsSetup()
     {

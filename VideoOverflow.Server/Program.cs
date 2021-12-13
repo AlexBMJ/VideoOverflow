@@ -8,20 +8,40 @@ using Microsoft.Identity.Web;
 using VideoOverflow.Core;
 using VideoOverflow.Infrastructure;
 
+using Server;
+using VideoOverflow.Infrastructure.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+    .AddMicrosoftIdentityWebApi(options =>
+        {
+            builder.Configuration.Bind("AzureAd", options);
+            options.TokenValidationParameters.RoleClaimType =
+                "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
+        },
+        options =>
+        {
+            builder.Configuration.Bind("AzureAd", options);
+        });
+
+builder.Services.Configure<JwtBearerOptions>(
+    JwtBearerDefaults.AuthenticationScheme, options =>
+    {
+        options.TokenValidationParameters.NameClaimType = "name";
+    });
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContext<VideoOverflowContext>(options => options.UseNpgsql(builder
     .Configuration.GetConnectionString("VideoOverflow")));
 builder.Services.AddScoped<IVideoOverflowContext, VideoOverflowContext>();
 builder.Services.AddScoped<IResourceRepository, ResourceRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 
 
@@ -30,8 +50,9 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseWebAssemblyDebugging();
 
+    app.UseDeveloperExceptionPage();
+    app.UseWebAssemblyDebugging();
 }
 else
 {
@@ -50,12 +71,15 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 
-//await app.FillDatabase();
+if (!app.Environment.IsEnvironment("Integration"))
+{
+    await app.FillDatabase();
+}
 
 app.Run();
 
+public partial class Program {}
