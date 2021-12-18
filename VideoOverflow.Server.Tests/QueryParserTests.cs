@@ -29,16 +29,16 @@ public class QueryParserTests : RepositoryTestsSetup {
     //     Assert.Equal(expected[1], actual[1].Name);
     // }
     
-    [Fact]
-    public void QueryParser_given_Hi_John_and_tags_Hi_returns_hi()
-    {
-        _tagRepo.Push(new TagCreateDTO() {Name = "Hi", TagSynonyms = new List<string>()});
-        var parser = new QueryParser(_tagRepo, _resourceRepo);
-        var expected = new List<TagDTO>() {new TagDTO(1, "Hi", new List<string>())};
-        var actual = parser.ParseTags("Hi John").ToList();
-        //Assert.Equal(expected.Count, actual.Count);
-        expected.Should().BeEquivalentTo(actual);
-    }
+    // [Fact]
+    // public void QueryParser_given_Hi_John_and_tags_Hi_returns_hi()
+    // {
+    //     _tagRepo.Push(new TagCreateDTO() {Name = "Hi", TagSynonyms = new List<string>()});
+    //     var parser = new QueryParser(_tagRepo, _resourceRepo);
+    //     var expected = new List<TagDTO>() {new TagDTO(1, "Hi", new List<string>())};
+    //     var actual = parser.ParseTags("Hi John").ToList();
+    //     //Assert.Equal(expected.Count, actual.Count);
+    //     expected.Should().BeEquivalentTo(actual);
+    // }
 
     // [Fact]
     // public void QueryParser_given_query_undo_commit_git_command_line_returns_match_percent()

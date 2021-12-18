@@ -625,3 +625,4 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/rider,csharp,git,windows,linux,macos,jetbrains
+VideoOverflow.Infrastructure/Migrations/*
