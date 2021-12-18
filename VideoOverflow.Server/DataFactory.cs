@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿
+using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 using FluentAssertions.Extensions;
 using Microsoft.VisualBasic;
@@ -9,6 +10,49 @@ namespace Server;
 
 public static class DataFactory
 {
+    private static IList<string> _categories = new List<string>();
+    private static IList<string> _tags = new List<string>();
+    private static IList<ResourceType> _resourceTypes = new List<ResourceType>() {ResourceType.Article, ResourceType.Book, ResourceType.Video };
+    private static IList<string> _languages = new List<string>() {"Danish", "English"};
+
+    private static IList<string> _authors = new List<string>()
+    {
+        "edureka!", "dotNET", "Docker", "Java", "TechTarget", "wikipedia", "Andy Sterkowitz",
+        "geeksforgeeks", "Programming with Mosh", "Martin Kleppman", "Unknown"
+    };
+
+    private static IList<string> _urls = new List<string>()
+    {
+        "https://www.youtube.com/watch?v=PQsJR8ci3J0&ab_channel=edureka%21",
+        "https://www.youtube.com/watch?v=BM4CHBmAPh4&list=PLdo4fOcmZ0oVxKLQCHpiUWun7vlJJvUiN&ab_channel=dotNET",
+        "https://www.youtube.com/watch?v=iqqDU2crIEQ&t=38s&ab_channel=Docker",
+        "https://docs.oracle.com/javase/tutorial/",
+        "https://searchapparchitecture.techtarget.com/definition/object-oriented-programming-OOP",
+        "https://en.wikipedia.org/wiki/Functional_programming",
+        "https://www.youtube.com/watch?v=3kzHmaeozDI&ab_channel=AndySterkowitz",
+        "https://www.geeksforgeeks.org/types-software-testing/",
+        "https://www.youtube.com/watch?v=7S_tz1z_5bA&t=279s",
+        "https://www.youtube.com/watch?v=UEAMfLPZZhE&ab_channel=MartinKleppmann",
+        "https://www.interaction-design.org/literature/topics/ux-design"
+    };
+
+    private static IList<string> _siteTitles = new List<string>()
+    {
+        "How to use GitHub | What is GitHub | Git and GitHub Tutorial | DevOps Training | Edureka",
+        "What is C#? | C# 101 [1 of 19]",
+        "How to Get Started with Docker",
+        "The Java Tutorial",
+        "object-oriented programming (OOP)",
+        "Functional programming",
+        "What is Unit Testing? Why YOU Should Learn It + Easy to Understand Examples",
+        "Types of Software Testing",
+        "MySQL Tutorial for Beginners [Full Course]",
+        "Distributed Systems 1.1: Introduction",
+        "User Experience (UX) Design"
+    };
+    private static readonly int _amountOfResources = 1000;
+    private static Random rnd = new Random();
+    private static readonly int _dateRange = 30*365; //30 years    
     public static async Task<IHost> FillDatabase(this IHost host)
     {
         using (var scope = host.Services.CreateScope())
@@ -35,29 +79,37 @@ public static class DataFactory
             new User() {Name = "Alex", Comments = new Collection<Comment>()}
         );
 
-        // Add categories to the database
-        await context.Categories.AddRangeAsync(
+        var categories = new List<Category>()
+        {
             new Category() {Name = "Programming"},
-            new Category() {Name = "Object Oriented Programming"},
-            new Category() {Name = "Functional Programming"},
             new Category() {Name = "Testing"},
-            new Category() {Name = "Unit Testing"},
             new Category() {Name = "Database"},
             new Category() {Name = "Distributed Systems"},
             new Category() {Name = "UX"},
-            new Category() {Name = "Algorithm and DataStructures"},
-            new Category() {Name = "Github"},
-            new Category() {Name = "Docker"},
-            new Category() {Name = "Kattis"}
+            new Category() {Name = "Algorithms"},
+            new Category() {Name = "Data structures"},
+            new Category() {Name = "Version control"},
+            new Category() {Name = "Containerization"},
+            new Category() {Name = "UI"}
+        };
+        // Add categories to the database
+        await context.Categories.AddRangeAsync(
+           categories
         );
+       _categories = categories.Select(x => x.Name).ToList();
 
+       var tags = new List<Tag>()
+       {
+           new Tag() {Name = "C#"}, new Tag() {Name = "Java"}, new Tag() {Name = "Python"},
+           new Tag() {Name = "Microsoft"}, new Tag() {Name = "JavaScript"}, new Tag() {Name = "C++"},
+           new Tag() {Name = "C"}, new Tag() {Name = "Docker"}, new Tag() {Name = "LearnIT"},
+           new Tag() {Name = "Git"}, new Tag() {Name = "SQL"}
+       };
         // Add tags to the database
         await context.Tags.AddRangeAsync(
-            new Tag() {Name = "C#"}, new Tag() {Name = "Java"}, new Tag() {Name = "Python"},
-            new Tag() {Name = "Microsoft"}, new Tag() {Name = "JavaScript"}, new Tag() {Name = "C++"},
-            new Tag() {Name = "C"}, new Tag() {Name = "Docker"}, new Tag() {Name = "LearnIT"}, 
-            new Tag() {Name = "Git"}, new Tag() { Name = "SQL"}
+            tags
         );
+        _tags = tags.Select(x => x.Name).ToList();
 
         // Save changes before creating tagsynonyms
         await context.SaveChangesAsync();
@@ -94,16 +146,15 @@ public static class DataFactory
             "This tutorial will fix my problem, thx!",
             "Can this help me find deleted text messages?"
         };
-
-        var randomNumberGenerator = new Random();
+        
 
         for (int i = 0; i < 2000; i++)
         {
             await context.Comments.AddAsync(new Comment()
             {
-                Content = commentContent[randomNumberGenerator.Next(0, commentContent.Count - 1)],
-                CreatedBy = randomNumberGenerator.Next(1, context.Users.Count()),
-                AttachedToResource = randomNumberGenerator.Next(1, context.Resources.Count())
+                Content = commentContent[rnd.Next(0, commentContent.Count - 1)],
+                CreatedBy = rnd.Next(1, context.Users.Count()),
+                AttachedToResource = rnd.Next(1, context.Resources.Count())
             });
         }
     }
@@ -133,96 +184,46 @@ public static class DataFactory
     // The indexes of each list to generate a resource that matches the real information.
     private static async Task GenerateResources(VideoOverflowContext context)
     {
-        var siteTitles = new Collection<string>()
+        var siteTitles = new Collection<string>();
+
+        var siteUrls = new Collection<string>();
+
+        var authors = new Collection<string>();
+
+        var createdDates = new Collection<DateTime>();
+
+        var categories = new Collection<ICollection<string>>();
+
+        PopulateList(ref _categories, ref categories);
+        
+        var lixNumbers = new Collection<int>();
+
+        var languages = new Collection<string>();
+
+        var tags = new Collection<ICollection<string>>();
+        
+        PopulateList(ref _tags, ref tags);
+
+        var materialTypes = new Collection<ResourceType>();
+        
+        for (int i = 0; i < _amountOfResources; i++)
         {
-            "How to use GitHub | What is GitHub | Git and GitHub Tutorial | DevOps Training | Edureka",
-            "What is C#? | C# 101 [1 of 19]",
-            "How to Get Started with Docker",
-            "The Java Tutorial",
-            "object-oriented programming (OOP)",
-            "Functional programming",
-            "What is Unit Testing? Why YOU Should Learn It + Easy to Understand Examples",
-            "Types of Software Testing",
-            "MySQL Tutorial for Beginners [Full Course]",
-            "Distributed Systems 1.1: Introduction",
-            "User Experience (UX) Design"
-        };
+            var randomDate = DateTime.Today.AddDays(- rnd.Next(_dateRange));
+            var materialIndex = rnd.Next(0, _resourceTypes.Count);
+            var languageIndex = rnd.Next(0, _languages.Count);
+            var authorIndex = rnd.Next(0, _authors.Count);
+            var urlIndex = rnd.Next(0, _urls.Count);
+            var titleIndex = rnd.Next(0, _siteTitles.Count);
+            materialTypes.Add(_resourceTypes[materialIndex]);
+            languages.Add(_languages[languageIndex]);
+            createdDates.Add(randomDate.AsUtc());
+            authors.Add(_authors[authorIndex]);
+            siteUrls.Add(_urls[urlIndex]);
+            siteTitles.Add(_siteTitles[titleIndex]);
+            lixNumbers.Add(rnd.Next(10,100));
+        }
 
-        var siteUrls = new Collection<string>()
-        {
-            "https://www.youtube.com/watch?v=PQsJR8ci3J0&ab_channel=edureka%21",
-            "https://www.youtube.com/watch?v=BM4CHBmAPh4&list=PLdo4fOcmZ0oVxKLQCHpiUWun7vlJJvUiN&ab_channel=dotNET",
-            "https://www.youtube.com/watch?v=iqqDU2crIEQ&t=38s&ab_channel=Docker",
-            "https://docs.oracle.com/javase/tutorial/",
-            "https://searchapparchitecture.techtarget.com/definition/object-oriented-programming-OOP",
-            "https://en.wikipedia.org/wiki/Functional_programming",
-            "https://www.youtube.com/watch?v=3kzHmaeozDI&ab_channel=AndySterkowitz",
-            "https://www.geeksforgeeks.org/types-software-testing/",
-            "https://www.youtube.com/watch?v=7S_tz1z_5bA&t=279s",
-            "https://www.youtube.com/watch?v=UEAMfLPZZhE&ab_channel=MartinKleppmann",
-            "https://www.interaction-design.org/literature/topics/ux-design"
-        };
-
-        var authors = new Collection<string>()
-        {
-            "edureka!", "dotNET", "Docker", "Java", "TechTarget", "wikipedia", "Andy Sterkowitz",
-            "geeksforgeeks", "Programming with Mosh", "Martin Kleppman", "Unknown"
-        };
-
-        var createdDates = new Collection<DateTime>()
-        {
-            DateTime.Parse("2020-09-29").AsUtc(),
-            DateTime.Parse("2019-09-23").AsUtc(),
-            DateTime.Parse("2020-08-14").AsUtc(),
-            DateTime.Parse("2021-11-15").AsUtc(),
-            DateTime.Parse("2021-07-01").AsUtc(),
-            DateTime.Parse("2021-11-10").AsUtc(),
-            DateTime.Parse("2018-11-05").AsUtc(),
-            DateTime.Parse("2020-12-23").AsUtc(),
-            DateTime.Parse("2019-03-20").AsUtc(),
-            DateTime.Parse("2020-10-28").AsUtc(),
-            DateTime.Parse("2021-10-10").AsUtc(),
-            
-        };
-
-        var categories = new Collection<Collection<string>>()
-        {
-            new Collection<string>() {"Github"}, new Collection<string>() {"Object Oriented Programming"},
-            new Collection<string>() {"Docker"}, new Collection<string>() {"Object Oriented Programming"},
-            new Collection<string>() {"Object Oriented Programming"},
-            new Collection<string>() {"Functional Programming"},
-            new Collection<string>() {"Testing", "Unit Testing"},
-            new Collection<string>()
-                {"Testing", "Unit Testing", "Object Oriented Programming", "Functional Programming"},
-            new Collection<string>() {"Database"}, new Collection<string>() {"Distributed Systems"},
-            new Collection<string>() {"UX"}
-        };
-
-        var lixNumbers = new Collection<int>() {10, 25, 40, 50, 30, 40, 40, 55, 25, 25, 30};
-
-        var languages = new Collection<string>()
-        {
-            "English", "English", "English", "English", "English", "English", "English", "English", "English",
-            "English", "English"
-        };
-
-        var tags = new Collection<Collection<string>>()
-        {
-            new Collection<string>() {"Git"}, new Collection<string>() {"C#"},
-            new Collection<string>() { }, new Collection<string>() {"Java"},
-            new Collection<string>() {"Java", "C#", "C++"}, new Collection<string>() { },
-            new Collection<string>() { }, new Collection<string>() { }, new Collection<string>() {"SQL"},
-            new Collection<string>() { }, new Collection<string>() { }
-        };
-
-        var materialTypes = new Collection<ResourceType>()
-        {
-            ResourceType.Video, ResourceType.Video, ResourceType.Video, ResourceType.Article,
-            ResourceType.Article, ResourceType.Article, ResourceType.Video, ResourceType.Article,
-            ResourceType.Video, ResourceType.Video, ResourceType.Article
-        };
-
-        for (int i = 0; i < siteTitles.Count; i++)
+        for (int i = 0; i < _amountOfResources; i++)
         {
             await context.Resources.AddAsync(new Resource
             {
@@ -241,10 +242,12 @@ public static class DataFactory
             });
         }
 
+        
         await context.SaveChangesAsync();
+    
     }
 
-    private static Collection<Tag> FindTags(VideoOverflowContext context, Collection<string> tagNames)
+    private static Collection<Tag> FindTags(VideoOverflowContext context, ICollection<string> tagNames)
     {
         var tags = new Collection<Tag>();
 
@@ -262,7 +265,7 @@ public static class DataFactory
         return tags;
     }
 
-    private static Collection<Category> FindCategories(VideoOverflowContext context, Collection<string> categories)
+    private static Collection<Category> FindCategories(VideoOverflowContext context, ICollection<string> categories)
     {
         var categoriesFound = new Collection<Category>();
 
@@ -288,5 +291,23 @@ public static class DataFactory
     private static string GetContentSource(string url)
     {
         return new Regex(@"^(?:.*:\/\/)?(?:www\.)?(?<site>[^:\/]*).*$").Match(url).Groups[1].Value;
+    }
+
+    private static void PopulateList<T>(ref IList<T> populateWith, ref Collection<ICollection<T>> toPopulate)
+    {
+        for (var i = 0; i < _amountOfResources; i++)
+        {
+            ICollection<T> toAdd = new List<T>();
+            var amount = rnd.Next(0, populateWith.Count);
+            var index = rnd.Next(0, populateWith.Count);
+            for (var j = 0; j < amount; j++)
+            {
+                toAdd.Add(populateWith[index]);
+                if(amount != 1) {
+                    index = (index + rnd.Next(1, (populateWith.Count) / (amount-1))) % populateWith.Count;
+                }
+            }
+            toPopulate.Add(toAdd);
+        }
     }
 }
