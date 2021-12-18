@@ -1,104 +1,85 @@
 ﻿@page "/Add"
 @using Microsoft.AspNetCore.Components
 @using VideoOverflow.Core.DTOs
-@inject HttpClient Http
-@inject NavigationManager NavigationManager
+@using System.ComponentModel.DataAnnotations
+@inject HttpClient _http
+@inject NavigationManager _navigationManager
 
 <h1>Create Resource</h1>
 
 <hr />
 
-<EditForm Model="@Resource" OnValidSubmit="@HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-    <div class="form-group">
-        <label for="SiteTitle">Site Title</label>
-        <InputText id="SiteTitle" @bind-Value="SiteTitle" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label for="SiteUrl">Site Url</label>
-        <InputText id="SiteUrl" @bind-Value="SiteTitle" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label for="MaterialType">MaterialType</label>
-        <InputText id="MaterialType" @bind-Value="MaterialType" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label for="Author">Author</label>
-        <InputNumber id="Author" @bind-Value="Author" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label for="LixNumber">LixNumber</label>
-        <InputText id="LixNumber" @bind-Value="LixNumber" class="form-control" />
-    </div>
-    <div class="form-group">
-            <label for="Language">Language</label>
-            <InputText id="Language" @bind-Value="Language" class="form-control" />
-        </div>
-    <div class="form-group">
-        <label for="Tags">Tags</label>
-        <InputTextArea @bind-Value="Tags" class="form-control" rows="5" />
-    </div>
-    <div class="form-group">
-        <label for="Categories">Powers</label>
-        <InputTextArea @bind-Value="Categories" class="form-control" rows="5" />
-    </div>
-    
-    <div class="form-group">
-        <br />
-        <button type="submit" class="btn btn-success">Create</button>
-        <button type="reset" class="btn btn-secondary">Reset</button>
-        <button type="button" class="btn btn-primary" @onclick="Cancel">Cancel</button>
-    </div>
-</EditForm>
+<MudForm Model="_createForm">
+    <MudTextField T="string" Label="Site Title" @bind-Value="_createForm.SiteTitle"/>
+    <MudTextField T="string" Label="Site Url" @bind-Value="_createForm.SiteUrl"/>
+    <MudTextField T="string" Label="MaterialType" @bind-Value="_createForm.MaterialType"/>
+    <MudTextField T="string" Label="Author" @bind-Value="_createForm.Author"/>
+    <MudTextField T="string" Label="LixNumber" @bind-Value="_createForm.LixNumber"/>
+    <MudTextField T="string" Label="Language" @bind-Value="_createForm.Language"/>
+    <MudTextField T="string" Label="Tags" @bind-Value="_createForm.Tags"/>
+    <MudTextField T="string" Label="Powers" @bind-Value="_createForm.Powers"/>
+    <MudTextField T="string" Label="Created" @bind-Value="_createForm.Created"/>
+</MudForm>
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await HandleValidSubmit())">Submit</MudButton>
 
 
 @code {
-
-    private ResourceCreateDTO Resource;
-    private string ResourceType;
-    private string SiteUrl;
-    private string created;
-    private string MaterialType;
-    private string SiteTitle;
-    private string? Author;
-    private string LixNumber;
-    private string Language;
-    private string Tags;
-
-    private string Categories;
+    private CreateForm _createForm = new();
+    private string _categories;
 
     private async Task HandleValidSubmit()
     {
-        Resource = new ResourceCreateDTO()
+        var payload = new ResourceCreateDTO()
         {
-            Created = DateTime.Parse(created),
+            Created = DateTime.Parse(_createForm.Created),
             MaterialType = VideoOverflow.Core.ResourceType.Article,
-            SiteUrl = SiteUrl,
-            SiteTitle = SiteTitle,
-            Author = Author,
-            LixNumber = Int32.Parse(LixNumber),
-            Language = Language
+            SiteUrl = _createForm.SiteUrl,
+            SiteTitle = _createForm.SiteTitle,
+            Author = _createForm.Author,
+            LixNumber = Int32.Parse(_createForm.LixNumber),
+            Language = _createForm.Language
         };
 
 
-        var response = await Http.PostAsJsonAsync("api/resources", Resource);
+        var response = await _http.PostAsJsonAsync("api/resources", payload);
 
         if (response.IsSuccessStatusCode)
         {
             var created = await response.Content.ReadFromJsonAsync<ResourceDTO>();
 
-            var uri = $"{NavigationManager.BaseUri}resource/{created?.Id}";
+            var uri = $"{_navigationManager.BaseUri}resource/{created?.Id}";
 
-            NavigationManager.NavigateTo(uri);
+            _navigationManager.NavigateTo(uri);
         }
     }
 
     private void Cancel()
     {
-        var uri = $"{NavigationManager.BaseUri}resources";
+        var uri = $"{_navigationManager.BaseUri}resources";
 
-        NavigationManager.NavigateTo(uri);
+        _navigationManager.NavigateTo(uri);
+    }
+
+    private class CreateForm
+    {
+        [Required]
+        public string SiteTitle { get; set; }
+        [Required]
+        public string SiteUrl { get; set; }
+        [Required]
+        public string MaterialType { get; set; }
+        [Required]
+        public string Author { get; set; }
+        [Required]
+        public string LixNumber { get; set; }
+        [Required]
+        public string Language { get; set; }
+        [Required]
+        public string Tags { get; set; }
+        [Required]
+        public string Powers { get; set; }
+        [Required]
+        public string Created { get; set; }
     }
 
 }
