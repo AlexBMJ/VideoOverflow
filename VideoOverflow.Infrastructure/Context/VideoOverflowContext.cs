@@ -33,6 +33,8 @@ public class VideoOverflowContext : DbContext, IVideoOverflowContext
         modelBuilder.Entity<Tag>()
             .HasIndex(u => u.Name)
             .IsUnique();
+        
+        modelBuilder.HasPostgresExtension("pg_trgm");
 
         // modelBuilder.Entity<TagSynonym>().Property(tagSyn => tagSyn.Name)
         //     .UseCollation("SQL_Latin1_General_CP1_CI_AS");

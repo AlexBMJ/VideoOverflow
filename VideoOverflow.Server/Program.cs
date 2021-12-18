@@ -10,6 +10,7 @@ using VideoOverflow.Infrastructure;
 
 using Server;
 using VideoOverflow.Infrastructure.Context;
+using VideoOverflow.Infrastructure.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +42,7 @@ builder.Services.AddDbContext<VideoOverflowContext>(options => options.UseNpgsql
     .Configuration.GetConnectionString("VideoOverflow")));
 builder.Services.AddScoped<IVideoOverflowContext, VideoOverflowContext>();
 builder.Services.AddScoped<IResourceRepository, ResourceRepository>();
+builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 
