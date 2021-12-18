@@ -52,7 +52,7 @@ public static class DataFactory
     };
     private static readonly int _amountOfResources = 1000;
     private static Random rnd = new Random();
-    private static readonly int _dateRange = 30*365; //5 years    
+    private static readonly int _dateRange = 30*365; //30 years    
     public static async Task<IHost> FillDatabase(this IHost host)
     {
         using (var scope = host.Services.CreateScope())
@@ -196,7 +196,6 @@ public static class DataFactory
 
         PopulateList(ref _categories, ref categories);
         
-        //var a = _categories[11];
         var lixNumbers = new Collection<int>();
 
         var languages = new Collection<string>();
@@ -269,13 +268,11 @@ public static class DataFactory
     private static Collection<Category> FindCategories(VideoOverflowContext context, ICollection<string> categories)
     {
         var categoriesFound = new Collection<Category>();
-        Console.WriteLine(categories.Count);
 
         foreach (var categoryName in categories)
         {
             foreach (var category in context.Categories)
             {
-                Console.WriteLine(category + "\t" + categoryName);
                 if (category.Name == categoryName)
                 {
                     categoriesFound.Add(category);
