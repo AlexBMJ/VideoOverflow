@@ -28,7 +28,7 @@
             => (await _repository.Get(id)).ToActionResult();
 
         
-        [Authorize(Roles = "Developer")]
+        [Authorize(Roles = $"{Developer}")]
         [HttpPost]  
         [ProducesResponseType(typeof(ResourceDTO), 201)]
         public async Task<IActionResult> Post(ResourceCreateDTO resource)
@@ -44,5 +44,12 @@
         [ProducesResponseType(404)]
         public async Task<IActionResult> Put([FromBody] ResourceUpdateDTO resource)
             => (await _repository.Update(resource)).ToActionResult();
+        
+        [Authorize(Roles = $"{Developer}")]
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Delete(int id)
+            => (await _repository.Delete(id)).ToActionResult();
     }
 }

@@ -128,6 +128,21 @@ public class ResourceRepository : IResourceRepository
         return Status.Updated;
     }
 
+    public async Task<Status> Delete(int resourceId)
+    {
+        var resource = await _context.Resources.FindAsync(resourceId);
+
+        if (resource == null)
+        {
+            return Status.NotFound;
+        }
+
+        _context.Resources.Remove(resource);
+        await _context.SaveChangesAsync();
+        
+        return Status.Deleted;
+    }
+
     private async Task<ICollection<Tag>> GetTags(IEnumerable<string> tags)
     {
         var collectionOfTags = new Collection<Tag>();

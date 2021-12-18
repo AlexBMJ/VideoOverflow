@@ -325,10 +325,10 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
 
         await _repo.Push(resource);
 
-        var expectedObj = await _repo.Get(1);
+        var actualObject = await _repo.Get(1);
         
-        Assert.Equal(expectedObj.Value.LixNumber, 0);
-        Assert.Equal(expectedObj.Value.SkillLevel, 1);
+        Assert.Equal(0, actualObject.Value.LixNumber);
+        Assert.Equal(1, actualObject.Value.SkillLevel);
     }
     
     [Fact]
@@ -351,6 +351,34 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
         await Assert.ThrowsAsync<Exception>(() => _repo.Push(resource));
     }
 
+    [Fact]
+    public async Task Delete_returns_NotFound_for_no_existing_resource()
+    {
+        var actual = await _repo.Delete(100);
+
+        Assert.Equal(Status.NotFound, actual);
+    }
+    
+    [Fact]
+    public async Task Delete_returns_Deleted_for_existing_resource()
+    {
+        await _repo.Push(_resource);
+        var actual = await _repo.Delete(1);
+
+        Assert.Equal(Status.Deleted, actual);
+    }
+    
+    [Fact]
+    public async Task Delete_actually_deletes_resource()
+    {
+        await _repo.Push(_resource);
+        await _repo.Delete(1);
+
+        var instance = await _repo.Get(1);
+
+        Assert.True(instance.IsNone);
+    }
+
     private ICollection<Comment> GetComments(int resourceId)
     {
         var collection = new Collection<Comment>();
@@ -365,6 +393,7 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
         }
         return collection;
     }
+    
     
     /* Dispose code has been taken from  https://github.com/ondfisk/BDSA2021/blob/main/MyApp.Infrastructure.Tests/CityRepositoryTests.cs*/
     private bool _disposed;
