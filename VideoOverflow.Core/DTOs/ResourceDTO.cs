@@ -8,6 +8,7 @@ public record ResourceDTO(
     string SiteUrl,
     string ContentSource,
     string SiteTitle,
+    DateTime? Created,
     string? Author,
     string Language,
     ICollection<string> Tags,
