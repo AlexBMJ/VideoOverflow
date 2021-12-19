@@ -1,3 +1,5 @@
+using VideoOverflow.Server.Model;
+
 namespace VideoOverflow.Server.Tests;
 
 public class ResourcesControllerTests
@@ -66,7 +68,7 @@ public class ResourcesControllerTests
             var response = await controller.Get(1);
 
             // Assert
-            Assert.Equal(resource, response);
+            Assert.Equal(resource, response.Value);
         }
 
 
@@ -83,7 +85,7 @@ public class ResourcesControllerTests
             var response = await controller.Get(42);
 
             // Assert
-            Assert.IsType<NotFoundResult>(response);
+            Assert.IsType<NotFoundResult>(response.Result);
         }
 
 
