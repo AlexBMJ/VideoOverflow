@@ -2,6 +2,8 @@
 @using Microsoft.AspNetCore.Components
 @using VideoOverflow.Core.DTOs
 @using System.ComponentModel.DataAnnotations
+@using FluentAssertions.Extensions
+@using VideoOverflow.Core
 @inject HttpClient _http
 @inject NavigationManager _navigationManager
 
@@ -12,36 +14,43 @@
 <MudForm Model="_createForm">
     <MudTextField T="string" Label="Site Title" @bind-Value="_createForm.SiteTitle"/>
     <MudTextField T="string" Label="Site Url" @bind-Value="_createForm.SiteUrl"/>
-    <MudTextField T="string" Label="MaterialType" @bind-Value="_createForm.MaterialType"/>
+    <MudSelect T="string" Label="MaterialType" Variant="Variant.Outlined" @bind-Value="_createForm.MaterialType" AnchorOrigin="Origin.BottomCenter">
+        <MudSelectItem Value="@("Video")" />
+        <MudSelectItem Value="@("Article")" />
+        <MudSelectItem Value="@("Book")" />
+    </MudSelect>
     <MudTextField T="string" Label="Author" @bind-Value="_createForm.Author"/>
     <MudTextField T="string" Label="LixNumber" @bind-Value="_createForm.LixNumber"/>
     <MudTextField T="string" Label="Language" @bind-Value="_createForm.Language"/>
     <MudTextField T="string" Label="Tags" @bind-Value="_createForm.Tags"/>
-    <MudTextField T="string" Label="Powers" @bind-Value="_createForm.Powers"/>
+    <MudTextField T="string" Label="Categories" @bind-Value="_createForm.Categories"/>
     <MudTextField T="string" Label="Created" @bind-Value="_createForm.Created"/>
+    <MudDatePicker PickerVariant="PickerVariant.Static" Date="@(DateTime.Today.AddDays(1))" @bind-Value="_date" />
 </MudForm>
 <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await HandleValidSubmit())">Submit</MudButton>
 
 
 @code {
     private CreateForm _createForm = new();
-    private string _categories;
+    private DateTime _date;
 
     private async Task HandleValidSubmit()
     {
         var payload = new ResourceCreateDTO()
         {
-            Created = DateTime.Parse(_createForm.Created),
-            MaterialType = VideoOverflow.Core.ResourceType.Article,
+            Created = DateTime.Parse(_date.Day + "-" + _date.Month + "-" + _date.Year).AsUtc(),
+            MaterialType = _createForm.MaterialType == "Video" ? ResourceType.Video :
+                _createForm.MaterialType == "Article" ? ResourceType.Article : ResourceType.Book,
             SiteUrl = _createForm.SiteUrl,
             SiteTitle = _createForm.SiteTitle,
             Author = _createForm.Author,
             LixNumber = Int32.Parse(_createForm.LixNumber),
-            Language = _createForm.Language
+            Language = _createForm.Language,
+            Tags = new List<string>(){_createForm.Tags},
+            Categories = new List<string>(){_createForm.Categories}
         };
-
-
-        var response = await _http.PostAsJsonAsync("api/resources", payload);
+        
+        var response = await _http.PostAsJsonAsync("api/resource", payload);
 
         if (response.IsSuccessStatusCode)
         {
@@ -77,7 +86,7 @@
         [Required]
         public string Tags { get; set; }
         [Required]
-        public string Powers { get; set; }
+        public string Categories { get; set; }
         [Required]
         public string Created { get; set; }
     }
