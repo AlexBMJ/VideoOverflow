@@ -30,29 +30,25 @@ public class ResourceRepository : IResourceRepository
 
     public async Task<Option<ResourceDetailsDTO>> Get(int resourceId)
     {
-        var entity = await _context.Resources.Where(resource => resource.Id == resourceId).Select(c => c)
+        Console.WriteLine(resourceId);
+        return await _context.Resources.Where(resource => resource.Id == resourceId).Select(c => 
+                new ResourceDetailsDTO()
+                {
+                    Id = c.Id,
+                    MaterialType = c.MaterialType,
+                    Author = c.Author,
+                    SiteTitle = c.SiteTitle,
+                    ContentSource = c.ContentSource,
+                    SiteUrl = c.SiteUrl,
+                    Created = c.Created,
+                    Language = c.Language,
+                    LixNumber = c.LixNumber,
+                    SkillLevel = c.SkillLevel,
+                    Categories = c.Categories.Select(category => category.Name).ToList(),
+                    Comments = c.Comments.Select(comment => comment.Content).ToList(),
+                    Tags = c.Tags.Select(t => t.Name).ToList()
+                })
             .FirstOrDefaultAsync();
-
-        return entity == null
-            ? null
-            : new ResourceDetailsDTO()
-            {
-                Id = entity.Id,
-                MaterialType = entity.MaterialType,
-                Author = entity.Author,
-                SiteTitle = entity.SiteTitle,
-                ContentSource = entity.ContentSource,
-                SiteUrl = entity.SiteUrl,
-                Created = entity.Created,
-                Language = entity.Language,
-                LixNumber = entity.LixNumber,
-                SkillLevel = GetSkillLevel(entity.LixNumber),
-                Categories = entity.Categories.Select(category => category.Name).ToList(),
-                Comments = entity.Comments == null
-                    ? new Collection<string>()
-                    : entity.Comments.Select(comment => comment.Content).ToList(),
-                Tags = entity.Tags.Select(c => c.Name).ToList()
-            };
     }
 
     public async Task<ResourceDTO> Push(ResourceCreateDTO create)
@@ -123,6 +119,10 @@ public class ResourceRepository : IResourceRepository
         entity.Created = update.Created;
         entity.SkillLevel = GetSkillLevel(update.LixNumber);
         entity.ContentSource = GetContentSource(update.SiteUrl);
+        if (update.Comments != null)
+        {
+            entity.Comments = await GetComments(update.Comments);
+        }
 
         await _context.SaveChangesAsync();
         return Status.Updated;
@@ -197,5 +197,25 @@ public class ResourceRepository : IResourceRepository
     private string GetContentSource(string url)
     {
         return new Regex(@"^(?:.*:\/\/)?(?:www\.)?(?<site>[^:\/]*).*$").Match(url).Groups[1].Value;
+    }
+
+    private async Task<ICollection<Comment>> GetComments(IEnumerable<string> comments)
+    {
+        var collectionOfCategories = new Collection<Comment>();
+        foreach (var comment in comments)
+        {
+            var exists = await _context.Comments.FirstOrDefaultAsync(c => c.Content == comment);
+
+            if (exists == null)
+            {
+                exists = new Comment() {Content = comment};
+                await _context.Comments.AddAsync(exists);
+                await _context.SaveChangesAsync();
+            }
+
+            collectionOfCategories.Add(exists);
+        }
+
+        return collectionOfCategories;
     }
 }

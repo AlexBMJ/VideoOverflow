@@ -24,8 +24,8 @@
         [ProducesResponseType(404)]
         [ProducesResponseType(typeof(ResourceDetailsDTO), 200)]
         [HttpGet("{id}")]
-        public async Task<ActionResult<ResourceDetailsDTO>> Get(int id)
-            => (await _repository.Get(id)).ToActionResult();
+        public async Task<ResourceDetailsDTO> Get(int id)
+            => (await _repository.Get(id));
 
         
         [Authorize(Roles = $"{Developer}")]

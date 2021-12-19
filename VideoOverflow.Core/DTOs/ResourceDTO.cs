@@ -51,4 +51,6 @@ public record ResourceCreateDTO
 public record ResourceUpdateDTO : ResourceCreateDTO
 {
     public int Id { get; init; }
+    
+    public ICollection<string>? Comments { get; init; }
 }

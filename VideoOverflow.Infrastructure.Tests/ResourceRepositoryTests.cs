@@ -91,11 +91,24 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
 
         await _repo.Push(_resource);
 
+        var update = new ResourceUpdateDTO
+        {
+            Id = 1,
+            Created = _resource.Created,
+            Author = _resource.Author,
+            SiteTitle = _resource.SiteTitle,
+            SiteUrl = _resource.SiteUrl,
+            Language = _resource.Language,
+            MaterialType = _resource.MaterialType,
+            Categories = _resource.Categories,
+            Tags = _resource.Tags,
+            Comments = new List<string>() {comment.Content}
+        };
+        
         await _context.Comments.AddAsync(comment);
         await _context.SaveChangesAsync();
 
-        var resource = await _context.Resources.FindAsync(1);
-        resource.Comments = GetComments(1);
+        var updateResponse = _repo.Update(update);
 
         var expected = new ResourceDetailsDTO()
         {
@@ -184,14 +197,22 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
     [InlineData(25, 2)]
     public async Task Resource_given_LixLevel_returns_skillLevel(int lixLevel, int expectedSkillLevel)
     {
-        await _repo.Push(_resource);
+        var resource = new ResourceCreateDTO
+        {
+            Created = _resource.Created,
+            Author = _resource.Author,
+            SiteTitle = _resource.SiteTitle,
+            SiteUrl = _resource.SiteUrl,
+            Language = _resource.Language,
+            MaterialType = _resource.MaterialType,
+            Categories = _resource.Categories,
+            Tags = _resource.Tags,
+            LixNumber = lixLevel
+        };
+        await _repo.Push(resource);
 
-        var entity = await _context.Resources.FindAsync(1);
-
-        entity.LixNumber = lixLevel;
-
-        var expected =  _repo.Get(1).Result.Value.SkillLevel;
-        var actual = expectedSkillLevel;
+        var actual =  _repo.Get(1).Result.Value.SkillLevel;
+        var expected = expectedSkillLevel;
 
         Assert.Equal(expected, actual);
         

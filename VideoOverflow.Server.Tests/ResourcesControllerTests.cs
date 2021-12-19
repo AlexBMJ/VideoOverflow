@@ -66,7 +66,7 @@ public class ResourcesControllerTests
             var response = await controller.Get(1);
 
             // Assert
-            Assert.Equal(resource, response.Value);
+            Assert.Equal(resource, response);
         }
 
 
@@ -76,14 +76,14 @@ public class ResourcesControllerTests
             // Arrange
             var logger = new Mock<ILogger<ResourceController>>();
             var repository = new Mock<IResourceRepository>();
-            repository.Setup(m => m.Get(21221121)).ReturnsAsync(default(ResourceDetailsDTO));
+            repository.Setup(m => m.Get(21221121)).ReturnsAsync(default(Option<ResourceDetailsDTO>));
             var controller = new ResourceController(logger.Object, repository.Object);
 
             // Act
             var response = await controller.Get(42);
 
             // Assert
-            Assert.IsType<NotFoundResult>(response.Result);
+            Assert.IsType<NotFoundResult>(response);
         }
 
 
