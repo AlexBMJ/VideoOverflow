@@ -35,20 +35,18 @@
         </tbody>
     </table>
     
-    <p> @AuthenticationStateProvider.GetAuthenticationStateAsync().Result.User.IsInRole($"Developer")</p>
+    <p> @AuthenticationStateProvider.GetAuthenticationStateAsync().Result.User.IsInRole($"developer")</p>
 }
 
 @code {
     private string message = string.Empty;
     private IEnumerable<Claim> claims = Enumerable.Empty<Claim>();
-    private ClaimsPrincipal _user;
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-        _user = user;
-        
+
         if (user.Identity?.IsAuthenticated == true)
         {
             message = $"You are logged in as: {user.Identity.Name}.";
