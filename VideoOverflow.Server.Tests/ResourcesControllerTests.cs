@@ -17,6 +17,7 @@ public class ResourcesControllerTests
                 "https://www.youtube.com",
                 "youtube",
                 "Youtube",
+                DateTime.Parse("20-08-2012"),
                 "A",
                 "english",
                 new Collection<string>(),
