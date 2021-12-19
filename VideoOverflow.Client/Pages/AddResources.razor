@@ -24,21 +24,21 @@
     <MudTextField T="string" Label="Language" @bind-Value="_createForm.Language"/>
     <MudTextField T="string" Label="Tags" @bind-Value="_createForm.Tags"/>
     <MudTextField T="string" Label="Categories" @bind-Value="_createForm.Categories"/>
-    <MudTextField T="string" Label="Created" @bind-Value="_createForm.Created"/>
-    <MudDatePicker PickerVariant="PickerVariant.Static" Date="@(DateTime.Today.AddDays(1))" @bind-Value="_date" />
+    <MudDatePicker Label="Basic example" @bind-Date="_date"/>
+
 </MudForm>
 <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await HandleValidSubmit())">Submit</MudButton>
 
 
 @code {
     private CreateForm _createForm = new();
-    private DateTime _date;
+    private DateTime? _date = DateTime.Today;
 
     private async Task HandleValidSubmit()
     {
         var payload = new ResourceCreateDTO()
         {
-            Created = DateTime.Parse(_date.Day + "-" + _date.Month + "-" + _date.Year).AsUtc(),
+            Created = DateTime.Parse(_date.Value.Day + "-" + _date.Value.Month + "-" + _date.Value.Year).AsUtc(),
             MaterialType = _createForm.MaterialType == "Video" ? ResourceType.Video :
                 _createForm.MaterialType == "Article" ? ResourceType.Article : ResourceType.Book,
             SiteUrl = _createForm.SiteUrl,
@@ -46,28 +46,22 @@
             Author = _createForm.Author,
             LixNumber = Int32.Parse(_createForm.LixNumber),
             Language = _createForm.Language,
-            Tags = new List<string>(){_createForm.Tags},
-            Categories = new List<string>(){_createForm.Categories}
+            Tags = _createForm.Tags.Split(", "),
+            Categories = _createForm.Categories.Split(", ")
         };
         
         var response = await _http.PostAsJsonAsync("api/resource", payload);
-
+        
         if (response.IsSuccessStatusCode)
         {
             var created = await response.Content.ReadFromJsonAsync<ResourceDTO>();
 
-            var uri = $"{_navigationManager.BaseUri}resource/{created?.Id}";
+            var uri = $"{_navigationManager.BaseUri}api/resource/{created?.Id}";
 
             _navigationManager.NavigateTo(uri);
         }
     }
-
-    private void Cancel()
-    {
-        var uri = $"{_navigationManager.BaseUri}resources";
-
-        _navigationManager.NavigateTo(uri);
-    }
+    
 
     private class CreateForm
     {
@@ -77,7 +71,7 @@
         public string SiteUrl { get; set; }
         [Required]
         public string MaterialType { get; set; }
-        [Required]
+        
         public string Author { get; set; }
         [Required]
         public string LixNumber { get; set; }
