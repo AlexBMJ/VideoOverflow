@@ -1,4 +1,4 @@
-﻿namespace VideoOverflow.Infrastructure.Context;
+namespace VideoOverflow.Infrastructure.Context;
 
 public class VideoOverflowContext : DbContext, IVideoOverflowContext
 {
