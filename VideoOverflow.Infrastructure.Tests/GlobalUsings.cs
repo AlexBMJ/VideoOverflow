@@ -14,5 +14,6 @@ global using System.Linq;
 global using VideoOverflow.Infrastructure.Entities;
 global using VideoOverflow.Infrastructure.repositories;
 global using VideoOverflow.Core.DTOs;
-
+global using VideoOverflow.Infrastructure.Context;
+global using Npgsql;
 

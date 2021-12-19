@@ -16,7 +16,7 @@
             _logger = logger;
             _repository = repository;
             _tagRepo = tagRepository;
-            _queryParser = new QueryParser(_tagRepo, _repository);
+            _queryParser = new QueryParser(_tagRepo);
         }
 
         [Authorize]

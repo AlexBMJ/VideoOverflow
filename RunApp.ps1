@@ -2,7 +2,7 @@
 $connectionString = "Server=localhost;Database=VideoOverflow;Port=5001;UserId=postgres;Password=Test1234"
 Set-Clipboard $password
 
-Write-Host "Setting up connectionString...."
+Write-Host "Setting up Connection Strings...."
     cd .\VideoOverflow.Server\
     dotnet user-secrets set ConnectionStrings:VideoOverflow "$connectionString"
 
