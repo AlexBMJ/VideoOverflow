@@ -2,6 +2,8 @@
 @using VideoOverflow.Core
 @using VideoOverflow.Core.DTOs
 @inject HttpClient _http
+@inject NavigationManager _navigationManager
+@inject ISnackbar Snackbar
 
 <PageTitle>Browse</PageTitle>
 
@@ -33,11 +35,13 @@
             <MudItem xl="3" lg="3" md="2" Class="d-flex align-center">@context.Item2.SiteTitle</MudItem>
             <MudItem xl="2" lg="2" md="1" Class="d-flex align-center">@context.Item2.Language</MudItem>
             <MudItem xl="2" lg="2" md="2" Class="d-flex align-center">@context.Item2.Author</MudItem>
-            <MudItem xl="3" lg="3" md="4" sm="4" Class="d-flex flex-wrap align-center">
-                @foreach (var tag in context.Item2.Tags) {
-                    <MudChip Class="mud-theme-tertiary" Style="cursor: pointer;">@tag</MudChip>
-                }
-            </MudItem>
+             @*TODO: FIX THE CREATED DATETIME ON RESOURCES INSTEAD OF HARDCODET DATE*@
+             <MudItem xl="2" lg="2" md="2" Class="d-flex align-center"> 12-02-2001 </MudItem>
+             <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" aria-label="edit" />
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(() =>  Delete(context.Item2.Id))"/>
+             
+           
+            
         </MudGrid>
     </RowTemplate>
     <ChildRowContent>
@@ -74,6 +78,24 @@
                                     @foreach (var category in context.Item2.Categories) {
                                         <MudChip Class="mud-theme-secondary">@category</MudChip>
                                     }
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
+                        <MudItem xl="5" lg="3" md="3">
+                            <MudCard Elevation="0">
+                                <MudCardHeader>
+                                    <CardHeaderContent>
+                                        <MudText Typo="Typo.body1">Tags</MudText>
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                                <MudCardContent Class="pa-4">
+                                    <MudTable Items="context.Item2.Tags" Context="tag" Height="10em"
+                                              Elevation="0">
+                                        <RowTemplate>
+                                            <MudText Class="py-2">@tag</MudText>
+                                            <MudDivider/>
+                                        </RowTemplate>
+                                    </MudTable>
                                 </MudCardContent>
                             </MudCard>
                         </MudItem>
@@ -121,6 +143,24 @@
             ResourceType.Video => Icons.Filled.VideoLibrary,
             _ => throw new ArgumentOutOfRangeException(nameof(material), material, null)
         };
+    }
+
+    private async Task Delete(int id)
+    {
+        var response = await _http.DeleteAsync($"api/Resource/{id}");
+        
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add("SuccessFully Deleted a resource");
+            var entity = _resources.Where(c => c.Item2.Id 
+                 == id).Select(c => c).FirstOrDefault();
+            if (entity != null)
+            {
+                _resources.Remove(entity);
+                StateHasChanged();
+            }
+            
+        }
     }
 
     private void ShowDetails(int id) {
