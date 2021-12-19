@@ -30,7 +30,6 @@ public class ResourceRepository : IResourceRepository
 
     public async Task<Option<ResourceDetailsDTO>> Get(int resourceId)
     {
-        Console.WriteLine(resourceId);
         return await _context.Resources.Where(resource => resource.Id == resourceId).Select(c => 
                 new ResourceDetailsDTO()
                 {
