@@ -76,7 +76,7 @@ public class ResourcesControllerTests
             // Arrange
             var logger = new Mock<ILogger<ResourceController>>();
             var repository = new Mock<IResourceRepository>();
-            repository.Setup(m => m.Get(21221121)).ReturnsAsync(default(Option<ResourceDetailsDTO>));
+            repository.Setup(m => m.Get(21221121)).ReturnsAsync(default(ResourceDetailsDTO));
             var controller = new ResourceController(logger.Object, repository.Object);
 
             // Act
