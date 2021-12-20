@@ -429,17 +429,56 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
 
         _context.Comments.Should().BeEmpty();
     }
-
-    private ICollection<Comment> GetComments(int resourceId)
+    [Fact]
+    public async Task comments_attachedToResource_are_attached()
     {
-        var collection = new Collection<Comment>();
+        await _context.Resources.AddAsync(new Resource()
+        {
+            Created = Created,
+            Author = "author",
+            SiteTitle = "title",
+            LixNumber = 1,
+            SiteUrl = "https://www.example.com",
+            Language = "Danish",
+            MaterialType = ResourceType.Video,
+            ContentSource = "example.com",
+            Categories = new Collection<Category>(),
+            Tags = new Collection<Tag>(),
+            Comments = new List<Comment>() 
+        });
+        await _context.Resources.AddAsync(new Resource()
+        {
+            Created = Created,
+            Author = "author2",
+            SiteTitle = "title2",
+            LixNumber = 2,
+            SiteUrl = "https://www.example2.com",
+            Language = "Danish",
+            MaterialType = ResourceType.Video,
+            ContentSource = "example2.com",
+            Categories = new Collection<Category>(),
+            Tags = new Collection<Tag>(),
+            Comments = new List<Comment>() 
+        });
+        var commentHello = _context.Comments.Add(new Comment() {AttachedToResource = 1, Content = "hello", CreatedBy = 0}).Entity;
+        var commentNice = _context.Comments.Add(new Comment() {AttachedToResource = 1, Content = "nice", CreatedBy = 0}).Entity;
+        var commentGreat = _context.Comments.Add(new Comment() {AttachedToResource = 2, Content = "great", CreatedBy = 0}).Entity;
+        await _context.SaveChangesAsync();
+
+        var expected = new List<Comment>() {commentHello, commentNice};
+        var expected2 = new List<Comment>() {commentGreat};
+        GetComments(1).Should().Equal(expected);
+        GetComments(2).Should().Equal(expected2);
+    }
+    private List<Comment> GetComments(int resourceId)
+    {
+        var collection = new List<Comment>();
 
         foreach (var comment in _context.Comments)
         {
             if (comment.AttachedToResource == resourceId)
             {
-                collection.Add(
-                    new Comment() {Content = comment.Content, CreatedBy = 0, AttachedToResource = resourceId});
+                collection.Add(comment);
             }
         }
         return collection;
