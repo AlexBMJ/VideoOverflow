@@ -1,4 +1,4 @@
-﻿namespace VideoOverflow.Server.Model;
+﻿namespace Server.Model;
 
 public static class Extensions
 {
