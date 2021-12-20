@@ -25,143 +25,126 @@
 
 <MudDivider/>
 
-<MudTable T="SettableTuple<bool, ResourceDTO>" Items="_resources" Bordered="true" Class="ma-4" Height="84vh">
+<MudTable  T="SettableTuple<bool, ResourceDTO>"  Items="_resources" Bordered="true" Class="ma-4" Height="100% -24px" >
     <RowTemplate>
-        <MudGrid Style="width: calc(100% + 12px)">
-            <MudItem Class="d-flex align-center">
-                <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowRight" aria-label="closed" OnClick="@(() => ShowDetails(context.Item2.Id))"/>
+        <MudGrid Justify="Justify.SpaceBetween" Style="width: calc(100% + 12px)" >
+            <MudItem Class="d-flex align-center" >
+                <MudToggleIconButton ToggledChanged="@(() => ShowDetails(context.Item2.Id))" Toggled="context.Item1" Icon="@Icons.Material.Filled.KeyboardArrowRight" ToggledIcon="@Icons.Filled.KeyboardArrowDown" aria-label="closed"/>
             </MudItem>
-            <MudItem xl="1" lg="1" md="1" Class="d-flex align-center">
+            <MudItem xl="1" lg="1" md="1" sm="1" Class="d-flex align-center">
                 <MudIcon Icon="@GetMaterialIcon(context.Item2.MaterialType)"/>
             </MudItem>
-            <MudItem xl="3" lg="3" md="2" Class="d-flex align-center">@context.Item2.SiteTitle</MudItem>
-            <MudItem xl="2" lg="2" md="1" Class="d-flex align-center">@context.Item2.Language</MudItem>
-            <MudItem xl="2" lg="2" md="2" Class="d-flex align-center">@context.Item2.Author</MudItem>
-
-            <MudItem xl="1" lg="1" md="1" Class="d-flex align-center"> @context.Item2.Created.Value.Day-@context.Item2.Created.Value.Month-@context.Item2.Created.Value.Year </MudItem>
-            <MudItem Style="margin-left: 30px" Class="d-flex align-center">
-                <MudFab Style="height: 40px; width: 40px; margin-left: 50px" Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" aria-label="edit" />
-                <MudButton Style="margin-left: 10px; width: 15px" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(() =>  Delete(context.Item2.Id))"/>
+            <MudItem xl="4" lg="3" md="2" sm="2" Class="d-flex align-center">@context.Item2.SiteTitle</MudItem>
+            <MudItem xl="1" lg="1" md="1" sm="2" Class="d-flex align-center">@context.Item2.Language</MudItem>
+            <MudItem xl="2" lg="2" md="2" sm="2" Class="d-flex align-center">@context.Item2.Author</MudItem>
+            <MudItem xl="1" lg="2" md="2" sm="2" Class="d-flex align-center">@context.Item2.Created.Value.Day-@context.Item2.Created.Value.Month-@context.Item2.Created.Value.Year </MudItem>
+            <MudItem xl="1" lg="1" md="1" sm="1" Class="d-flex align-center">
+                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" aria-label="edit"/>
             </MudItem>
-
+            <MudItem xl="1" lg="1" md="1" sm="1" Class="d-flex align-center">
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(() => Delete(context.Item2.Id))"/>
+            </MudItem>
         </MudGrid>
         <MudDivider/>
     </RowTemplate>
     <ChildRowContent>
         @if (context.Item1) {
-            <MudTr>
-                <td colspan="4">
-                    <MudGrid>
-                        <MudItem xl="5" lg="3" md="3">
-                            <MudCard Elevation="0">
-                                <MudCardHeader>
-                                    <CardHeaderContent>
-                                        <MudText Typo="Typo.body1">Comments</MudText>
-                                    </CardHeaderContent>
-                                </MudCardHeader>
-                                <MudCardContent Class="pa-4">
-                                    <MudCardContent Class="pa-4">
-                                    </MudCardContent>
-                                    @if (context.Item2.Comments.Count == 0)
-                                    {
-                                        <MudChip Class="mud-theme-secondary">No Comments</MudChip>
-                                    }
-                                    else
-                                    {
-                                        <MudTable Items="context.Item2.Comments" Context="comment" Height="10em"
-                                                  Elevation="0">
-                                            <RowTemplate>
-                                                <MudText Class="py-2">@comment</MudText>
-                                                <MudDivider/>
-   
-                                            </RowTemplate>
-   
-                                        </MudTable>
-                                    }
-                                </MudCardContent>
-                            </MudCard>
-                        </MudItem>
-                        <MudItem>
-                            <MudCard Elevation="0">
-                                <MudCardHeader>
-                                    <CardHeaderContent>
-                                        <MudText Typo="Typo.body1">Categories</MudText>
-                                    </CardHeaderContent>
-                                </MudCardHeader>
-                                <MudCardContent Class="pa-4">
-                                    @foreach (var category in context.Item2.Categories) {
-                                        <MudChip Class="mud-theme-secondary">@category</MudChip>
-                                        
-                                    }
-                                </MudCardContent>
-                            </MudCard>
-                        </MudItem>
-                        <MudItem xl="5" lg="3" md="3">
-                            <MudCard Elevation="0">
-                                <MudCardHeader>
-                                    <CardHeaderContent>
-                                        <MudText Typo="Typo.body1">Tags</MudText>
-                                        
-                                    </CardHeaderContent>
-                                </MudCardHeader>
-                                <MudCardContent Class="pa-4">
-                                    <MudTable Items="context.Item2.Tags" Context="tag" Height="10em"
-                                              Elevation="0">
-                                        <RowTemplate>
-                                            <MudItem xl="3" lg="3" md="4" sm="4" Class="d-flex flex-wrap align-center" Style="margin-top: 5px; margin-bottom: 5px">
-                                                @if (context.Item2.Tags.Count == 0)
-                                                {
-                                                    <MudChip Class="mud-theme-tertiary" Style="cursor: pointer;">No tags</MudChip>
-                                                }
-                                                else
-                                                {
-                                                    foreach (var tag in context.Item2.Tags)
-                                                    {
-                                                        <MudChip Class="mud-theme-tertiary" Style="cursor: pointer;">@tag</MudChip>
-                                                    } 
-                                                }
-                                            </MudItem>
-                                            <MudDivider/>
-                                        </RowTemplate>
-                                    </MudTable>
-                                </MudCardContent>
-                            </MudCard>
-                        </MudItem>
-                        
-                    </MudGrid>
-                    <MudItem>
-                        <MudCard Elevation="0">
-                            <MudCardHeader>
-                                <CardHeaderContent>
-                                    <MudText Typo="Typo.body1">External Site</MudText>
-                                </CardHeaderContent>
-                            </MudCardHeader>
-                            <MudCardContent Class="pa-4" Style="">
-                                <MudLink Href="@context.Item2.SiteUrl">@context.Item2.SiteUrl</MudLink>
-                            </MudCardContent>
-                        </MudCard>
-                    </MudItem>
-                </td>
-            </MudTr>
+            <MudItem xl="12" lg="12" md="12" >
+                <MudCard Elevation="0">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Categories</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent Class="mt-n7 pr-4 pl-4">
+                        @foreach (var category in context.Item2.Categories)
+                        {
+                            <MudChip Class="mud-theme-secondary">@category</MudChip>
+                        }
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudDivider/>
+            <MudItem xl="12" lg="12" md="12">
+                    <MudCard Elevation="0">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Tags</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent Class="mt-n7 pr-4 pl-4">
+                            @if (context.Item2.Tags.Count == 0)
+                            {
+                                <MudChip Class="mud-theme-tertiary" Style="cursor: pointer; opacity: 50%">No tags</MudChip>
+                            }
+                            else
+                            {
+                                foreach (var tag in context.Item2.Tags)
+                                {
+                                    <MudChip Class="mud-theme-tertiary" Style="cursor: pointer;">@tag</MudChip>
+                                }
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            <MudDivider/>
+            <MudItem>
+                <MudCard Elevation="0">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">External Site</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent Class="mt-n7 pr-4 pl-4" Style="">
+                        <MudLink Href="@context.Item2.SiteUrl">@context.Item2.SiteUrl</MudLink>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudDivider/>
+            <MudItem xl="12" lg="12" md="12">
+                <MudCard Elevation="0">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Comments</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent Class="mt-n7 pr-4 pl-4">
+                        @if (context.Item2.Comments is {Count: 0 })
+                        {
+                            <MudChip Class="mud-theme-tertiary" Style="opacity: 50%">No Comments</MudChip>
+                        }
+                        else
+                        {
+                            <MudTable Items="context.Item2.Comments" Context="comment"
+                                      Elevation="0">
+                                <RowTemplate>
+                                    <MudDivider/>
+                                    <MudText Class="py-2">@comment</MudText>
+                                </RowTemplate>
+                            </MudTable>
+                            <MudDivider/>
+                        }
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
         }
-        <MudDivider/>
     </ChildRowContent>
 </MudTable>
-<MudDivider/>
 <MudGrid Justify="Justify.Center" Spacing="1" Class="my-4">
     <MudItem xs="12" sm="6" md="4">
         <MudNumericField @bind-Value="_resultCount" Label="Results" Variant="Variant.Outlined" Step="5" Min="5" Max="50" />
     </MudItem>
-        <MudItem lg="3" md="3" sm="3" xs="12">
-            <MudIconButton Class="ma-2" Color="Color.Primary" Icon="@Icons.Filled.ArrowBackIosNew" OnClick="@(() => {if (_page > 1) {_page-=1; Search();}})" Size="Size.Large" Variant="Variant.Filled" />
-            <MudIconButton Class="ma-2" Color="Color.Primary" Icon="@Icons.Filled.ArrowForwardIos" OnClick="@(() => {_page+=1; Search();})" Size="Size.Large" Variant="Variant.Filled" />
+    <MudItem lg="3" md="3" sm="3" xs="12">
+            <MudIconButton Class="ma-2" Variant="Variant.Filled" DisableElevation="true" Icon="@Icons.Material.Filled.ArrowBackIosNew" OnClick="@(() => {if (_page > 1) {_page -= 1; Search();}})" Size="Size.Large" />
+            <MudIconButton Class="ma-2" Variant="Variant.Filled" DisableElevation="true" Icon="@Icons.Material.Filled.ArrowForwardIos" OnClick="@(() => {_page+=1;Search();})" Size="Size.Large"  />
+
         </MudItem>
 </MudGrid>
 
 
 @code {
-    private string _search = "";
-    private IList<SettableTuple<bool, ResourceDTO>> _resources = new List<SettableTuple<bool, ResourceDTO>>();
+    private string? _search;
+    private IList<SettableTuple<bool, ResourceDTO>>? _resources;
     private IList<CategoryDTO> _categories = new List<CategoryDTO>();
     private string _category = "None";
     private string? _correctionSuggestion;
@@ -217,8 +200,9 @@
         
         if (response.IsSuccessStatusCode)
         {
-            _snackbar.Add("Resource removed");
-            var entity = _resources?.Where(c => c.Item2.Id 
+            _snackbar.Add("SuccessFully Deleted a resource");
+            var entity = _resources.Where(c => c.Item2.Id 
+
                  == id).Select(c => c).FirstOrDefault();
             if (entity != null) {
                 _resources?.Remove(entity);
