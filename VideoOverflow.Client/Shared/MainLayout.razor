@@ -7,15 +7,15 @@
     </div>
     
     <main>
-        <MudAppBar Style="position: sticky; top: 0;">
+        <MudAppBar Style="position: sticky; top: 0">
             <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit"
                            Edge="Edge.Start" OnClick="@(() => _navMenu?.Toggle())"/>
             <MudSpacer/>
-            <img src="icon.svg" height="40px" alt="Logo"/>
+            <img src="icon.svg" height="40px" alt="Logo" style="position: absolute; left: 50%; transform: translateX(-50%)"/>
             <MudSpacer/>
             <LoginDisplay/>
         </MudAppBar>
-        <MudContainer>
+        <MudContainer Class="pa-0">
             @Body
         </MudContainer>
     </main>

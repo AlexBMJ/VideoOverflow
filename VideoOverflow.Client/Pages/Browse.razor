@@ -23,7 +23,7 @@
 
 <MudDivider/>
 
-<MudTable T="SettableTuple<bool, ResourceDTO>" Items="_resources" Bordered="true" Class="my-4" Height="84vh">
+<MudTable T="SettableTuple<bool, ResourceDTO>" Items="_resources" Bordered="true" Class="ma-4" Height="84vh">
     <RowTemplate>
         <MudGrid Style="width: calc(100% + 12px)">
             <MudItem Class="d-flex align-center">
@@ -36,11 +36,10 @@
             <MudItem xl="2" lg="2" md="1" Class="d-flex align-center">@context.Item2.Language</MudItem>
             <MudItem xl="2" lg="2" md="2" Class="d-flex align-center">@context.Item2.Author</MudItem>
 
+
             <MudItem xl="2" lg="2" md="2" Class="d-flex align-center"> @context.Item2.Created.Value.Day-@context.Item2.Created.Value.Month-@context.Item2.Created.Value.Year </MudItem>
              <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" aria-label="edit" />
             <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(() =>  Delete(context.Item2.Id))"/>
-             
-
         </MudGrid>
         <MudDivider/>
     </RowTemplate>
@@ -115,6 +114,7 @@
                 </td>
             </MudTr>
         }
+        <MudDivider/>
     </ChildRowContent>
 </MudTable>
 <MudDivider/>
