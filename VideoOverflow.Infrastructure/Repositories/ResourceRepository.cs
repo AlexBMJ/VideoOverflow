@@ -3,15 +3,26 @@ using System.Text.RegularExpressions;
 
 namespace VideoOverflow.Infrastructure.repositories;
 
+/// <summary>
+/// The repository for the user relation
+/// </summary>
 public class ResourceRepository : IResourceRepository
 {
     private readonly IVideoOverflowContext _context;
 
+    /// <summary>
+    /// Initialize the repository with a given context
+    /// </summary>
+    /// <param name="context">Context for a DB</param>
     public ResourceRepository(IVideoOverflowContext context)
     {
         _context = context;
     }
 
+    /// <summary>
+    /// Gets all resources from the resource relation in the DB
+    /// </summary>
+    /// <returns>A collection of all resources</returns>
     public async Task<IEnumerable<ResourceDTO>> GetAll()
     {
         // Give resourceDTO
@@ -29,6 +40,16 @@ public class ResourceRepository : IResourceRepository
             c.Comments.Select(comment => comment.Content).ToList())).ToListAsync();
     }
     
+    /// <summary>
+    /// Gets all resources in a specific category based on a query from the user which has some specified tags
+    /// and only returns a specified amount of resources
+    /// </summary>
+    /// <param name="category">The id of the category of the resources to get</param>
+    /// <param name="query">The query from the user to parse</param>
+    /// <param name="tags">All the tags which the resources needs to have</param>
+    /// <param name="count">Amount of resources to return</param>
+    /// <param name="skip"></param>
+    /// <returns></returns>
     public async Task<IEnumerable<ResourceDTO>> GetResources(int category, string query, IEnumerable<TagDTO> tags, int count, int skip)
     {
         return await _context.Resources.
@@ -50,7 +71,12 @@ public class ResourceRepository : IResourceRepository
             r.Comments.Select(comment => comment.Content).ToList())).ToListAsync();
     }
 
-    public async Task<Option<ResourceDetailsDTO>> Get(int resourceId)
+    /// <summary>
+    /// Gets a resource based on it's id
+    /// </summary>
+    /// <param name="resourceId">The id of the resource to get</param>
+    /// <returns>The resource with the specific id</returns>
+    public async Task<Option<ResourceDetailsDTO>?> Get(int resourceId)
     {
         return await _context.Resources.Where(resource => resource.Id == resourceId).Select(c => 
                 new ResourceDetailsDTO()
@@ -72,6 +98,12 @@ public class ResourceRepository : IResourceRepository
             .FirstOrDefaultAsync();
     }
 
+    /// <summary>
+    /// Pushes a resource to the resource relation in the DB
+    /// </summary>
+    /// <param name="create">The resource to push to the DB</param>
+    /// <returns>The pushed resource</returns>
+    /// <exception cref="Exception">The url is invalid</exception>
     public async Task<ResourceDTO> Push(ResourceCreateDTO create)
     {
         if (!isValidUrl(create.SiteUrl))
@@ -112,6 +144,11 @@ public class ResourceRepository : IResourceRepository
         );
     }
 
+    /// <summary>
+    /// Updates a resource in the DB
+    /// </summary>
+    /// <param name="update">The updated resource</param>
+    /// <returns>The status of the update</returns>
     public async Task<Status> Update(ResourceUpdateDTO update)
     {
         var entity = await _context.Resources.Where(resource => resource.Id == update.Id).Select(c => c)
@@ -150,6 +187,11 @@ public class ResourceRepository : IResourceRepository
         return Status.Updated;
     }
 
+    /// <summary>
+    /// Deletes a resource from the DB based on it's id
+    /// </summary>
+    /// <param name="resourceId">The id of the resource to delete</param>
+    /// <returns>The status of the delete</returns>
     public async Task<Status> Delete(int resourceId)
     {
         var resource = await _context.Resources.FindAsync(resourceId);
@@ -173,6 +215,11 @@ public class ResourceRepository : IResourceRepository
         return Status.Deleted;
     }
 
+    /// <summary>
+    /// Gets all tags based on a collection of tag names
+    /// </summary>
+    /// <param name="tags">A collection of tag names</param>
+    /// <returns>A collection of tags with the tag names</returns>
     private async Task<ICollection<Tag>> GetTags(IEnumerable<string> tags)
     {
         var collectionOfTags = new Collection<Tag>();
@@ -193,6 +240,11 @@ public class ResourceRepository : IResourceRepository
         return collectionOfTags;
     }
 
+    /// <summary>
+    /// Gets categories based on a collection of category names
+    /// </summary>
+    /// <param name="categories">A collection of category names</param>
+    /// <returns>A collection of categories with the category names</returns>
     private async Task<ICollection<Category>> GetCategories(IEnumerable<string> categories)
     {
         var collectionOfCategories = new Collection<Category>();
@@ -213,22 +265,42 @@ public class ResourceRepository : IResourceRepository
         return collectionOfCategories;
     }
 
+    /// <summary>
+    /// Gets the skill level of a resource based on it's lix
+    /// </summary>
+    /// <param name="lix">The lix of a resource</param>
+    /// <returns>The skill level of the lix</returns>
     private int GetSkillLevel(int lix)
     {
         return lix < 25 ? 1 : lix < 35 ? 2 : lix < 45 ? 3 : lix < 55 ? 4 : 5;
     }
     
+    /// <summary>
+    /// Checks if a url is valid
+    /// </summary>
+    /// <param name="url">The url to check</param>
+    /// <returns>Whether the url is valid or not</returns>
     private bool isValidUrl(string url)
     {
         return new Regex(@"(https?:\/\/|www\.)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)").Match(url).Success;
 
     }
 
+    /// <summary>
+    /// Gets the content source from a url
+    /// </summary>
+    /// <param name="url">The url to extract a content source from</param>
+    /// <returns>The content source of the url</returns>
     private string GetContentSource(string url)
     {
         return new Regex(@"^(?:.*:\/\/)?(?:www\.)?(?<site>[^:\/]*).*$").Match(url).Groups[1].Value;
     }
 
+    /// <summary>
+    /// Gets all comments based on a collection of comments' content
+    /// </summary>
+    /// <param name="comments">A collection of comments' content</param>
+    /// <returns>A collection of comments with the specified content</returns>
     private async Task<ICollection<Comment>> GetComments(IEnumerable<string> comments)
     {
         var collectionOfCategories = new Collection<Comment>();

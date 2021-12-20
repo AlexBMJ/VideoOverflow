@@ -1,5 +1,8 @@
 ﻿namespace VideoOverflow.Infrastructure.Entities;
 
+/// <summary>
+/// The category entity
+/// </summary>
 public class Category
 {
     // Attributes

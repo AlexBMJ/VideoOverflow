@@ -9,7 +9,6 @@ namespace VideoOverflow.Server.Tests;
 /// </summary>
 [Collection("Database")]
 public class QueryParserTests : DatabaseTestCase {
-    public class QueryParserTests : RepositoryTestsSetup {
     private readonly TagRepository _tagRepo;
 
     public QueryParserTests(DatabaseTemplateFixture databaseFixture) : base(databaseFixture) {

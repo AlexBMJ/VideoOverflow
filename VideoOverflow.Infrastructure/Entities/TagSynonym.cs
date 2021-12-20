@@ -1,4 +1,8 @@
 ﻿namespace VideoOverflow.Infrastructure.Entities;
+
+/// <summary>
+/// The tagSynonym entity
+/// </summary>
 public class TagSynonym
 {
     //Attributes
