@@ -300,8 +300,8 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
             Language = "English",
             MaterialType = ResourceType.Article,
             SiteUrl = "https://docs.microsoft.com/da-dk/dynamics365/marketing/teams-webinar",
-            Categories = new Collection<string>(),
-            Tags = new Collection<string>(),
+            Categories = new Collection<string>(){"Programming", "Testing"},
+            Tags = new Collection<string>(){"C#", "GIT"},
             SiteTitle = "Changed to this topic",
             Created = Created
         };
@@ -322,8 +322,8 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
             SiteTitle = "Changed to this topic",
             Author = "Unknown",
             Language = "English",
-            Tags = new Collection<string>() { },
-            Categories = new Collection<string>() { },
+            Tags = new Collection<string>() {"C#", "GIT" },
+            Categories = new Collection<string>() {"Programming", "Testing" },
             Comments = new Collection<string>()
         };
 

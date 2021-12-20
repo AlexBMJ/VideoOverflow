@@ -231,7 +231,7 @@ public class ResourceRepository : IResourceRepository
 
     private async Task<ICollection<Comment>> GetComments(IEnumerable<string> comments)
     {
-        var collectionOfCategories = new Collection<Comment>();
+        var collectionOfComments = new Collection<Comment>();
         foreach (var comment in comments)
         {
             var exists = await _context.Comments.FirstOrDefaultAsync(c => c.Content == comment);
@@ -243,9 +243,9 @@ public class ResourceRepository : IResourceRepository
                 await _context.SaveChangesAsync();
             }
 
-            collectionOfCategories.Add(exists);
+            collectionOfComments.Add(exists);
         }
 
-        return collectionOfCategories;
+        return collectionOfComments;
     }
 }
