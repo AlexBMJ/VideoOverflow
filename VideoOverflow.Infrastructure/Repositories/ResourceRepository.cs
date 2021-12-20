@@ -135,16 +135,10 @@ public class ResourceRepository : IResourceRepository
         entity.Language = update.Language;
         entity.MaterialType = update.MaterialType;
         entity.SiteTitle = update.SiteTitle;
-        entity.Categories = await GetCategories(update.Categories);
-        entity.Tags = await GetTags(update.Tags);
         entity.SiteUrl = update.SiteUrl;
         entity.Created = update.Created;
         entity.SkillLevel = GetSkillLevel(update.LixNumber);
         entity.ContentSource = GetContentSource(update.SiteUrl);
-        if (update.Comments != null)
-        {
-            entity.Comments = await GetComments(update.Comments);
-        }
 
         await _context.SaveChangesAsync();
         return Status.Updated;
@@ -166,7 +160,6 @@ public class ResourceRepository : IResourceRepository
                 _context.Comments.Remove(comment);
             }
         }
-        
         _context.Resources.Remove(resource);
         await _context.SaveChangesAsync();
         
@@ -221,31 +214,11 @@ public class ResourceRepository : IResourceRepository
     private bool isValidUrl(string url)
     {
         return new Regex(@"(https?:\/\/|www\.)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)").Match(url).Success;
-
     }
 
     private string GetContentSource(string url)
     {
         return new Regex(@"^(?:.*:\/\/)?(?:www\.)?(?<site>[^:\/]*).*$").Match(url).Groups[1].Value;
     }
-
-    private async Task<ICollection<Comment>> GetComments(IEnumerable<string> comments)
-    {
-        var collectionOfComments = new Collection<Comment>();
-        foreach (var comment in comments)
-        {
-            var exists = await _context.Comments.FirstOrDefaultAsync(c => c.Content == comment);
-
-            if (exists == null)
-            {
-                exists = new Comment() {Content = comment};
-                await _context.Comments.AddAsync(exists);
-                await _context.SaveChangesAsync();
-            }
-
-            collectionOfComments.Add(exists);
-        }
-
-        return collectionOfComments;
-    }
+    
 }
