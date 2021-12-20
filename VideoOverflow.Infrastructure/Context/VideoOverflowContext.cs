@@ -1,4 +1,4 @@
-﻿namespace VideoOverflow.Infrastructure.Context;
+namespace VideoOverflow.Infrastructure.Context;
 
 public class VideoOverflowContext : DbContext, IVideoOverflowContext
 {
@@ -36,9 +36,6 @@ public class VideoOverflowContext : DbContext, IVideoOverflowContext
         
         modelBuilder.HasPostgresExtension("pg_trgm");
 
-        // modelBuilder.Entity<TagSynonym>().Property(tagSyn => tagSyn.Name)
-        //     .UseCollation("SQL_Latin1_General_CP1_CI_AS");
-        
         // One to Many
         modelBuilder.Entity<Resource>()
             .HasMany(resource => resource.Comments);

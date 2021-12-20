@@ -1,11 +1,9 @@
 ﻿@page "/home"
 @using MudBlazor.Services
 @inject NavigationManager _navigation
+
 @using Microsoft.AspNetCore.Components.Authorization;
 
-
-
-<PageTitle>Home</PageTitle>
 
 <AuthorizeView Roles="@ADMINISTRATION_ROLE">
     <p>You are an Administrator</p>

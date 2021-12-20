@@ -1,5 +1,3 @@
-using VideoOverflow.Infrastructure.Context;
-
 namespace VideoOverflow.Infrastructure.Tests;
 
 public class RepositoryTestsSetup
