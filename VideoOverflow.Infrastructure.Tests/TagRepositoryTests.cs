@@ -8,7 +8,27 @@ public class TagRepositoryTests : RepositoryTestsSetup, IDisposable
     {
         _repo = new TagRepository(_context);
     }
+    
+    [Fact]
+    public async Task GetTagBySynName_returns_correct_tag_out_of_many()
+    {
+        var aTag = new TagCreateDTO() {Name = "a", TagSynonyms = new List<string>()};
+        var bTag = new TagCreateDTO() {Name = "b", TagSynonyms = new List<string>()};
+        var cTag = new TagCreateDTO() {Name = "c", TagSynonyms = new List<string>()};
+        var dTag = new TagCreateDTO() {Name = "d", TagSynonyms = new List<string>()};
+        
+        await _repo.Push(aTag);
+        await _repo.Push(bTag);
+        await _repo.Push(cTag);
+        await _repo.Push(dTag);
 
+        var actual = await _repo.GetTagByName("c");
+
+        var expected = new TagDTO(3, "c", new List<string>());
+
+        expected.Should().BeEquivalentTo(actual);
+    }
+    
     [Fact]
     public async Task GetAll_returns_all_tags()
     {
