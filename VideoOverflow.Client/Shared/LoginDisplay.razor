@@ -6,11 +6,13 @@
 
 <AuthorizeView>
     <Authorized>
-        Hello, @context.User.Identity?.Name! 
-        <button style="margin-left: 10px"  class="nav-link btn btn-link" @onclick="BeginLogout">Log out</button>
+        <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+                Hello, @context.User.Identity?.Name!
+        </MudHidden>
+        <button style="margin-left: 10px; color: white " class="nav-link btn btn-link" @onclick="BeginLogout">Log out</button>
     </Authorized>
     <NotAuthorized>
-        <a href="authentication/login"> Log in</a>
+        <a href="authentication/login" style="color: white"> Log in</a>
     </NotAuthorized>
 </AuthorizeView>
 

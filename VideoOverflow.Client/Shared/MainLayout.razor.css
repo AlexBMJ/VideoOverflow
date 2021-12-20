@@ -15,7 +15,3 @@ main {
     position: sticky;
     top: 0;
 }
-
-.page-background-class {
-    background-image:url(../wwwroot/background.svg)
-}
