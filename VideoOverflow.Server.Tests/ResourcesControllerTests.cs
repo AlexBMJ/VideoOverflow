@@ -86,7 +86,7 @@ public class ResourcesControllerTests
         var repository = new Mock<IResourceRepository>();
         var tagRepo = new Mock<ITagRepository>();
         repository.Setup(m => m.Get(21221121)).ReturnsAsync(default(ResourceDetailsDTO));
-        var controller = new ResourceController(logger.Object, tagRepo.Object);
+        var controller = new ResourceController(logger.Object, repository.Object, tagRepo.Object);
 
         // Act
         var response = await controller.Get(42);

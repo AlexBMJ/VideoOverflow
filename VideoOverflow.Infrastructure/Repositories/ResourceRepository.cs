@@ -42,6 +42,7 @@ public class ResourceRepository : IResourceRepository
             r.SiteUrl,
             r.ContentSource,
             r.SiteTitle,
+            r.Created,
             r.Author,
             r.Language,
             r.Tags.Select(tag => tag.Name).ToList(),
