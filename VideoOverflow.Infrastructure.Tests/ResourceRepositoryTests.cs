@@ -402,6 +402,33 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
 
         Assert.True(instance.IsNone);
     }
+    
+    [Fact]
+    public async Task Delete_deletes_comments_attachedToResource()
+    {
+        var comment = _context.Comments.Add(new Comment() {AttachedToResource = 1, Content = "hello", CreatedBy = 0}).Entity;
+
+        await _context.Resources.AddAsync(new Resource()
+        {
+            Created = Created,
+            Author = "Deniz",
+            SiteTitle = "My first Page",
+            LixNumber = -121212,
+            SiteUrl = "ThisIsAnInvalidURL.com",
+            Language = "Danish",
+            MaterialType = ResourceType.Video,
+            ContentSource = "thisis.com",
+            Categories = new Collection<Category>(),
+            Tags = new Collection<Tag>(),
+            Comments = new List<Comment>() {comment}
+        });
+        
+        await _context.SaveChangesAsync();
+        
+        await _repo.Delete(1);
+
+        _context.Comments.Should().BeEmpty();
+    }
 
     private ICollection<Comment> GetComments(int resourceId)
     {
