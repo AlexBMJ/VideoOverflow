@@ -11,46 +11,46 @@
 @inject NavigationManager _navigationManager
 @inject ISnackbar Snackbar
 
+<MudContainer Class="ma-2">
+    <h1>Create Resource</h1>
+    <MudDivider/>
+    <MudForm Model="_createForm" >
+        <MudTextField T="string" Label="Site Title" @bind-Value="_createForm.SiteTitle"/>
+        <MudTextField T="string" Label="Site Url" @bind-Value="_createForm.SiteUrl"/>
+        <MudSelect T="string" Label="MaterialType" Variant="Variant.Outlined" @bind-Value="_createForm.MaterialType" AnchorOrigin="Origin.BottomCenter">
+            <MudSelectItem Value="@("Video")"/>
+            <MudSelectItem Value="@("Article")"/>
+            <MudSelectItem Value="@("Book")"/>
+        </MudSelect>
+        <MudTextField T="string" Label="Author" @bind-Value="_createForm.Author"/>
 
-<h1>Create Resource</h1>
+        <MudNumericField @bind-Value="_createForm.LixNumber" HelperText="Lix" Variant="Variant.Text" HideSpinButtons="true" />
+    	    
+        <MudTextField T="string" Label="Language" @bind-Value="_createForm.Language"/>
+        <MudTextField T="string" Label="Tags" @bind-Value="_createForm.Tags"/>
+        
+        <MudGrid>
+            <MudItem xs="12" md="12">
+                <MudSelect T="string" Label="Categories" HelperText="Pick the categories"
+                           MultiSelection="true" OffsetY="true" DelimitedStringSeparator="^" SelectAll="false" SelectAllText="Select all categories"
+                           @bind-Value="value" @bind-SelectedValues="options" AdornmentIcon="@Icons.Material.Filled.Search"
+                           MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))">
+                    @foreach (var category in Categories)
+                    {
+                        <MudSelectItem T="string" Value="@category.Name">@category.Name</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+        </MudGrid>
 
-<hr/>
+        <MudDatePicker Label="DateCreated" @bind-Date="_date"/>
+
+    </MudForm>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await HandleValidSubmit())">Submit</MudButton>
+</MudContainer>
 
 
 
-<MudForm Model="_createForm">
-    <MudTextField T="string" Label="Site Title" @bind-Value="_createForm.SiteTitle"/>
-    <MudTextField T="string" Label="Site Url" @bind-Value="_createForm.SiteUrl"/>
-    <MudSelect T="string" Label="MaterialType" Variant="Variant.Outlined" @bind-Value="_createForm.MaterialType" AnchorOrigin="Origin.BottomCenter">
-        <MudSelectItem Value="@("Video")"/>
-        <MudSelectItem Value="@("Article")"/>
-        <MudSelectItem Value="@("Book")"/>
-    </MudSelect>
-    <MudTextField T="string" Label="Author" @bind-Value="_createForm.Author"/>
-
-    <MudNumericField @bind-Value="_createForm.LixNumber" HelperText="Lix" Variant="Variant.Text" HideSpinButtons="true" />
-    	
-    <MudTextField T="string" Label="Language" @bind-Value="_createForm.Language"/>
-    <MudTextField T="string" Label="Tags" @bind-Value="_createForm.Tags"/>
-    
-    <MudGrid>
-        <MudItem xs="12" md="12">
-            <MudSelect T="string" Label="Categories" HelperText="Pick the categories"
-                       MultiSelection="true" OffsetY="true" DelimitedStringSeparator="^" SelectAll="false" SelectAllText="Select all categories"
-                       @bind-Value="value" @bind-SelectedValues="options" AdornmentIcon="@Icons.Material.Filled.Search"
-                       MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))">
-                @foreach (var category in Categories)
-                {
-                    <MudSelectItem T="string" Value="@category.Name">@category.Name</MudSelectItem>
-                }
-            </MudSelect>
-        </MudItem>
-    </MudGrid>
-
-    <MudDatePicker Label="DateCreated" @bind-Date="_date"/>
-
-</MudForm>
-<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await HandleValidSubmit())">Submit</MudButton>
 
 
 @code {

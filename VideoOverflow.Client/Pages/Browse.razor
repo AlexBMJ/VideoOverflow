@@ -76,6 +76,7 @@
                                 <MudCardContent Class="pa-4">
                                     @foreach (var category in context.Item2.Categories) {
                                         <MudChip Class="mud-theme-secondary">@category</MudChip>
+                                        
                                     }
                                 </MudCardContent>
                             </MudCard>
@@ -85,13 +86,26 @@
                                 <MudCardHeader>
                                     <CardHeaderContent>
                                         <MudText Typo="Typo.body1">Tags</MudText>
+                                        
                                     </CardHeaderContent>
                                 </MudCardHeader>
                                 <MudCardContent Class="pa-4">
                                     <MudTable Items="context.Item2.Tags" Context="tag" Height="10em"
                                               Elevation="0">
                                         <RowTemplate>
-                                            <MudText Class="py-2">@tag</MudText>
+                                            <MudItem xl="3" lg="3" md="4" sm="4" Class="d-flex flex-wrap align-center" Style="margin-top: 5px; margin-bottom: 5px">
+                                                @if (context.Item2.Tags.Count == 0)
+                                                {
+                                                    <MudChip Class="mud-theme-tertiary" Style="cursor: pointer;">No tags</MudChip>
+                                                }
+                                                else
+                                                {
+                                                    foreach (var tag in context.Item2.Tags)
+                                                    {
+                                                        <MudChip Class="mud-theme-tertiary" Style="cursor: pointer;">@tag</MudChip>
+                                                    } 
+                                                }
+                                                </MudItem>
                                             <MudDivider/>
                                         </RowTemplate>
                                     </MudTable>
