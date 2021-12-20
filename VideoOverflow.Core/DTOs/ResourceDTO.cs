@@ -8,6 +8,7 @@ public record ResourceDTO(
     string SiteUrl,
     string ContentSource,
     string SiteTitle,
+    DateTime? Created,
     string? Author,
     string Language,
     ICollection<string> Tags,
@@ -51,4 +52,6 @@ public record ResourceCreateDTO
 public record ResourceUpdateDTO : ResourceCreateDTO
 {
     public int Id { get; init; }
+    
+    public ICollection<string>? Comments { get; init; }
 }

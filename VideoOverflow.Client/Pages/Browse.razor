@@ -1,22 +1,24 @@
 @page "/Browse"
 @using VideoOverflow.Core
 @using VideoOverflow.Core.DTOs
+@using Microsoft.AspNetCore.WebUtilities
 @inject HttpClient _http
+@inject NavigationManager _navigationManager
+@inject ISnackbar Snackbar
 
 <PageTitle>Browse</PageTitle>
-
 <MudGrid Justify="Justify.Center" Spacing="1" Class="my-4">
-    <MudItem lg="8" md="8" sm="7" xs="12">
-        <MudTextField @bind-Value="_search" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Secondary"/>
-        <MudText>Did you mean: @_correctionSuggestion</MudText>
-    </MudItem>
-    <MudItem lg="3" md="3" sm="3" xs="12">
-        <MudSelect T="string" Label="Category" Strict="true" Variant="Variant.Outlined" Format="F2" AnchorOrigin="Origin.BottomCenter" AdornmentIcon="@Icons.Filled.Category">
-            @foreach (var ctg in _categories) {
-                <MudSelectItem Value="@ctg.Name"/>
-            }
-        </MudSelect>
-    </MudItem>
+        <MudItem lg="8" md="8" sm="7" xs="12">
+            <MudTextField @bind-Value="_search" OnKeyPress="@(e => {if (e.Code == "Enter") Search();})" Immediate="true" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Secondary"/>
+            <MudText>Did you mean: @_correctionSuggestion</MudText>
+        </MudItem>
+        <MudItem lg="3" md="3" sm="3" xs="12">
+            <MudSelect @bind-Value="_category" T="string" Label="Category" Strict="true" Variant="Variant.Outlined" Format="F2" AnchorOrigin="Origin.BottomCenter" AdornmentIcon="@Icons.Filled.Category">
+                @foreach (var ctg in _categories) {
+                    <MudSelectItem Value="@ctg.Name"/>
+                }
+            </MudSelect>
+        </MudItem>
 </MudGrid>
 
 <MudDivider/>
@@ -33,19 +35,11 @@
             <MudItem xl="3" lg="3" md="2" Class="d-flex align-center">@context.Item2.SiteTitle</MudItem>
             <MudItem xl="2" lg="2" md="1" Class="d-flex align-center">@context.Item2.Language</MudItem>
             <MudItem xl="2" lg="2" md="2" Class="d-flex align-center">@context.Item2.Author</MudItem>
-            <MudItem xl="3" lg="3" md="4" sm="4" Class="d-flex flex-wrap align-center" Style="margin-top: 5px; margin-bottom: 5px">
-                @if (context.Item2.Tags.Count == 0)
-                {
-                    <MudChip Class="mud-theme-tertiary" Style="cursor: pointer;">No tags</MudChip>
-                }
-                else
-                {
-                    foreach (var tag in context.Item2.Tags)
-                    {
-                        <MudChip Class="mud-theme-tertiary" Style="cursor: pointer;">@tag</MudChip>
-                    } 
-                }
-            </MudItem>
+
+
+            <MudItem xl="2" lg="2" md="2" Class="d-flex align-center"> @context.Item2.Created.Value.Day-@context.Item2.Created.Value.Month-@context.Item2.Created.Value.Year </MudItem>
+             <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" aria-label="edit" />
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(() =>  Delete(context.Item2.Id))"/>
         </MudGrid>
         <MudDivider/>
     </RowTemplate>
@@ -86,6 +80,24 @@
                                 </MudCardContent>
                             </MudCard>
                         </MudItem>
+                        <MudItem xl="5" lg="3" md="3">
+                            <MudCard Elevation="0">
+                                <MudCardHeader>
+                                    <CardHeaderContent>
+                                        <MudText Typo="Typo.body1">Tags</MudText>
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                                <MudCardContent Class="pa-4">
+                                    <MudTable Items="context.Item2.Tags" Context="tag" Height="10em"
+                                              Elevation="0">
+                                        <RowTemplate>
+                                            <MudText Class="py-2">@tag</MudText>
+                                            <MudDivider/>
+                                        </RowTemplate>
+                                    </MudTable>
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
                         <MudItem>
                             <MudCard Elevation="0">
                                 <MudCardHeader>
@@ -105,22 +117,47 @@
         <MudDivider/>
     </ChildRowContent>
 </MudTable>
+<MudDivider/>
+<MudGrid Justify="Justify.Center" Spacing="1" Class="my-4">
+    <MudItem xs="12" sm="6" md="4">
+        <MudNumericField @bind-Value="_resultCount" Label="Results" Variant="Variant.Outlined" Step="5" Min="5" Max="50" />
+    </MudItem>
+        <MudItem lg="3" md="3" sm="3" xs="12">
+            <MudIconButton Class="ma-2" Color="Color.Primary" Icon="@Icons.Filled.ArrowBackIosNew" OnClick="@(() => {if (_page > 1) {_page -= 1; Search();}})" Size="Size.Large" Variant="Variant.Filled" />
+            <MudIconButton Class="ma-2" Color="Color.Primary" Icon="@Icons.Filled.ArrowForwardIos" OnClick="@(() => {_page+=1;Search();})" Size="Size.Large" Variant="Variant.Filled" />
+        </MudItem>
+</MudGrid>
 
 
 @code {
     private string _search;
     private IList<SettableTuple<bool, ResourceDTO>>? _resources;
     private IList<CategoryDTO> _categories = new List<CategoryDTO>();
+    private string _category = "None";
     private string _correctionSuggestion;
+    private int _resultCount = 10;
+    private int _page = 1;
 
     protected override async Task OnInitializedAsync() {
-        var resources = await _http.GetFromJsonAsync<ResourceDTO[]>("api/Resource");
-        _resources = resources?.Select(r => new SettableTuple<bool, ResourceDTO>(false, r)).ToList();
-        
         var categories = await _http.GetFromJsonAsync<CategoryDTO[]>("api/Category");
-
         if (categories != null)
-            _categories = categories;
+
+            _categories = categories.ToList();
+        _categories.Insert(0, new CategoryDTO(0, "None"));
+        }
+
+    private async Task Search() {
+        var queryStringParams = new Dictionary<string, string?>() {
+            ["Category"] = _categories.First(c=>c.Name.Equals(_category)).Id.ToString(), 
+            ["Query"] = _search,
+            ["Count"] = _resultCount.ToString(),
+            ["Page"] = _page.ToString(),
+        };
+        var uri = QueryHelpers.AddQueryString("api/Resource/Search", queryStringParams);
+        var resources = await _http.GetFromJsonAsync<ResourceDTO[]>(uri);
+        _resources = resources?.Select(r => new SettableTuple<bool, ResourceDTO>(false, r)).ToList();
+        StateHasChanged();
+
     }
 
     private string GetMaterialIcon(ResourceType material) {
@@ -131,6 +168,24 @@
             ResourceType.Video => Icons.Filled.VideoLibrary,
             _ => throw new ArgumentOutOfRangeException(nameof(material), material, null)
         };
+    }
+
+    private async Task Delete(int id)
+    {
+        var response = await _http.DeleteAsync($"api/Resource/{id}");
+        
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add("SuccessFully Deleted a resource");
+            var entity = _resources.Where(c => c.Item2.Id 
+                 == id).Select(c => c).FirstOrDefault();
+            if (entity != null)
+            {
+                _resources.Remove(entity);
+                StateHasChanged();
+            }
+            
+        }
     }
 
     private void ShowDetails(int id) {

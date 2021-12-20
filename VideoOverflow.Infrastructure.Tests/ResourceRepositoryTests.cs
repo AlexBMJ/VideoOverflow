@@ -36,6 +36,7 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
             "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
             "learnit.itu.dk",
             "My first Page",
+            Created,
             "Deniz",
             "Danish",
             new Collection<string>() {"C#"},
@@ -91,11 +92,24 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
 
         await _repo.Push(_resource);
 
+        var update = new ResourceUpdateDTO
+        {
+            Id = 1,
+            Created = _resource.Created,
+            Author = _resource.Author,
+            SiteTitle = _resource.SiteTitle,
+            SiteUrl = _resource.SiteUrl,
+            Language = _resource.Language,
+            MaterialType = _resource.MaterialType,
+            Categories = _resource.Categories,
+            Tags = _resource.Tags,
+            Comments = new List<string>() {comment.Content}
+        };
+        
         await _context.Comments.AddAsync(comment);
         await _context.SaveChangesAsync();
 
-        var resource = await _context.Resources.FindAsync(1);
-        resource.Comments = GetComments(1);
+        var updateResponse = _repo.Update(update);
 
         var expected = new ResourceDetailsDTO()
         {
@@ -145,6 +159,7 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
             "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
             "learnit.itu.dk",
             "My first Page",
+            Created,
             "Deniz",
             "Danish",
             new Collection<string>() {"C#"},
@@ -157,6 +172,7 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
             "https://docs.microsoft.com/da-dk/dynamics365/marketing/teams-webinar",
             "docs.microsoft.com",
             "Opret et Microsoft Teams webinar",
+            Created,
             "OndFisk",
             "Danish",
             new Collection<string>() { },
@@ -184,14 +200,22 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
     [InlineData(25, 2)]
     public async Task Resource_given_LixLevel_returns_skillLevel(int lixLevel, int expectedSkillLevel)
     {
-        await _repo.Push(_resource);
+        var resource = new ResourceCreateDTO
+        {
+            Created = _resource.Created,
+            Author = _resource.Author,
+            SiteTitle = _resource.SiteTitle,
+            SiteUrl = _resource.SiteUrl,
+            Language = _resource.Language,
+            MaterialType = _resource.MaterialType,
+            Categories = _resource.Categories,
+            Tags = _resource.Tags,
+            LixNumber = lixLevel
+        };
+        await _repo.Push(resource);
 
-        var entity = await _context.Resources.FindAsync(1);
-
-        entity.LixNumber = lixLevel;
-
-        var expected =  _repo.Get(1).Result.Value.SkillLevel;
-        var actual = expectedSkillLevel;
+        var actual =  _repo.Get(1).Result.Value.SkillLevel;
+        var expected = expectedSkillLevel;
 
         Assert.Equal(expected, actual);
         
@@ -325,10 +349,10 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
 
         await _repo.Push(resource);
 
-        var expectedObj = await _repo.Get(1);
+        var actualObject = await _repo.Get(1);
         
-        Assert.Equal(expectedObj.Value.LixNumber, 0);
-        Assert.Equal(expectedObj.Value.SkillLevel, 1);
+        Assert.Equal(0, actualObject.Value.LixNumber);
+        Assert.Equal(1, actualObject.Value.SkillLevel);
     }
     
     [Fact]
@@ -351,6 +375,34 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
         await Assert.ThrowsAsync<Exception>(() => _repo.Push(resource));
     }
 
+    [Fact]
+    public async Task Delete_returns_NotFound_for_no_existing_resource()
+    {
+        var actual = await _repo.Delete(100);
+
+        Assert.Equal(Status.NotFound, actual);
+    }
+    
+    [Fact]
+    public async Task Delete_returns_Deleted_for_existing_resource()
+    {
+        await _repo.Push(_resource);
+        var actual = await _repo.Delete(1);
+
+        Assert.Equal(Status.Deleted, actual);
+    }
+    
+    [Fact]
+    public async Task Delete_actually_deletes_resource()
+    {
+        await _repo.Push(_resource);
+        await _repo.Delete(1);
+
+        var instance = await _repo.Get(1);
+
+        Assert.True(instance.IsNone);
+    }
+
     private ICollection<Comment> GetComments(int resourceId)
     {
         var collection = new Collection<Comment>();
@@ -365,6 +417,7 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
         }
         return collection;
     }
+    
     
     /* Dispose code has been taken from  https://github.com/ondfisk/BDSA2021/blob/main/MyApp.Infrastructure.Tests/CityRepositoryTests.cs*/
     private bool _disposed;
