@@ -1,11 +1,13 @@
-﻿namespace Server.Controllers
+﻿using Server.Model;
+
+namespace Server.Controllers
 {
     /// <summary>
     /// Controller for the resourceRepository
     /// </summary>
 
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("Api/[controller]")]
     [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]
     public class ResourceController : ControllerBase
     {
@@ -13,13 +15,15 @@
         private readonly IResourceRepository _repository;
         private readonly ITagRepository _tagRepo;
         private readonly QueryParser _queryParser;
+        private readonly SpellChecker _spellChecker;
 
         public ResourceController(ILogger<ResourceController> logger, IResourceRepository repository, ITagRepository tagRepository)
         {
             _logger = logger;
             _repository = repository;
             _tagRepo = tagRepository;
-            _queryParser = new QueryParser(_tagRepo, _repository);
+            _queryParser = new QueryParser(_tagRepo);
+            _spellChecker = new SpellChecker();
         }
 
       
@@ -50,6 +54,11 @@
         /// <param name="id">Id of the resource to get</param>
         /// <returns>The resource with specific id</returns>
         [Authorize]
+        [HttpGet("Spelling")]
+        public string SuggestSpelling(string Query)
+            => _spellChecker.SpellCheck(Query);
+
+        [Authorize]
         [ProducesResponseType(404)]
         [ProducesResponseType(typeof(ResourceDetailsDTO), 200)]
         [HttpGet("{id}")]
@@ -64,10 +73,8 @@
         /// <returns>The action result of the push</returns>
         [HttpPost]  
         [ProducesResponseType(typeof(ResourceDTO), 201)]
-        public async Task<IActionResult> Post(ResourceCreateDTO resource)
-        {
+        public async Task<IActionResult> Post(ResourceCreateDTO resource) {
             var created = await _repository.Push(resource);
-    
             return CreatedAtAction(nameof(Get), new { created.Id }, created);
         }
 

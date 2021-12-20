@@ -163,7 +163,6 @@ public static class DataFactory
             "Can this help me find deleted text messages?"
         };
         
-
         for (int i = 0; i < 2000; i++)
         {
             await context.Comments.AddAsync(new Comment()
@@ -173,6 +172,8 @@ public static class DataFactory
                 AttachedToResource = rnd.Next(1, context.Resources.Count())
             });
         }
+
+        await context.SaveChangesAsync();
     }
 
     /// <summary>
@@ -182,7 +183,7 @@ public static class DataFactory
     private static async Task AttachCommentsToUsersAndResources(VideoOverflowContext context) {
         var comments = from user in context.Users
             join comment in context.Comments
-                on user.Id equals comment.Id
+                on user.Id equals comment.CreatedBy
             select new { Owner = user, Comment = comment };
 
         foreach (var comment in comments) {
@@ -191,13 +192,12 @@ public static class DataFactory
         
         var resources = from resource in context.Resources
             join comment in context.Comments
-                on resource.Id equals comment.CreatedBy
+                on resource.Id equals comment.AttachedToResource
             select new { CreatedBy = resource, Comment = comment };
 
         foreach (var resource in resources) {
             resource.CreatedBy.Comments?.Add(resource.Comment);
         }
-
         await context.SaveChangesAsync();
     }
 

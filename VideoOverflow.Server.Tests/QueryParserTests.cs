@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Diagnostics.Metrics;
-using System.Linq;
 using FluentAssertions;
 using VideoOverflow.Infrastructure.repositories;
 using VideoOverflow.Infrastructure.Tests;
@@ -10,53 +7,66 @@ namespace VideoOverflow.Server.Tests;
 /// <summary>
 /// Tests for our queryParser
 /// </summary>
-public class QueryParserTests : RepositoryTestsSetup {
+[Collection("Database")]
+public class QueryParserTests : DatabaseTestCase {
+    public class QueryParserTests : RepositoryTestsSetup {
     private readonly TagRepository _tagRepo;
-    private readonly ResourceRepository _resourceRepo;
 
-    public QueryParserTests() {
-        _tagRepo = new TagRepository(_context);
-        _resourceRepo = new ResourceRepository(_context);
+    public QueryParserTests(DatabaseTemplateFixture databaseFixture) : base(databaseFixture) {
+        _tagRepo = new TagRepository(DbContext);
     }
-    // TODO: FIX TESTS
-    // [Fact]
-    // public void QueryParser_given_how_to_start_docker_linux_and_tags_Docker_Linux_returns_Docker_Linux()
-    // {
-    //     _tagRepo.Push(new TagCreateDTO() {Name = "Docker", TagSynonyms = new List<string>()});
-    //     _tagRepo.Push(new TagCreateDTO() {Name = "Linux", TagSynonyms = new List<string>()});
-    //     var parser = new QueryParser(_tagRepo, _resourceRepo);
-    //     var expected = new List<string>() {"docker", "linux"};
-    //     var actual = parser.ParseTags("how to start docker linux").ToList();
-    //     Assert.Equal(expected.Count, actual.Count);
-    //     Assert.Equal(expected[0], actual[0].Name);
-    //     Assert.Equal(expected[1], actual[1].Name);
-    // }
     
-    // [Fact]
-    // public void QueryParser_given_Hi_John_and_tags_Hi_returns_hi()
-    // {
-    //     _tagRepo.Push(new TagCreateDTO() {Name = "Hi", TagSynonyms = new List<string>()});
-    //     var parser = new QueryParser(_tagRepo, _resourceRepo);
-    //     var expected = new List<TagDTO>() {new TagDTO(1, "Hi", new List<string>())};
-    //     var actual = parser.ParseTags("Hi John").ToList();
-    //     //Assert.Equal(expected.Count, actual.Count);
-    //     expected.Should().BeEquivalentTo(actual);
-    // }
+    [Fact]
+    public async Task QueryParser_given_how_to_start_docker_linux_and_tags_Docker_Linux_Git_returns_Docker_Linux() {
+        await _tagRepo.Push(new TagCreateDTO() {Name = "Docker", TagSynonyms = new List<string>()});
+        await _tagRepo.Push(new TagCreateDTO() {Name = "Linux", TagSynonyms = new List<string>()});
+        await _tagRepo.Push(new TagCreateDTO() {Name = "Git", TagSynonyms = new List<string>()});
+        var parser = new QueryParser(_tagRepo);
+        var expected = new List<TagDTO>() {
+            new (1, "Docker", new List<string>()),
+            new (2, "Linux", new List<string>())
+        };
+        var actual = parser.ParseTags("how to start docker linux").ToList();
+        expected.Should().BeEquivalentTo(actual);
+    }
 
-    // [Fact]
-    // public void QueryParser_given_query_undo_commit_git_command_line_returns_match_percent()
-    // {
-    //     _resourceRepo.Push(new ResourceCreateDTO(){SiteTitle = "How to revert git commits", Tags = new List<string>(){"git", "bash", "linux", "windows", "command-line"}});
-    //     _resourceRepo.Push(new ResourceCreateDTO(){SiteTitle = "How to revert git commits", Tags = new List<string>(){"git", "bash", "linux", "windows", "command-line"}});
-    //     _resourceRepo.Push(new ResourceCreateDTO(){SiteTitle = "How to revert git commits", Tags = new List<string>(){"git", "bash", "linux", "windows", "command-line"}});
-    //
-    //     _tagRepo.Push(new TagCreateDTO() {Name = "git", TagSynonyms = new List<string>(){"github"}});
-    //     _tagRepo.Push(new TagCreateDTO() {Name = "command", TagSynonyms = new List<string>(){"commands", "command-line"}});
-    //     _tagRepo.Push(new TagCreateDTO() {Name = "bash", TagSynonyms = new List<string>(){"zsh", "sh", "shell", "bourne-again"}});
-    //
-    //     var parser = new QueryParser(_tagRepo, _resourceRepo);
-    //     var expected = "git";
-    //     var actual = parser.ParseTags("how to start docker linux").ToList();
-    //     Assert.Equal(expected, actual[0].Name);
-    // }
+
+    [Fact]
+    public async Task QueryParser_given_Hi_john_and_tag_John_returns_John() {
+        await _tagRepo.Push(new TagCreateDTO() {Name = "John", TagSynonyms = new List<string>()});
+        var parser = new QueryParser(_tagRepo);
+        var expected = new List<TagDTO>() {new (1, "John", new List<string>())};
+        var actual = parser.ParseTags("Hi john").ToList();
+        expected.Should().BeEquivalentTo(actual);
+    }
+
+    [Fact]
+    public async Task QueryParser_given_query_start_docker_container_with_bash_commands_returns_match_percent() {
+        await _tagRepo.Push(new TagCreateDTO() {Name = "Git", TagSynonyms = new List<string>(){"Github"}});
+        await _tagRepo.Push(new TagCreateDTO() {Name = "Command", TagSynonyms = new List<string>(){"Commands", "CommandLine"}});
+        await _tagRepo.Push(new TagCreateDTO() {Name = "Bash", TagSynonyms = new List<string>(){"Zsh", "Sh", "Shell", "Bourne-Again"}});
+    
+        var parser = new QueryParser(_tagRepo);
+        var expected = new List<TagDTO>() {
+            new (2, "Command", new List<string>(){"Commands", "CommandLine"}),
+            new (3, "Bash", new List<string>(){"Zsh", "Sh", "Shell", "Bourne-Again"})
+        };
+        var actual = parser.ParseTags("start docker container with bash commands").ToList();
+        expected.Should().BeEquivalentTo(actual);
+    }
+    
+    [Fact]
+    public async Task QueryParser_given_query_undo_commit_git_command_line_returns_Commit_Command() {
+        await _tagRepo.Push(new TagCreateDTO() {Name = "Git", TagSynonyms = new List<string>(){"Github"}});
+        await _tagRepo.Push(new TagCreateDTO() {Name = "Command", TagSynonyms = new List<string>(){"Commands", "CommandLine"}});
+        await _tagRepo.Push(new TagCreateDTO() {Name = "Bash", TagSynonyms = new List<string>(){"Zsh", "Sh", "Shell", "Bourne-Again"}});
+    
+        var parser = new QueryParser(_tagRepo);
+        var expected = new List<TagDTO>() {
+            new (1, "Git", new List<string>(){"Github"}),
+            new (2, "Command", new List<string>(){"Commands", "CommandLine"})
+        };
+        var actual = parser.ParseTags("undo commit git command line").ToList();
+        expected.Should().BeEquivalentTo(actual);
+    }
 }

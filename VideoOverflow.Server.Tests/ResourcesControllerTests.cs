@@ -1,5 +1,4 @@
 using FluentAssertions.Extensions;
-using VideoOverflow.Server.Model;
 
 namespace VideoOverflow.Server.Tests;
 

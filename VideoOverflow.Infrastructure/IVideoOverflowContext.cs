@@ -5,7 +5,6 @@ namespace VideoOverflow.Infrastructure;
 /// </summary>
 public interface IVideoOverflowContext : IDisposable {
     DbSet<Tag> Tags { get; }
-    DbSet<Word> Words { get; }
     DbSet<TagSynonym> TagSynonyms { get; }
     DbSet<Category> Categories { get; }
     DbSet<Comment> Comments { get; }
