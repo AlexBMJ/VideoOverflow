@@ -1,9 +1,15 @@
 ﻿@page "/home"
 @using MudBlazor.Services
 @inject NavigationManager _navigation
+@using Microsoft.AspNetCore.Components.Authorization;
+
 
 
 <PageTitle>Home</PageTitle>
+
+<AuthorizeView Roles="@ADMINISTRATION_ROLE">
+    <p>You are an Administrator</p>
+</AuthorizeView>
 <AuthorizeView>
     <Authorized>
         <MudPaper Style="height: 400px; background-size: contain;background: url(background.svg) bottom;" Class="d-flex align-center justify-center">
@@ -24,7 +30,7 @@
                 <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
                     <MudText Typo="Typo.h5">Welcome!</MudText>
                 </MudHidden>
-                <MudButton Variant="Variant.Filled" OnClick="@LogIn" EndIcon="@Icons.Material.Filled.Login" Color="@Color.Secondary" Style="color: white; width: 200px; height: 60px; margin-top: 30px">
+                <MudButton Variant="Variant.Filled" OnClick="@LogIn" EndIcon="@Icons.Material.Filled.Login" Color="@Color.Primary" Style="color: white; width: 200px; height: 60px; margin-top: 30px">
                     Log In
                 </MudButton>
             </MudContainer>
@@ -33,27 +39,30 @@
 </AuthorizeView>
 
 <MudCarousel Style="height:200px;" ShowArrows="@arrows" ShowDelimiters="@delimiters" AutoCycleTime="@cycleTimer" AutoCycle="@autocycle" TData="object">
-    <MudCarouselItem Transition="transition" Color="@Color.Secondary">
+    <MudCarouselItem Transition="transition" Color="@Color.Primary">
         <div class="d-flex" style="height:100%">
             <MudIcon Class="mx-auto my-auto" Icon="VideoOverflow.Client/wwwroot/icon-192.png" />
         </div>
     </MudCarouselItem>
-    <MudCarouselItem Transition="transition" Color="@Color.Secondary">
+    <MudCarouselItem Transition="transition" Color="@Color.Primary">
         <div class="d-flex" style="height:100%">
             <MudIcon Class="mx-auto my-auto" src="icon-192.png" Size="@Size.Large" />
         </div>
     </MudCarouselItem>
-    <MudCarouselItem Transition="transition" Color="@Color.Secondary">
+    <MudCarouselItem Transition="transition" Color="@Color.Primary">
         <div class="d-flex" style="height:100%">
-            <MudIcon Class="mx-auto my-auto" Icon="VideoOverflow.Client/wwwroot/icon-192.png" Color="@Color.Secondary" Size="@Size.Large" />
+            <MudIcon Class="mx-auto my-auto" Icon="VideoOverflow.Client/wwwroot/icon-192.png" Color="@Color.Primary" Size="@Size.Large" />
         </div>
     </MudCarouselItem>
 </MudCarousel>
 
-
+    
 
 @code
 {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    string ADMINISTRATION_ROLE = "developer";
 
     private bool arrows = false;
     private bool delimiters = true;
