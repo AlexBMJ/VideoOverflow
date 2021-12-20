@@ -5,14 +5,18 @@
 @using System.Linq
 @using System.Text.RegularExpressions
 @using FluentAssertions.Extensions
+@using Microsoft.AspNetCore.Authorization
 @using VideoOverflow.Core
 @inject HttpClient _http
 @inject NavigationManager _navigationManager
 @inject ISnackbar Snackbar
 
+
 <h1>Create Resource</h1>
 
 <hr/>
+
+
 
 <MudForm Model="_createForm">
     <MudTextField T="string" Label="Site Title" @bind-Value="_createForm.SiteTitle"/>
@@ -23,7 +27,9 @@
         <MudSelectItem Value="@("Book")"/>
     </MudSelect>
     <MudTextField T="string" Label="Author" @bind-Value="_createForm.Author"/>
-    <MudTextField T="string" Label="LixNumber" @bind-Value="_createForm.LixNumber"/>
+
+    <MudNumericField @bind-Value="_createForm.LixNumber" HelperText="Lix" Variant="Variant.Text" HideSpinButtons="true" />
+    	
     <MudTextField T="string" Label="Language" @bind-Value="_createForm.Language"/>
     <MudTextField T="string" Label="Tags" @bind-Value="_createForm.Tags"/>
     
@@ -51,27 +57,23 @@
     private CreateForm _createForm = new();
     private DateTime? _date = DateTime.Today;
     private string value { get; set; } = "Nothing selected";
-    private CategoryDTO[] Categories;
+    private List<CategoryDTO> Categories = new List<CategoryDTO>();
     private IEnumerable<string> options { get; set; } = new HashSet<string>() { };
     
     
         private async Task HandleValidSubmit()
         {
+
             if (!isValidUrl(_createForm.SiteUrl))
             {
                 Snackbar.Add("INVALID URL!");
                 return;
             }
-            var isNumeric = int.TryParse(_createForm.LixNumber, out int _);
-
-            if (!isNumeric)
-            {
-                Snackbar.Add("Lix number is not valid!");
-            }
-
+            
             if (_date > DateTime.Now)
             {
                 Snackbar.Add("Please pick a valid date");
+                return;
             }
 
             var payload = new ResourceCreateDTO()
@@ -81,8 +83,8 @@
                     _createForm.MaterialType == "Article" ? ResourceType.Article : ResourceType.Book,
                 SiteUrl = _createForm.SiteUrl,
                 SiteTitle = _createForm.SiteTitle,
-                Author = _createForm.Author,
-                LixNumber = Int32.Parse(_createForm.LixNumber),
+                Author = _createForm.Author == null ? "Unknown" : _createForm.Author,
+                LixNumber = _createForm.LixNumber,
                 Language = _createForm.Language,
                 Tags = _createForm.Tags.Split(", "),
                 Categories = options.Select(c => c).ToList()
@@ -112,10 +114,10 @@
         [Required]
         public string MaterialType { get; set; }
 
-        public string Author { get; set; }
+        public string? Author { get; set; }
 
         [Required]
-        public string LixNumber { get; set; }
+        public int LixNumber { get; set; }
 
         [Required]
         public string Language { get; set; }
@@ -132,7 +134,7 @@
     protected override async Task OnInitializedAsync()
     {
         {
-            var categories = await _http.GetFromJsonAsync<CategoryDTO[]>("api/Category");
+            var categories = await _http.GetFromJsonAsync<List<CategoryDTO>>("api/Category");
 
             if (categories != null)
             {
@@ -140,5 +142,4 @@
             }
         }
     }
-
 }
