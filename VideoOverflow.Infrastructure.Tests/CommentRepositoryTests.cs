@@ -1,14 +1,24 @@
 namespace VideoOverflow.Infrastructure.Tests;
 
+/// <summary>
+/// Tests for our commentRepository
+/// </summary>
 public class CommentRepositoryTests : RepositoryTestsSetup, IDisposable
 {
     private readonly CommentRepository _repo;
-
+    
+    /// <summary>
+    /// Instantiate each test with a fresh repository
+    /// </summary>
     public CommentRepositoryTests()
     {
         _repo = new CommentRepository(_context);
     }
 
+    /// <summary>
+    /// Test the commentRepository's getAll method for a non empty DB
+    /// to ensure all comments from DB are returned
+    /// </summary>
     [Fact]
     public async Task GetAll_returns_all_comments_with_creator()
     {
@@ -43,6 +53,10 @@ public class CommentRepositoryTests : RepositoryTestsSetup, IDisposable
         expected.Should().BeEquivalentTo(actual);
     }
 
+    /// <summary>
+    /// Test the commentRepository's getAll method for an empty DB
+    /// to ensure an empty collection is returned
+    /// </summary>
     [Fact]
     public async Task GetAll_returns_empty_list_for_non_existing_comments()
     {
@@ -53,6 +67,10 @@ public class CommentRepositoryTests : RepositoryTestsSetup, IDisposable
         expected.Should().BeEquivalentTo(actual);
     }
 
+    /// <summary>
+    /// Test the commentRepository's push method
+    /// to ensure it gets created correctly
+    /// </summary>
     [Fact]
     public async Task Push_creates_new_comment_with_id_and_content()
     {
@@ -64,6 +82,10 @@ public class CommentRepositoryTests : RepositoryTestsSetup, IDisposable
         Assert.Equal("Nice Video!", actual.Content);
     }
 
+    /// <summary>
+    /// Test the commentRepository's push method for DB with existing resource
+    /// to ensure the comment is added to the resource
+    /// </summary>
     [Fact]
     public async Task Push_adds_comment_to_resource_and_creates_new_list_of_comments_if_null()
     {
@@ -115,6 +137,10 @@ public class CommentRepositoryTests : RepositoryTestsSetup, IDisposable
         expected.Should().BeEquivalentTo(actual);
     }
 
+    /// <summary>
+    /// Test the commentRepository's push method with existing resource and user in the DB
+    /// to ensure comment is attached to the resource and user
+    /// </summary>
     [Fact]
     public async Task Push_comment_on_resource_adds_comment_to_resource_by_existing_user()
     {
@@ -152,7 +178,10 @@ public class CommentRepositoryTests : RepositoryTestsSetup, IDisposable
         expected.Should().BeEquivalentTo(actual);
     }
 
-    
+    /// <summary>
+    /// Test the commentRepository's update method for an existing comment
+    /// to ensure the comment is updated accordingly in the DB
+    /// </summary>
     [Fact]
     public async Task Update_comment_updates_user_comments_and_resource_comments()
     {
@@ -190,10 +219,10 @@ public class CommentRepositoryTests : RepositoryTestsSetup, IDisposable
 
         await _repo.Update(updateComment);
         
-        var expectedResourceComments = (await _context.Resources.FirstAsync()).Comments;
-        var expectedUserComments = (await _context.Users.FirstAsync()).Comments;
+        var actualResourceComments = (await _context.Resources.FirstAsync()).Comments;
+        var actualUserComments = (await _context.Users.FirstAsync()).Comments;
 
-        var actualResourceComments = new Collection<Comment>()
+        var expectedResourceComments = new Collection<Comment>()
         {
             new Comment()
             {
@@ -203,7 +232,7 @@ public class CommentRepositoryTests : RepositoryTestsSetup, IDisposable
                 Id = 1
             }
         };
-        var actualUserComments = new Collection<Comment>()
+        var expectedUserComments = new Collection<Comment>()
         {
             new Comment()
             {
@@ -219,6 +248,10 @@ public class CommentRepositoryTests : RepositoryTestsSetup, IDisposable
         
     }
 
+    /// <summary>
+    /// Test the commentRepository's get method for an existing comment
+    /// to ensure the correct comment is returned from the DB
+    /// </summary>
     [Fact]
     public async Task Get_returns_comment_for_given_id()
     {
@@ -233,6 +266,10 @@ public class CommentRepositoryTests : RepositoryTestsSetup, IDisposable
         Assert.Equal(expected, actual);
     }
 
+    /// <summary>
+    /// Test the commentRepository's get method for a non existing comment
+    /// to ensure null is returned
+    /// </summary>
     [Fact]
     public async Task Get_returns_null_for_non_existing_comment()
     {
@@ -240,7 +277,7 @@ public class CommentRepositoryTests : RepositoryTestsSetup, IDisposable
 
         Assert.Null(comment);
     }
-
+    
     [Fact]
     public async Task Get_returns_creator()
     {
@@ -266,7 +303,10 @@ public class CommentRepositoryTests : RepositoryTestsSetup, IDisposable
         Assert.Equal(actual, user);
     }
 
-
+    /// <summary>
+    /// Test the commentRepository's update method for existing comment
+    /// to ensure the updated action result is returned
+    /// </summary>
     [Fact]
     public async Task Update_of_existing_comment_returns_Updated()
     {
@@ -281,6 +321,10 @@ public class CommentRepositoryTests : RepositoryTestsSetup, IDisposable
         Assert.Equal(Status.Updated, actual);
     }
 
+    /// <summary>
+    /// Test the commentRepository's update method for a non existing comment
+    /// to ensure the notfound action result is returned
+    /// </summary>
     [Fact]
     public async Task Update_returns_NotFound_for_non_existing_comment()
     {
@@ -291,6 +335,10 @@ public class CommentRepositoryTests : RepositoryTestsSetup, IDisposable
         Assert.Equal(Status.NotFound, response);
     }
 
+    /// <summary>
+    /// Test the commentRepository's update method for an existing comment
+    /// to ensure the comment is updated accordingly in the DB
+    /// </summary>
     [Fact]
     public async Task Update_changes_content_of_comment()
     {
@@ -311,6 +359,10 @@ public class CommentRepositoryTests : RepositoryTestsSetup, IDisposable
     
     /* Dispose code has been taken from  https://github.com/ondfisk/BDSA2021/blob/main/MyApp.Infrastructure.Tests/CityRepositoryTests.cs*/
     private bool _disposed;
+    /// <summary>
+    /// If we haven't disposed yet, we start disposing our context
+    /// </summary>
+    /// <param name="disposing"> Boolean for if we have disposed yet</param>
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposed)

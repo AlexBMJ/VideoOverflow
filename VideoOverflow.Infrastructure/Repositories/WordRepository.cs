@@ -1,5 +1,8 @@
-namespace VideoOverflow.Infrastructure;
+namespace VideoOverflow.Infrastructure.Repositories;
 
+/// <summary>
+/// The repository for our word database
+/// </summary>
 public class WordRepository : IWordRepository
 {
     private readonly IVideoOverflowContext _context;

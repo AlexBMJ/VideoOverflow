@@ -1,14 +1,26 @@
+using VideoOverflow.Infrastructure.Repositories;
+
 namespace VideoOverflow.Infrastructure.Tests;
 
+/// <summary>
+/// Tests for our wordRepository
+/// </summary>
 public class WordRepositoryTests : RepositoryTestsSetup
 {
     private readonly WordRepository _repo;
 
+    /// <summary>
+    /// Instantiate each test with a fresh repository
+    /// </summary>
     public WordRepositoryTests()
     {
         _repo = new WordRepository(_context);
     }
 
+    /// <summary>
+    /// Test our wordRepository's getAll method
+    /// to ensure it returns all words
+    /// </summary>
     [Fact]
     public async Task GetAll_Returns_All_Words()
     {
@@ -38,6 +50,10 @@ public class WordRepositoryTests : RepositoryTestsSetup
         expected.Should().BeEquivalentTo(actual);
     }
 
+    /// <summary>
+    /// Test our wordRepository's getAll method while it's empty
+    /// to ensure it returns an empty collection.
+    /// </summary>
     [Fact]
     public async Task GetAll_Returns_Empty_For_Empty_Table()
     {
@@ -47,7 +63,11 @@ public class WordRepositoryTests : RepositoryTestsSetup
 
         expected.Should().BeEquivalentTo(actual);
     }
-
+    
+    /// <summary>
+    /// Test our wordRepository's get method on an existing word
+    /// to ensure it returns the correct word
+    /// </summary>
     [Fact]
     public async Task Get_Existing_Word_Returns_WordDTO_for_given_id()
     {
@@ -65,6 +85,10 @@ public class WordRepositoryTests : RepositoryTestsSetup
         expected.Should().BeEquivalentTo(actual);
     }
 
+    /// <summary>
+    /// Test our wordRepository's push method
+    /// to ensure it returns the correct wordDTO
+    /// </summary>
     [Fact]
     public async Task Push_Creates_Id_In_DB_and_returns_WordDTO_for_created_entity()
     {

@@ -1,5 +1,8 @@
 ﻿namespace Server.Controllers
 {
+    /// <summary>
+    /// Controller for the resourceRepository
+    /// </summary>
 
     [ApiController]
     [Route("api/[controller]")]
@@ -20,17 +23,33 @@
         }
 
       
+        /// <summary>
+        /// Get all resources from the repository
+        /// </summary>
+        /// <returns>All resources from the repository</returns>
         [HttpGet]
         public async Task<IEnumerable<ResourceDTO>> GetAll()
             => await _repository.GetAll();
 
+        /// <summary>
+        /// Gets all resources based on selected category, query, count and page
+        /// </summary>
+        /// <param name="Category">The selected category</param>
+        /// <param name="Query">The users query</param>
+        /// <param name="Count"></param>
+        /// <param name="Page"></param>
+        /// <returns>All resources based on the parameters</returns>
         [Authorize]
         [HttpGet("Search")]
         public async Task<IEnumerable<ResourceDTO>> GetResources(int Category, string Query, int Count, int Page)
             => await _repository.GetResources(Category, Query, _queryParser.ParseTags(Query), Count, Math.Max(0, Count*(Page-1)));
 
+        /// <summary>
+        /// Gets a specific resoure based on an id
+        /// </summary>
+        /// <param name="id">Id of the resource to get</param>
+        /// <returns>The resource with specific id</returns>
         [Authorize]
-
         [ProducesResponseType(404)]
         [ProducesResponseType(typeof(ResourceDetailsDTO), 200)]
         [HttpGet("{id}")]
@@ -38,7 +57,11 @@
             => (await _repository.Get(id)).ToActionResult();
 
         
-      
+        /// <summary>
+        /// Posts a resource to the repository
+        /// </summary>
+        /// <param name="resource">The resource to post</param>
+        /// <returns>The action result of the push</returns>
         [HttpPost]  
         [ProducesResponseType(typeof(ResourceDTO), 201)]
         public async Task<IActionResult> Post(ResourceCreateDTO resource)
@@ -48,14 +71,23 @@
             return CreatedAtAction(nameof(Get), new { created.Id }, created);
         }
 
-      
+        /// <summary>
+        /// Updates a resource based on the input resource
+        /// </summary>
+        /// <param name="resource">The updated resource</param>
+        /// <returns>The action result of the update</returns>
         [HttpPut]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> Put([FromBody] ResourceUpdateDTO resource)
             => (await _repository.Update(resource)).ToActionResult();
         
-    
+        
+        /// <summary>
+        /// Deletes a resource based on the id of the resource
+        /// </summary>
+        /// <param name="id">The id of the resource</param>
+        /// <returns>The action result of the delete</returns>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

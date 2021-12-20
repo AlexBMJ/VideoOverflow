@@ -1,15 +1,24 @@
 ﻿namespace VideoOverflow.Infrastructure.Tests;
 
+/// <summary>
+/// Tests for our tagSynonymRepository
+/// </summary>
 public class TagSynonymRepositoryTests : RepositoryTestsSetup, IDisposable
 {
     private readonly TagSynonymRepository _repo;
     
+    /// <summary>
+    /// Instantiate each test with a fresh repository
+    /// </summary>
     public TagSynonymRepositoryTests()
     {
         _repo = new TagSynonymRepository(_context);
     }
 
-
+    /// <summary>
+    /// Test the tagSynonymRepository's getAll method
+    /// to ensure it returns all tagSynonyms in the DB
+    /// </summary>
     [Fact]
     public async Task GetAll_returns_all_TagSynonyms()
     {
@@ -29,6 +38,10 @@ public class TagSynonymRepositoryTests : RepositoryTestsSetup, IDisposable
         expected.Should().BeEquivalentTo(actual);
     }
 
+    /// <summary>
+    /// Test the tagSynonymRepository's getAll method for an empty DB
+    /// to ensure it returns an empty collection
+    /// </summary>
     [Fact]
     public async Task GetAll_returns_empty_list_for_no_existing_TagSynonyms()
     {
@@ -37,13 +50,20 @@ public class TagSynonymRepositoryTests : RepositoryTestsSetup, IDisposable
         actual.Should().BeEmpty();
     }
 
-
+    /// <summary>
+    /// Test the tagSynonymRepository's get method for a non existing tagSynonym
+    /// to ensure it returns null
+    /// </summary>
     [Fact]
     public async void Get_returns_null_for_non_existing_id()
     {
         Assert.Null(await _repo.Get(4));
     }
-
+    
+    /// <summary>
+    /// Test the tagSynonymRepository's get method for an existing tagSynonym
+    /// to ensure it returns the correct tagSynonym
+    /// </summary>
     [Fact]
     public async Task Get_returns_tagSynonym()
     {
@@ -58,7 +78,10 @@ public class TagSynonymRepositoryTests : RepositoryTestsSetup, IDisposable
         expected.Should().BeEquivalentTo(actual);
     }
 
-
+    /// <summary>
+    /// Test the tagSynonymRepository's update method for an existing tagSynonym
+    /// to ensure it returns the updated action result
+    /// </summary>
     [Fact]
     public async Task Update_of_existing_tagSynonym_returns_Updated()
     {
@@ -73,6 +96,10 @@ public class TagSynonymRepositoryTests : RepositoryTestsSetup, IDisposable
         Assert.Equal(Status.Updated, actual);
     }
 
+    /// <summary>
+    /// Test the tagSynonymRepository's updated method for a non existing tagsynonym
+    /// to ensure it returns the action result notfound
+    /// </summary>
     [Fact]
     public async Task Update_returns_NotFound_for_non_existing_tagSynonym()
     {
@@ -83,6 +110,10 @@ public class TagSynonymRepositoryTests : RepositoryTestsSetup, IDisposable
         Assert.Equal(Status.NotFound, response);
     }
 
+    /// <summary>
+    /// Test the tagSynonymRepository's update method for an existing tagSynonym
+    /// to ensure the correct tagSynonym is updated accordingly
+    /// </summary>
     [Fact]
     public async Task Update_changes_name_of_tagSynonym()
     {
@@ -103,6 +134,10 @@ public class TagSynonymRepositoryTests : RepositoryTestsSetup, IDisposable
     
     /* Dispose code has been taken from  https://github.com/ondfisk/BDSA2021/blob/main/MyApp.Infrastructure.Tests/CityRepositoryTests.cs*/
     private bool _disposed;
+    /// <summary>
+    /// If we haven't disposed yet, we start disposing our context
+    /// </summary>
+    /// <param name="disposing"> Boolean for if we have disposed yet</param>
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposed)

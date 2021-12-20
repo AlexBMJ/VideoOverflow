@@ -1,5 +1,8 @@
 namespace VideoOverflow.Infrastructure; 
 
+/// <summary>
+/// The context for our database
+/// </summary>
 public interface IVideoOverflowContext : IDisposable {
     DbSet<Tag> Tags { get; }
     DbSet<Word> Words { get; }

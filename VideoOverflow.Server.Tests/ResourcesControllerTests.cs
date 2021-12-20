@@ -3,9 +3,15 @@ using VideoOverflow.Server.Model;
 
 namespace VideoOverflow.Server.Tests;
 
-
+/// <summary>
+/// Tests for our resourceController
+/// </summary>
 public class ResourcesControllerTests
 {
+    /// <summary>
+    /// Test the resourceController's post method
+    /// to ensure it creates a post in the DB
+    /// </summary>
     [Fact]
     public async Task Post_creates_Resource()
     {
@@ -43,6 +49,10 @@ public class ResourcesControllerTests
 
     }
 
+    /// <summary>
+    /// Test the resourceController's getAll method
+    /// to ensure it returns all entries in the DB
+    /// </summary>
     [Fact]
     public async Task GetAll_returns_All_Resources_from_repo() {
         // Arrange
@@ -60,7 +70,10 @@ public class ResourcesControllerTests
         Assert.Equal(expected, actual);
     }
 
-
+    /// <summary>
+    /// Test the resourceController's get method on an existing resource
+    /// to ensure the method returns the correct resource
+    /// </summary>
     [Fact]
     public async Task Get_existing_resource() {
         // Arrange
@@ -78,7 +91,10 @@ public class ResourcesControllerTests
         Assert.Equal(resource, response.Value);
     }
 
-
+    /// <summary>
+    /// Test the resourceController's get method on a non existing resource
+    /// to ensure it returns a notfound actionresult
+    /// </summary>
     [Fact]
     public async Task Get_given_non_existing_returns_NotFound()
     {
@@ -96,6 +112,10 @@ public class ResourcesControllerTests
         Assert.IsType<NotFoundResult>(response.Result);
     }
 
+    /// <summary>
+    /// Test the resourceController's put method on an existing resource
+    /// to ensure that the resource is updated when finished
+    /// </summary>
     [Fact]
     public async Task Put_updates_Resource() {
         // Arrange
@@ -113,6 +133,10 @@ public class ResourcesControllerTests
         Assert.IsType<NoContentResult>(response);
     }
 
+    /// <summary>
+    /// Test the resourceController's put method on a non existing resource
+    /// to ensure it returns a notfound actionresult.
+    /// </summary>
     [Fact]
     public async Task Put_given_unknown_resource_returns_NotFound() {
 
