@@ -9,7 +9,7 @@
 <PageTitle>Browse</PageTitle>
 <MudGrid Justify="Justify.Center" Spacing="1" Class="my-4">
         <MudItem lg="8" md="8" sm="7" xs="12">
-            <MudTextField @bind-Value="_search" OnKeyPress="@(e => {if (e.Code == "Enter") {SpellCheck();Search();}})" Immediate="true" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Secondary"/>
+            <MudTextField @bind-Value="_search" OnKeyPress="@(e => {if (e.Code == "Enter") {if (e.Code == "Enter") {SpellCheck();Search();}})" Immediate="true" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" OnAdornmentClick="@(Search)" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Secondary"/>
             @if (!string.IsNullOrEmpty(_correctionSuggestion)) {
                 <MudChip OnClick="@(() => { _search = _correctionSuggestion; _correctionSuggestion = null; Search(); })" Label="true">Did you mean: @_correctionSuggestion</MudChip>
             }
@@ -38,10 +38,12 @@
             <MudItem xl="2" lg="2" md="1" Class="d-flex align-center">@context.Item2.Language</MudItem>
             <MudItem xl="2" lg="2" md="2" Class="d-flex align-center">@context.Item2.Author</MudItem>
 
+            <MudItem xl="1" lg="1" md="1" Class="d-flex align-center"> @context.Item2.Created.Value.Day-@context.Item2.Created.Value.Month-@context.Item2.Created.Value.Year </MudItem>
+            <MudItem Style="margin-left: 30px" Class="d-flex align-center">
+                <MudFab Style="height: 40px; width: 40px; margin-left: 50px" Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" aria-label="edit" />
+                <MudButton Style="margin-left: 10px; width: 15px" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(() =>  Delete(context.Item2.Id))"/>
+            </MudItem>
 
-            <MudItem xl="2" lg="2" md="2" Class="d-flex align-center"> @context.Item2.Created.Value.Day-@context.Item2.Created.Value.Month-@context.Item2.Created.Value.Year </MudItem>
-             <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" aria-label="edit" />
-            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(() =>  Delete(context.Item2.Id))"/>
         </MudGrid>
         <MudDivider/>
     </RowTemplate>
@@ -58,13 +60,24 @@
                                     </CardHeaderContent>
                                 </MudCardHeader>
                                 <MudCardContent Class="pa-4">
-                                    <MudTable Items="context.Item2.Comments" Context="comment" Height="10em"
-                                              Elevation="0">
-                                        <RowTemplate>
-                                            <MudText Class="py-2">@comment</MudText>
-                                            <MudDivider/>
-                                        </RowTemplate>
-                                    </MudTable>
+                                    <MudCardContent Class="pa-4">
+                                    </MudCardContent>
+                                    @if (context.Item2.Comments.Count == 0)
+                                    {
+                                        <MudChip Class="mud-theme-secondary">No Comments</MudChip>
+                                    }
+                                    else
+                                    {
+                                        <MudTable Items="context.Item2.Comments" Context="comment" Height="10em"
+                                                  Elevation="0">
+                                            <RowTemplate>
+                                                <MudText Class="py-2">@comment</MudText>
+                                                <MudDivider/>
+   
+                                            </RowTemplate>
+   
+                                        </MudTable>
+                                    }
                                 </MudCardContent>
                             </MudCard>
                         </MudItem>
@@ -78,6 +91,7 @@
                                 <MudCardContent Class="pa-4">
                                     @foreach (var category in context.Item2.Categories) {
                                         <MudChip Class="mud-theme-secondary">@category</MudChip>
+                                        
                                     }
                                 </MudCardContent>
                             </MudCard>
@@ -87,32 +101,46 @@
                                 <MudCardHeader>
                                     <CardHeaderContent>
                                         <MudText Typo="Typo.body1">Tags</MudText>
+                                        
                                     </CardHeaderContent>
                                 </MudCardHeader>
                                 <MudCardContent Class="pa-4">
                                     <MudTable Items="context.Item2.Tags" Context="tag" Height="10em"
                                               Elevation="0">
                                         <RowTemplate>
-                                            <MudText Class="py-2">@tag</MudText>
+                                            <MudItem xl="3" lg="3" md="4" sm="4" Class="d-flex flex-wrap align-center" Style="margin-top: 5px; margin-bottom: 5px">
+                                                @if (context.Item2.Tags.Count == 0)
+                                                {
+                                                    <MudChip Class="mud-theme-tertiary" Style="cursor: pointer;">No tags</MudChip>
+                                                }
+                                                else
+                                                {
+                                                    foreach (var tag in context.Item2.Tags)
+                                                    {
+                                                        <MudChip Class="mud-theme-tertiary" Style="cursor: pointer;">@tag</MudChip>
+                                                    } 
+                                                }
+                                            </MudItem>
                                             <MudDivider/>
                                         </RowTemplate>
                                     </MudTable>
                                 </MudCardContent>
                             </MudCard>
                         </MudItem>
-                        <MudItem>
-                            <MudCard Elevation="0">
-                                <MudCardHeader>
-                                    <CardHeaderContent>
-                                        <MudText Typo="Typo.body1">External Site</MudText>
-                                    </CardHeaderContent>
-                                </MudCardHeader>
-                                <MudCardContent Class="pa-4" Style="">
-                                    <MudLink Href="@context.Item2.SiteUrl">@context.Item2.SiteUrl</MudLink>
-                                </MudCardContent>
-                            </MudCard>
-                        </MudItem>
+                        
                     </MudGrid>
+                    <MudItem>
+                        <MudCard Elevation="0">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.body1">External Site</MudText>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent Class="pa-4" Style="">
+                                <MudLink Href="@context.Item2.SiteUrl">@context.Item2.SiteUrl</MudLink>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
                 </td>
             </MudTr>
         }
