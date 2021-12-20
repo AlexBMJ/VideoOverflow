@@ -1,4 +1,4 @@
-﻿@page "/Add"
+﻿@page "/Add Resources"
 @using Microsoft.AspNetCore.Components
 @using VideoOverflow.Core.DTOs
 @using System.ComponentModel.DataAnnotations
@@ -50,9 +50,6 @@
 </MudContainer>
 
 
-
-
-
 @code {
     private CreateForm _createForm = new();
     private DateTime? _date = DateTime.Today;
@@ -74,6 +71,11 @@
             {
                 Snackbar.Add("Please pick a valid date");
                 return;
+            }
+            
+            if (_createForm.LixNumber < 0)
+            {
+                _createForm.LixNumber = 0;
             }
 
             var payload = new ResourceCreateDTO()
