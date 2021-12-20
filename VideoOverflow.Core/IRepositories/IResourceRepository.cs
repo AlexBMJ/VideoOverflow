@@ -8,4 +8,6 @@ public interface IResourceRepository
     public Task<Option<ResourceDetailsDTO>> Get(int id);
     public Task<ResourceDTO> Push(ResourceCreateDTO create);
     public Task<Status> Update(ResourceUpdateDTO update);
+
+    public Task<Status> Delete(int resourceId);
 }

@@ -1,6 +1,6 @@
 ﻿namespace Server.Controllers
 {
-    [Authorize]
+
     [ApiController]
     [Route("api/[controller]")]
     [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]
@@ -19,7 +19,7 @@
             _queryParser = new QueryParser(_tagRepo, _repository);
         }
 
-        [Authorize]
+      
         [HttpGet]
         public async Task<IEnumerable<ResourceDTO>> GetAll()
             => await _repository.GetAll();
@@ -30,6 +30,7 @@
             => await _repository.GetResources(Category, Query, _queryParser.ParseTags(Query), Count, Math.Max(0, Count*(Page-1)));
 
         [Authorize]
+
         [ProducesResponseType(404)]
         [ProducesResponseType(typeof(ResourceDetailsDTO), 200)]
         [HttpGet("{id}")]
@@ -37,7 +38,7 @@
             => (await _repository.Get(id)).ToActionResult();
 
         
-        [Authorize(Roles = "Developer")]
+      
         [HttpPost]  
         [ProducesResponseType(typeof(ResourceDTO), 201)]
         public async Task<IActionResult> Post(ResourceCreateDTO resource)
@@ -47,11 +48,18 @@
             return CreatedAtAction(nameof(Get), new { created.Id }, created);
         }
 
-        [Authorize(Roles = "Developer")]
+      
         [HttpPut]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> Put([FromBody] ResourceUpdateDTO resource)
             => (await _repository.Update(resource)).ToActionResult();
+        
+    
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Delete(int id)
+            => (await _repository.Delete(id)).ToActionResult();
     }
 }
