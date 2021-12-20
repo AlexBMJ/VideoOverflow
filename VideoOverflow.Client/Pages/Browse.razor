@@ -9,8 +9,10 @@
 <PageTitle>Browse</PageTitle>
 <MudGrid Justify="Justify.Center" Spacing="1" Class="my-4">
         <MudItem lg="8" md="8" sm="7" xs="12">
-            <MudTextField @bind-Value="_search" OnKeyPress="@(e => {if (e.Code == "Enter") Search();})" Immediate="true" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" OnAdornmentClick="@(Search)" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Primary"/>
-            <MudText>Did you mean: @_correctionSuggestion</MudText>
+            <MudTextField @bind-Value="_search" OnKeyPress="@(e => {if (e.Code == "Enter") {SpellCheck();Search();}})" Immediate="true" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" OnAdornmentClick="@(Search)" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Secondary"/>
+            @if (!string.IsNullOrEmpty(_correctionSuggestion)) {
+                <MudChip OnClick="@(() => { _search = _correctionSuggestion; _correctionSuggestion = null; Search(); })" Label="true">Did you mean: @_correctionSuggestion</MudChip>
+            }
         </MudItem>
         <MudItem lg="3" md="3" sm="3" xs="12">
             <MudSelect @bind-Value="_category" T="string" Label="Category" Strict="true" Variant="Variant.Outlined" Format="F2" AnchorOrigin="Origin.BottomCenter" AdornmentIcon="@Icons.Filled.Category">
@@ -135,6 +137,7 @@
     <MudItem lg="3" md="3" sm="3" xs="12">
             <MudIconButton Class="ma-2" Variant="Variant.Filled" DisableElevation="true" Icon="@Icons.Material.Filled.ArrowBackIosNew" OnClick="@(() => {if (_page > 1) {_page -= 1; Search();}})" Size="Size.Large" />
             <MudIconButton Class="ma-2" Variant="Variant.Filled" DisableElevation="true" Icon="@Icons.Material.Filled.ArrowForwardIos" OnClick="@(() => {_page+=1;Search();})" Size="Size.Large"  />
+
         </MudItem>
 </MudGrid>
 
@@ -149,24 +152,37 @@
     private int _page = 1;
 
     protected override async Task OnInitializedAsync() {
-        var categories = await _http.GetFromJsonAsync<CategoryDTO[]>("api/Category");
+        var categories = await _http.GetFromJsonAsync<CategoryDTO[]>("Api/Category");
         if (categories != null)
-
             _categories = categories.ToList();
         _categories.Insert(0, new CategoryDTO(0, "None"));
-        }
+    }
+
+    private async Task SpellCheck() {
+        var uri = QueryHelpers.AddQueryString("Api/Resource/Spelling",
+            new Dictionary<string, string?>() {["Query"] = _search});
+        var suggestion = await _http.GetStringAsync(uri);
+        _correctionSuggestion = suggestion != _search ? suggestion : null;
+        StateHasChanged();
+    }
+
     private async Task Search() {
+        var resources = await GetResources();
+        if (resources != null) {
+            _resources = resources.Select(r => new SettableTuple<bool, ResourceDTO>(false, r)).ToList();
+            StateHasChanged();
+        }
+    }
+
+    private async Task<IEnumerable<ResourceDTO>?> GetResources() {
         var queryStringParams = new Dictionary<string, string?>() {
-            ["Category"] = _categories.First(c=>c.Name.Equals(_category)).Id.ToString(), 
+            ["Category"] = _categories.First(c=>c.Name.Equals(_category)).Id.ToString(),
             ["Query"] = _search,
             ["Count"] = _resultCount.ToString(),
-            ["Page"] = _page.ToString(),
+            ["Page"] = _page.ToString()
         };
-        var uri = QueryHelpers.AddQueryString("api/Resource/Search", queryStringParams);
-        var resources = await _http.GetFromJsonAsync<ResourceDTO[]>(uri);
-        _resources = resources?.Select(r => new SettableTuple<bool, ResourceDTO>(false, r)).ToList();
-        StateHasChanged();
-
+        var uri = QueryHelpers.AddQueryString("Api/Resource/Search", queryStringParams);
+        return await _http.GetFromJsonAsync<ResourceDTO[]>(uri);
     }
 
     private string GetMaterialIcon(ResourceType material) {
@@ -179,21 +195,19 @@
         };
     }
 
-    private async Task Delete(int id)
-    {
-        var response = await _http.DeleteAsync($"api/Resource/{id}");
+    private async Task Delete(int id) {
+        var response = await _http.DeleteAsync($"Api/Resource/{id}");
         
         if (response.IsSuccessStatusCode)
         {
             _snackbar.Add("SuccessFully Deleted a resource");
             var entity = _resources.Where(c => c.Item2.Id 
+
                  == id).Select(c => c).FirstOrDefault();
-            if (entity != null)
-            {
-                _resources.Remove(entity);
+            if (entity != null) {
+                _resources?.Remove(entity);
                 StateHasChanged();
             }
-            
         }
     }
 

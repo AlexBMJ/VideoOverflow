@@ -1,9 +1,11 @@
 ﻿@page "/home"
 @inject NavigationManager _navigation
 
+@using Microsoft.AspNetCore.Components.Authorization;
 
 
 <AuthorizeView Roles="@AdministrationRole">
+
     <p>You are an Administrator</p>
 </AuthorizeView>
 <AuthorizeView>
@@ -36,6 +38,7 @@
 
 <MudCarousel Style="height:275px; transform: translateY(-3px)" ShowArrows="@Arrows" ShowDelimiters="@Delimiters" AutoCycleTime="@_cycleTimer" AutoCycle="@AutoCycle" TData="object">
     <MudCarouselItem Transition="Transition" Color="@Color.Primary">
+
         <div class="d-flex" style="height:100%">
             <MudIcon Class="mx-auto my-auto" Icon="VideoOverflow.Client/wwwroot/icon-192.png" />
         </div>
@@ -46,6 +49,7 @@
         </div>
     </MudCarouselItem>
     <MudCarouselItem Transition="Transition" Color="@Color.Primary">
+
         <div class="d-flex" style="height:100%">
             <MudIcon Class="mx-auto my-auto" Icon="VideoOverflow.Client/wwwroot/icon-192.png" Color="@Color.Primary" Size="@Size.Large" />
         </div>
@@ -60,6 +64,7 @@
     private Task<AuthenticationState> AuthenticationStateTask { get; set; } = null!;
 
         private const string AdministrationRole = "developer";
+
 
         private const bool Arrows = false;
         private const bool Delimiters = true;

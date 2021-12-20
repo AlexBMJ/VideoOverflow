@@ -16,6 +16,7 @@
         <MudTextField T="string" Label="Site Title" @bind-Value="_createForm.SiteTitle" HelperTextOnFocus="true" HelperText="Please give your resource a name" Required="true" RequiredError="Title is required!"/>
         <MudTextField T="string" Label="Site Url" @bind-Value="_createForm.SiteUrl" HelperTextOnFocus="true" HelperText="Please enter a valid url for the resource" Required="true" RequiredError="Url is required and must be valid!"/>
         <MudSelect T="string" Label="MaterialType" @bind-Value="_createForm.MaterialType" AnchorOrigin="Origin.BottomCenter" HelperTextOnFocus="true" HelperText="Choose a material type" Required="true" RequiredError="A material type is required!">
+
             <MudSelectItem Value="@("Video")"/>
             <MudSelectItem Value="@("Article")"/>
             <MudSelectItem Value="@("Book")"/>
