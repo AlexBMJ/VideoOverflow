@@ -76,7 +76,7 @@ public class ResourceRepository : IResourceRepository
     /// </summary>
     /// <param name="resourceId">The id of the resource to get</param>
     /// <returns>The resource with the specific id</returns>
-    public async Task<Option<ResourceDetailsDTO>?> Get(int resourceId)
+    public async Task<Option<ResourceDetailsDTO>> Get(int resourceId)
     {
         return await _context.Resources.Where(resource => resource.Id == resourceId).Select(c => 
                 new ResourceDetailsDTO()
