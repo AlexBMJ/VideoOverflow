@@ -158,7 +158,15 @@ public class ResourceRepository : IResourceRepository
         {
             return Status.NotFound;
         }
-
+        
+        await foreach (var comment in _context.Comments)
+        {
+            if (comment.AttachedToResource == resourceId)
+            {
+                _context.Comments.Remove(comment);
+            }
+        }
+        
         _context.Resources.Remove(resource);
         await _context.SaveChangesAsync();
         
