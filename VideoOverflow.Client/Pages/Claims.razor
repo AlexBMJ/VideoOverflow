@@ -26,7 +26,10 @@
     }
     <MudText>User is admin/developer: @_authenticationStateProvider.GetAuthenticationStateAsync().Result.User.IsInRole($"developer")</MudText>
     <MudDivider/>
-    <MudText>Roles: @_authenticationStateProvider.GetAuthenticationStateAsync().Result.User.Identities.ToList() </MudText>
+    <AuthorizeView Roles="developer">
+        Jeg kan ses
+    </AuthorizeView>
+    
 
 </MudContainer>
 

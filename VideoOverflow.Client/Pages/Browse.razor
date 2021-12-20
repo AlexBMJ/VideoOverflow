@@ -56,13 +56,24 @@
                                     </CardHeaderContent>
                                 </MudCardHeader>
                                 <MudCardContent Class="pa-4">
-                                    <MudTable Items="context.Item2.Comments" Context="comment" Height="10em"
-                                              Elevation="0">
-                                        <RowTemplate>
-                                            <MudText Class="py-2">@comment</MudText>
-                                            <MudDivider/>
-                                        </RowTemplate>
-                                    </MudTable>
+                                   <MudCardContent Class="pa-4">
+                                       </MudCardContent>
+                                       @if (context.Item2.Comments.Count == 0)
+                                       {
+                                           <MudChip Class="mud-theme-secondary">No Comments</MudChip>
+                                       }
+                                       else
+                                       {
+                                           <MudTable Items="context.Item2.Comments" Context="comment" Height="10em"
+                                                     Elevation="0">
+                                               <RowTemplate>
+                                                   <MudText Class="py-2">@comment</MudText>
+                                                   <MudDivider/>
+   
+                                               </RowTemplate>
+   
+                                           </MudTable>
+                                       }
                                 </MudCardContent>
                             </MudCard>
                         </MudItem>
