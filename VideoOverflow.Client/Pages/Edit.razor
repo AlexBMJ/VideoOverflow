@@ -1,0 +1,152 @@
+﻿@page "/Edit/{id:int}"
+
+@using VideoOverflow.Core.DTOs
+@using VideoOverflow.Core
+@using Microsoft.AspNetCore.Components
+@using System.ComponentModel.DataAnnotations
+
+@inject HttpClient _http
+@inject NavigationManager _navigationManager
+@inject ISnackbar Snackbar
+
+
+
+
+<MudContainer Class="ma-2">
+    <h1>Edit Resource</h1>
+    <MudDivider/>
+    <MudForm Model="_ResourceForm" >
+        <MudTextField T="string" Label="Site Title" @bind-Value="_ResourceForm.SiteTitle"/>
+        <MudTextField T="string" Label="Site Url" @bind-Value="_ResourceForm.SiteUrl"/>
+        <MudSelect T="string" Label="MaterialType" Variant="Variant.Outlined" @bind-Value="_ResourceForm.MaterialType" AnchorOrigin="Origin.BottomCenter">
+            <MudSelectItem Value="@("Video")"/>
+            <MudSelectItem Value="@("Article")"/>
+            <MudSelectItem Value="@("Book")"/>
+        </MudSelect>
+        <MudTextField T="string" Label="Author" @bind-Value="_ResourceForm.Author"/>
+
+        <MudNumericField @bind-Value="_ResourceForm.LixNumber" HelperText="Lix" Variant="Variant.Text" HideSpinButtons="true" />
+    	    
+        <MudTextField T="string" Label="Language" @bind-Value="_ResourceForm.Language"/>
+        <MudTextField T="string" Label="Tags" @bind-Value="_ResourceForm.Tags"/>
+        
+       @* <MudGrid>
+            <MudItem xs="12" md="12">
+                <MudSelect T="string" Label="Categories" HelperText="Pick the categories"
+                           MultiSelection="true" OffsetY="true" DelimitedStringSeparator="^" SelectAll="false" SelectAllText="Select all categories"
+                           @bind-Value="value" @bind-SelectedValues="options" AdornmentIcon="@Icons.Material.Filled.Search"
+                           MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))">
+                    @foreach (var category in Categories)
+                    {
+                        <MudSelectItem T="string" Value="@category.Name">@category.Name</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+        </MudGrid>*@
+
+        <MudDatePicker Label="DateCreated" @bind-Date="_ResourceForm.Created"/>
+
+    </MudForm>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await EditResource())">Edit</MudButton>
+</MudContainer>
+
+
+@code {
+
+    private ResourceForm _ResourceForm = new();
+
+    public class ResourceForm
+    {
+        
+        [Required]
+        public string SiteTitle { get; set; }
+
+        [Required] 
+        public DateTime? Created { get; set; }
+        
+        [Required]
+        public string SiteUrl { get; set; }
+
+        [Required]
+        public string MaterialType { get; set; }
+
+        public string? Author { get; set; }
+
+        [Required]
+        public int LixNumber { get; set; }
+
+        [Required]
+        public string Language { get; set; }
+
+        [Required]
+        public string Tags { get; set; }
+        
+        [Required]
+        public string Categories { get; set; }
+        
+        [Required]
+        public string Comments { get; set; }
+    }
+
+
+    [Parameter]
+    public int id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine("HITT");
+        
+        await SetInitValues(id);
+        
+        Console.WriteLine("Update resource ID:" + id);
+    }
+
+    /// Fetch detailed information about the resource you want to edit and bind them to the variables
+    private async Task SetInitValues(int id)
+    {
+        var details = await _http.GetFromJsonAsync<ResourceDetailsDTO>($"api/resource/{id}");
+
+        _ResourceForm.Created = details.Created;
+        _ResourceForm.MaterialType = details.MaterialType.ToString();
+        _ResourceForm.SiteUrl = details.SiteUrl;
+        _ResourceForm.SiteTitle = details.SiteTitle;
+        _ResourceForm.Author = details.Author;
+        _ResourceForm.LixNumber = details.LixNumber;
+        _ResourceForm.Language = details.Language;
+        _ResourceForm.Comments = string.Join(", ", details.Comments);
+        _ResourceForm.Tags = string.Join(", ", details.Tags);
+        _ResourceForm.Categories = string.Join(", ", details.Categories);
+
+    }
+
+
+    private async Task EditResource()
+    {
+
+        var update = new ResourceUpdateDTO()
+        {
+            Id = id,
+            Created = _ResourceForm.Created,
+            MaterialType = (ResourceType)Enum.Parse(typeof(ResourceType), _ResourceForm.MaterialType),
+            SiteUrl = _ResourceForm.SiteUrl,
+            SiteTitle = _ResourceForm.SiteTitle,
+            Author = _ResourceForm.Author,
+            LixNumber = _ResourceForm.LixNumber,
+            Language = _ResourceForm.Language,
+
+            Tags = _ResourceForm.Tags.Split(", "),
+            Categories = _ResourceForm.Categories.Split(", "),
+            Comments = _ResourceForm.Comments.Split(", ")
+        };
+        
+        var response = await _http.PutAsJsonAsync<ResourceUpdateDTO>($"api/Resource", update);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add("You have successfully edited resource with id: " + id);
+            
+        }
+
+    }
+    
+}
