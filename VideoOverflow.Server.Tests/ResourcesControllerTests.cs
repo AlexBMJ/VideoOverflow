@@ -1,3 +1,4 @@
+using FluentAssertions.Extensions;
 using VideoOverflow.Server.Model;
 
 namespace VideoOverflow.Server.Tests;
@@ -17,7 +18,7 @@ public class ResourcesControllerTests
             "https://www.youtube.com",
             "youtube",
             "Youtube",
-            DateTime.Parse("20-08-2012"),
+            DateTime.Parse("20-08-2012").AsUtc(),
             "A",
             "english",
             new Collection<string>(),
