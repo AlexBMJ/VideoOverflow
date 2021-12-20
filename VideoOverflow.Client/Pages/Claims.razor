@@ -26,11 +26,6 @@
     }
     <MudText>User is admin/developer: @_authenticationStateProvider.GetAuthenticationStateAsync().Result.User.IsInRole($"developer")</MudText>
     <MudDivider/>
-    <AuthorizeView Roles="developer">
-        Jeg kan ses
-    </AuthorizeView>
-    
-
 </MudContainer>
 
 @code {
@@ -39,7 +34,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync() ;
         var user = authState.User;
 
         if (user.Identity?.IsAuthenticated == true)

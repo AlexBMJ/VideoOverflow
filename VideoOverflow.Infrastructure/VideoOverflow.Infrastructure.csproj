@@ -25,9 +25,5 @@
     <ItemGroup>
       <ProjectReference Include="..\VideoOverflow.Core\VideoOverflow.Core.csproj" />
     </ItemGroup>
-     
-    <ItemGroup>
-      <Folder Include="Migrations" />
-    </ItemGroup>
 
 </Project>
