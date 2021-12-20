@@ -23,9 +23,9 @@ public class TagRepository : ITagRepository
     }
     
     public async Task<IReadOnlyCollection<TagDTO>> GetTagByNameAndSynonym(string name) {
-        return await _context.Tags.Where(
-            t => t.Name.Equals(name) || t.TagSynonyms.Any(s => s.Name.Equals(name)))
-                .Select(c => new TagDTO(c.Id, c.Name, c.TagSynonyms.Select(a => a.Name).ToList())).ToListAsync();
+        return await _context.Tags.
+            Where(t => EF.Functions.TrigramsSimilarity(t.Name, name) > 0.8 || t.TagSynonyms.Any(s => EF.Functions.TrigramsSimilarity(s.Name, name) > 0.8)).
+            Select(c => new TagDTO(c.Id, c.Name, c.TagSynonyms.Select(a => a.Name).ToList())).ToListAsync();
     }
     
     public async Task<TagDTO?> Get(int tagId)

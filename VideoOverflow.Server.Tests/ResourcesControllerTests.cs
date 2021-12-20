@@ -2,11 +2,13 @@ using VideoOverflow.Server.Model;
 
 namespace VideoOverflow.Server.Tests;
 
+
 public class ResourcesControllerTests
 {
     [Fact]
     public async Task Post_creates_Resource()
     {
+
         // Arrange
         var logger = new Mock<ILogger<ResourceController>>();
         var toCreate = new ResourceCreateDTO();
@@ -23,8 +25,11 @@ public class ResourcesControllerTests
             new Collection<string>()
         );
         var repository = new Mock<IResourceRepository>();
+      
+        var tagRepo = new Mock<ITagRepository>();
         repository.Setup(m => m.Push(toCreate)).ReturnsAsync(created);
-        var controller = new ResourceController(logger.Object, repository.Object);
+        var controller = new ResourceController(logger.Object, repository.Object, tagRepo.Object);
+
 
         // Act
         var result = await controller.Post(toCreate) as CreatedAtActionResult;
@@ -33,17 +38,19 @@ public class ResourcesControllerTests
         Assert.Equal(created, result?.Value);
         Assert.Equal("Get", result?.ActionName);
         Assert.Equal(KeyValuePair.Create("Id", (object?) 1), result?.RouteValues?.Single());
+
+
     }
 
     [Fact]
-    public async Task GetAll_returns_All_Resources_from_repo()
-    {
+    public async Task GetAll_returns_All_Resources_from_repo() {
         // Arrange
         var logger = new Mock<ILogger<ResourceController>>();
         var expected = Array.Empty<ResourceDTO>();
         var repository = new Mock<IResourceRepository>();
+        var tagRepo = new Mock<ITagRepository>();
         repository.Setup(m => m.GetAll()).ReturnsAsync(expected);
-        var controller = new ResourceController(logger.Object, repository.Object);
+        var controller = new ResourceController(logger.Object, repository.Object, tagRepo.Object);
 
         // Act
         var actual = await controller.GetAll();
@@ -54,14 +61,14 @@ public class ResourcesControllerTests
 
 
     [Fact]
-    public async Task Get_existing_resource()
-    {
+    public async Task Get_existing_resource() {
         // Arrange
         var logger = new Mock<ILogger<ResourceController>>();
         var repository = new Mock<IResourceRepository>();
+        var tagRepo = new Mock<ITagRepository>();
         var resource = new ResourceDetailsDTO();
         repository.Setup(m => m.Get(1)).ReturnsAsync(resource);
-        var controller = new ResourceController(logger.Object, repository.Object);
+        var controller = new ResourceController(logger.Object, repository.Object, tagRepo.Object);
 
         // Act
         var response = await controller.Get(1);
@@ -77,8 +84,9 @@ public class ResourcesControllerTests
         // Arrange
         var logger = new Mock<ILogger<ResourceController>>();
         var repository = new Mock<IResourceRepository>();
+        var tagRepo = new Mock<ITagRepository>();
         repository.Setup(m => m.Get(21221121)).ReturnsAsync(default(ResourceDetailsDTO));
-        var controller = new ResourceController(logger.Object, repository.Object);
+        var controller = new ResourceController(logger.Object, tagRepo.Object);
 
         // Act
         var response = await controller.Get(42);
@@ -87,16 +95,15 @@ public class ResourcesControllerTests
         Assert.IsType<NotFoundResult>(response.Result);
     }
 
-
     [Fact]
-    public async Task Put_updates_Resource()
-    {
+    public async Task Put_updates_Resource() {
         // Arrange
         var logger = new Mock<ILogger<ResourceController>>();
         var resource = new ResourceUpdateDTO();
         var repository = new Mock<IResourceRepository>();
+        var tagRepo = new Mock<ITagRepository>();
         repository.Setup(m => m.Update(resource)).ReturnsAsync(Updated);
-        var controller = new ResourceController(logger.Object, repository.Object);
+        var controller = new ResourceController(logger.Object, repository.Object, tagRepo.Object);
 
         // Act
         var response = await controller.Put(resource);
@@ -106,14 +113,17 @@ public class ResourcesControllerTests
     }
 
     [Fact]
-    public async Task Put_given_unknown_resource_returns_NotFound()
-    {
+    public async Task Put_given_unknown_resource_returns_NotFound() {
+
         // Arrange
         var logger = new Mock<ILogger<ResourceController>>();
         var resource = new ResourceUpdateDTO();
         var repository = new Mock<IResourceRepository>();
+
+        var tagRepo = new Mock<ITagRepository>();
         repository.Setup(m => m.Update(resource)).ReturnsAsync(NotFound);
-        var controller = new ResourceController(logger.Object, repository.Object);
+        var controller = new ResourceController(logger.Object, repository.Object, tagRepo.Object);
+
 
         // Act
         var response = await controller.Put(resource);

@@ -28,6 +28,26 @@ public class ResourceRepository : IResourceRepository
             c.Categories.Select(category => category.Name).ToList(),
             c.Comments.Select(comment => comment.Content).ToList())).ToListAsync();
     }
+    
+    public async Task<IEnumerable<ResourceDTO>> GetResources(int category, string query, IEnumerable<TagDTO> tags, int count, int skip)
+    {
+        return await _context.Resources.
+            Where(t => (category == 0 || t.Categories.Any(c=>c.Id == category)) && t.Tags.Any(a=> tags.Select(qt=>qt.Id).Contains(a.Id))).
+            OrderByDescending(o=>EF.Functions.TrigramsSimilarity(o.SiteTitle, query)).
+            Skip(skip).
+            Take(count).
+            Select(r => new ResourceDTO(
+            r.Id,
+            r.MaterialType,
+            r.SiteUrl,
+            r.ContentSource,
+            r.SiteTitle,
+            r.Author,
+            r.Language,
+            r.Tags.Select(tag => tag.Name).ToList(),
+            r.Categories.Select(category => category.Name).ToList(),
+            r.Comments.Select(comment => comment.Content).ToList())).ToListAsync();
+    }
 
     public async Task<Option<ResourceDetailsDTO>> Get(int resourceId)
     {

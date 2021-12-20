@@ -8,11 +8,15 @@
     {
         private readonly ILogger<ResourceController> _logger;
         private readonly IResourceRepository _repository;
+        private readonly ITagRepository _tagRepo;
+        private readonly QueryParser _queryParser;
 
-        public ResourceController(ILogger<ResourceController> logger, IResourceRepository repository)
+        public ResourceController(ILogger<ResourceController> logger, IResourceRepository repository, ITagRepository tagRepository)
         {
             _logger = logger;
             _repository = repository;
+            _tagRepo = tagRepository;
+            _queryParser = new QueryParser(_tagRepo, _repository);
         }
 
       
@@ -20,7 +24,13 @@
         public async Task<IEnumerable<ResourceDTO>> GetAll()
             => await _repository.GetAll();
 
-       
+        [Authorize]
+        [HttpGet("Search")]
+        public async Task<IEnumerable<ResourceDTO>> GetResources(int Category, string Query, int Count, int Page)
+            => await _repository.GetResources(Category, Query, _queryParser.ParseTags(Query), Count, Math.Max(0, Count*(Page-1)));
+
+        [Authorize]
+
         [ProducesResponseType(404)]
         [ProducesResponseType(typeof(ResourceDetailsDTO), 200)]
         [HttpGet("{id}")]
