@@ -1,11 +1,11 @@
 ﻿@page "/home"
-@using MudBlazor.Services
 @inject NavigationManager _navigation
 
 @using Microsoft.AspNetCore.Components.Authorization;
 
 
-<AuthorizeView Roles="@ADMINISTRATION_ROLE">
+<AuthorizeView Roles="@AdministrationRole">
+
     <p>You are an Administrator</p>
 </AuthorizeView>
 <AuthorizeView>
@@ -36,18 +36,20 @@
     </NotAuthorized>
 </AuthorizeView>
 
-<MudCarousel Style="height:200px;" ShowArrows="@arrows" ShowDelimiters="@delimiters" AutoCycleTime="@cycleTimer" AutoCycle="@autocycle" TData="object">
-    <MudCarouselItem Transition="transition" Color="@Color.Primary">
+<MudCarousel Style="height:275px; transform: translateY(-3px)" ShowArrows="@Arrows" ShowDelimiters="@Delimiters" AutoCycleTime="@_cycleTimer" AutoCycle="@AutoCycle" TData="object">
+    <MudCarouselItem Transition="Transition" Color="@Color.Primary">
+
         <div class="d-flex" style="height:100%">
             <MudIcon Class="mx-auto my-auto" Icon="VideoOverflow.Client/wwwroot/icon-192.png" />
         </div>
     </MudCarouselItem>
-    <MudCarouselItem Transition="transition" Color="@Color.Primary">
+    <MudCarouselItem Transition="Transition" Color="@Color.Primary">
         <div class="d-flex" style="height:100%">
             <MudIcon Class="mx-auto my-auto" src="icon-192.png" Size="@Size.Large" />
         </div>
     </MudCarouselItem>
-    <MudCarouselItem Transition="transition" Color="@Color.Primary">
+    <MudCarouselItem Transition="Transition" Color="@Color.Primary">
+
         <div class="d-flex" style="height:100%">
             <MudIcon Class="mx-auto my-auto" Icon="VideoOverflow.Client/wwwroot/icon-192.png" Color="@Color.Primary" Size="@Size.Large" />
         </div>
@@ -59,14 +61,16 @@
 @code
 {
     [CascadingParameter]
-    private Task<AuthenticationState> authenticationStateTask { get; set; }
-    string ADMINISTRATION_ROLE = "developer";
+    private Task<AuthenticationState> AuthenticationStateTask { get; set; } = null!;
 
-    private bool arrows = false;
-    private bool delimiters = true;
-    private bool autocycle = true;
-    private Transition transition = Transition.Slide;
-    private TimeSpan cycleTimer = new TimeSpan(0, 0, 0, 10);
+        private const string AdministrationRole = "developer";
+
+
+        private const bool Arrows = false;
+        private const bool Delimiters = true;
+        private const bool AutoCycle = true;
+        private const Transition Transition = MudBlazor.Transition.Slide;
+    private readonly TimeSpan _cycleTimer = new TimeSpan(0, 0, 0, 10);
 
 
     private void LogIn()
