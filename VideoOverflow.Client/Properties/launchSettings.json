@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "Videooverflow": {
+    "VideoOverflow": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
