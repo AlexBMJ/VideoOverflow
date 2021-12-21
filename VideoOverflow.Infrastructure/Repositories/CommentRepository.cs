@@ -1,14 +1,25 @@
 namespace VideoOverflow.Infrastructure.repositories;
 
+/// <summary>
+/// The repository for the user relation
+/// </summary>
 public class CommentRepository : ICommentRepository
 {
     private readonly IVideoOverflowContext _context;
 
+    /// <summary>
+    /// Initialize the repository with a given context
+    /// </summary>
+    /// <param name="context">Context for a DB</param>
     public CommentRepository(IVideoOverflowContext context)
     {
         _context = context;
     }
 
+    /// <summary>
+    /// Gets all comments in the comment relation in the DB
+    /// </summary>
+    /// <returns>All comments in the DB</returns>
     public async Task<IReadOnlyCollection<CommentDTO>> GetAll()
     {
         return (await _context.Comments.Select(c => new CommentDTO(c.Id, c.CreatedBy, c.AttachedToResource, c.Content))
@@ -16,6 +27,11 @@ public class CommentRepository : ICommentRepository
             .AsReadOnly();
     }
 
+    /// <summary>
+    /// Gets a comment based on it's id
+    /// </summary>
+    /// <param name="commentId">The id of the comment to search for</param>
+    /// <returns>The comment with the specified id or null if it doesn't exist</returns>
     public async Task<CommentDTO?> Get(int commentId)
     {
         return await (from c in _context.Comments
@@ -23,6 +39,11 @@ public class CommentRepository : ICommentRepository
             select new CommentDTO(c.Id, c.CreatedBy, c.AttachedToResource, c.Content)).FirstOrDefaultAsync();
     }
 
+    /// <summary>
+    /// Pushes a comment to the DB
+    /// </summary>
+    /// <param name="comment">The comment to push</param>
+    /// <returns>The comment pushed to the DB</returns>
     public async Task<CommentDTO> Push(CommentCreateDTO comment)
     {
         var createdComment = new Comment()
@@ -55,6 +76,11 @@ public class CommentRepository : ICommentRepository
             createdComment.Content);
     }
 
+    /// <summary>
+    /// Updates a comment in the DB
+    /// </summary>
+    /// <param name="comment">The updated comment</param>
+    /// <returns>The status of the update</returns>
     public async Task<Status> Update(CommentUpdateDTO comment)
     {
         var entity = await (from c in _context.Comments

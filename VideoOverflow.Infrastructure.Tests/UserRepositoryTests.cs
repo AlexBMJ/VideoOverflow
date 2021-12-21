@@ -1,14 +1,24 @@
 namespace VideoOverflow.Infrastructure.Tests;
 
+/// <summary>
+/// Tests for our userRepository
+/// </summary>
 public class UserRepositoryTests : RepositoryTestsSetup, IDisposable
 {
     private readonly UserRepository _repo;
 
+    /// <summary>
+    /// Instantiate each test with a fresh repository
+    /// </summary>
     public UserRepositoryTests()
     {
         _repo = new UserRepository(_context);
     }
 
+    /// <summary>
+    /// Test the userRepository's getAll method
+    /// to ensure it returns all users
+    /// </summary>
     [Fact]
     public async Task GetAll_returns_all_users()
     {
@@ -41,6 +51,10 @@ public class UserRepositoryTests : RepositoryTestsSetup, IDisposable
         expected.Should().BeEquivalentTo(actual);
     }
 
+    /// <summary>
+    /// Test the userRepository's getAll method for an empty DB
+    /// to ensure it returns an empty collection
+    /// </summary>
     [Fact]
     public async Task GetAll_returns_empty_list_for_no_existing_Users()
     {
@@ -49,6 +63,10 @@ public class UserRepositoryTests : RepositoryTestsSetup, IDisposable
         Assert.Empty(actual);
     }
     
+    /// <summary>
+    /// Test the userRepository's getAll method with comments added to users
+    /// to ensure that all users have the correct comments paired with them
+    /// </summary>
     [Fact]
     public async Task GetAll_returns_all_comments_of_User()
     {
@@ -81,6 +99,10 @@ public class UserRepositoryTests : RepositoryTestsSetup, IDisposable
         expected.Should().BeEquivalentTo(actual.Comments);
     }
 
+    /// <summary>
+    /// Test the userRepository's push method
+    /// to ensure it creates a new user in the DB
+    /// </summary>
     [Fact]
     public async Task Push_creates_new_user_with_id_and_given_name()
     {
@@ -104,7 +126,10 @@ public class UserRepositoryTests : RepositoryTestsSetup, IDisposable
         expected.Should().BeEquivalentTo(actual);
     }
 
-
+    /// <summary>
+    /// Test the userRepository's push method
+    /// to ensure it creates the user in the DB
+    /// </summary>
     [Fact]
     public async Task Push_returns_new_userDTO_with_id_name_and_comments()
     {
@@ -116,7 +141,10 @@ public class UserRepositoryTests : RepositoryTestsSetup, IDisposable
         expected.Should().BeEquivalentTo(actual);
     }
 
-
+    /// <summary>
+    /// Test the userRepository's get method for an existing user
+    /// to ensure it returns the correct user
+    /// </summary>
     [Fact]
     public async Task Get_given_existing_userId_returns_UserDTO()
     {
@@ -132,6 +160,10 @@ public class UserRepositoryTests : RepositoryTestsSetup, IDisposable
         expected.Should().BeEquivalentTo(actual);
     }
 
+    /// <summary>
+    /// Test the userRepository's get method for a non existing user
+    /// to ensure it returns null
+    /// </summary>
     [Fact]
     public async Task Get_non_existing_user_returns_null()
     {
@@ -140,6 +172,10 @@ public class UserRepositoryTests : RepositoryTestsSetup, IDisposable
         Assert.Null(user);
     }
 
+    /// <summary>
+    /// Test the userRepository's update method for an existing user
+    /// to ensure the updated action result is returned
+    /// </summary>
     [Fact]
     public async Task Update_existing_user_returns_Updated()
     {
@@ -154,6 +190,10 @@ public class UserRepositoryTests : RepositoryTestsSetup, IDisposable
         Assert.Equal(Status.Updated, actual);
     }
 
+    /// <summary>
+    /// Test the userRepository's update method for an existing user
+    /// to ensure it updates the correct user in the DB
+    /// </summary>
     [Fact]
     public async Task Update_existing_user_changes_name()
     {
@@ -178,6 +218,10 @@ public class UserRepositoryTests : RepositoryTestsSetup, IDisposable
         expected.Should().BeEquivalentTo(actual);
     }
 
+    /// <summary>
+    /// Test the userRepository's update method on a non existing user
+    /// to ensure it returns the actionresult notFound
+    /// </summary>
     [Fact]
     public async Task Update_nonExisting_user_returns_NotFound()
     {
@@ -187,8 +231,13 @@ public class UserRepositoryTests : RepositoryTestsSetup, IDisposable
         Assert.Equal(Status.NotFound, actual);
     }
     
+    
     /* Dispose code has been taken from  https://github.com/ondfisk/BDSA2021/blob/main/MyApp.Infrastructure.Tests/CityRepositoryTests.cs*/
     private bool _disposed;
+    /// <summary>
+    /// If we haven't disposed yet, we start disposing our context
+    /// </summary>
+    /// <param name="disposing"> Boolean for if we have disposed yet</param>
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposed)

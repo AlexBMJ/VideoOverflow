@@ -1,6 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace VideoOverflow.Infrastructure.Entities;
+
+/// <summary>
+/// The resource entity
+/// </summary>
 public class Resource
 {
     //Attributes

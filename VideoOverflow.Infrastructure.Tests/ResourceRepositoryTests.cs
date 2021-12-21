@@ -1,9 +1,15 @@
-
 using FluentAssertions.Extensions;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace VideoOverflow.Infrastructure.Tests;
 
+/// <summary>
+/// Tests for the resourceRepository
+/// </summary>
 public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
+
 {
     private readonly ResourceRepository _repo;
     private readonly TagRepository _tagRepo;
@@ -31,7 +37,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         };
     }
 
-
+    /// <summary>
+    /// Test the resourceRepository's push method
+    /// to ensure it returns the correct resourceDTO
+    /// </summary>
     [Fact]
     public async Task Push_returns_resourceDTO_with_Id()
     {
@@ -39,22 +48,14 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
 
         var actual = await _repo.Push(_resource);
 
-        var expected = new ResourceDTO(
-            1,
-            ResourceType.Video,
-            "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
-            "learnit.itu.dk",
-            "My first Page",
-            Created,
-            "Deniz",
-            "Danish",
-            new Collection<string>() {"C#"},
-            new Collection<string>() {"Programming"},
-            new Collection<string>());
-
-        expected.Should().BeEquivalentTo(actual);
+        var expected = Status.Created;
+        Assert.Equal(expected, actual);
     }
 
+    /// <summary>
+    /// Test the resourceRepository's get method for a non existing resource
+    /// to ensure it returns null
+    /// </summary>
     [Fact]
     public async Task Get_returns_null_for_non_existing_resource()
     {
@@ -63,6 +64,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         Assert.True(exists.IsNone);
     }
 
+    /// <summary>
+    /// Test the resourceRepository's get method for an existing resource
+    /// to esnure it returns the correct resourceDTO
+    /// </summary>
     [Fact]
     public async Task Get_returns_resourceDTO_for_givenId()
     {
@@ -89,6 +94,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         expected.Should().BeEquivalentTo(actual.Value);
     }
 
+    /// <summary>
+    /// Test the resourceRepository's get method after the update method
+    /// to ensure the correct resource is returned with the updates
+    /// </summary>
     [Fact]
     public async Task Get_returns_added_comments_to_resource_after_initialization()
     {
@@ -141,6 +150,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         expected.Should().BeEquivalentTo(actual.Value);
     }
 
+    /// <summary>
+    /// Test the resourceRepository's getAll method for a non empty DB
+    /// return all resources in the DB
+    /// </summary>
     [Fact]
     public async Task GetAll_returns_all_resources()
     {
@@ -162,38 +175,46 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
 
         var actual = await _repo.GetAll();
 
-        var learnItResourceDTO = new ResourceDTO(
-            1,
-            ResourceType.Video,
-            "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
-            "learnit.itu.dk",
-            "My first Page",
-            Created,
-            "Deniz",
-            "Danish",
-            new Collection<string>() {"C#"},
-            new Collection<string>() {"Programming"},
-            new Collection<string>());
+        var learnItResourceDTO = new ResourceDetailsDTO() {
+            Id = 1,
+            MaterialType = ResourceType.Video,
+            SiteUrl = "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
+            ContentSource = "learnit.itu.dk",
+            SiteTitle = "My first Page",
+            Created = Created,
+            Author = "Deniz",
+            Language = "Danish",
+            SkillLevel = 1,
+            Categories = new Collection<string>() {"Programming"},
+            Tags = new Collection<string>() {"C#"},
+            Comments = new Collection<string>() {}
+        };
 
-        var microsoftResourceDTO = new ResourceDTO(
-            2,
-            ResourceType.Article,
-            "https://docs.microsoft.com/da-dk/dynamics365/marketing/teams-webinar",
-            "docs.microsoft.com",
-            "Opret et Microsoft Teams webinar",
-            Created,
-            "OndFisk",
-            "Danish",
-            new Collection<string>() { },
-            new Collection<string>() { },
-            new Collection<string>()
-        );
+        var microsoftResourceDTO = new ResourceDetailsDTO() {
+            Id=2,
+            MaterialType = ResourceType.Article,
+            SiteUrl = "https://docs.microsoft.com/da-dk/dynamics365/marketing/teams-webinar",
+            SiteTitle = "Opret et Microsoft Teams webinar",
+            ContentSource = "docs.microsoft.com",
+            Created = Created,
+            SkillLevel = 1,
+            Author = "OndFisk",
+            Language = "Danish",
+            Categories = new Collection<string>() { },
+            Tags = new Collection<string>() { },
+            Comments = new Collection<string>() {}
 
-        var expected = new Collection<ResourceDTO>() {learnItResourceDTO, microsoftResourceDTO};
+        };
+
+        var expected = new Collection<ResourceDetailsDTO>() {learnItResourceDTO, microsoftResourceDTO};
 
         expected.Should().BeEquivalentTo(actual);
     }
 
+    /// <summary>
+    /// Test the resourceRepository's getAll method for an empty DB
+    /// to ensure it returns an empty collection
+    /// </summary>
     [Fact]
     public async Task GetAll_returns_empty_for_no_resources()
     {
@@ -202,6 +223,12 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         actual.Should().BeEmpty();
     }
 
+    /// <summary>
+    /// Test the resourceRepository's getSkillLevel method
+    /// to ensure the correct skillLevel is assigned to a resource based on the lixLevel
+    /// </summary>
+    /// <param name="lixLevel">The lixLevel of the resource</param>
+    /// <param name="expectedSkillLevel">The expected skillLevel of the resource</param>
     [Theory]
     [InlineData(55, 5)]
     [InlineData(45, 4)]
@@ -230,6 +257,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         
     }
 
+    /// <summary>
+    /// Test the resourceRepository's push method with new tags
+    /// to ensure the new tags are created in the DB
+    /// </summary>
     [Fact]
     public async Task Push_resource_with_new_tags_creates_new_tags_in_DB()
     {
@@ -242,6 +273,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         expected.Should().BeEquivalentTo(actual);
     }
 
+    /// <summary>
+    /// Test the resourceRepository's push method with null author
+    /// to ensure it sets the author to "Unknown" in the DB
+    /// </summary>
     [Fact]
     public async Task Push_sets_author_to_unknown_if_author_is_null()
     {
@@ -264,6 +299,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         "Unknown".Should().BeEquivalentTo(actual.Value.Author);
     }
 
+    /// <summary>
+    /// Test the resourceRepository's update method for non existing resource
+    /// to ensure the action result notfound is returned
+    /// </summary>
     [Fact]
     public async Task Update_returns_NotFound_for_no_existing_resource()
     {
@@ -272,6 +311,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         Assert.Equal(Status.NotFound, actual);
     }
 
+    /// <summary>
+    /// Test the resourceRepository's update method for existing resource
+    /// to ensure the action result updated is returned
+    /// </summary>
     [Fact]
     public async Task Update_returns_Updated_for_updated_resource()
     {
@@ -281,7 +324,7 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         {
             Id = 1,
             Created = Created,
-            LixNumber = 40,
+            LixNumber = 45,
             Author = "OndFisk",
             SiteTitle = "Changed from my first page",
             SiteUrl = "https://docs.microsoft.com/da-dk/dynamics365/marketing/teams-webinar",
@@ -313,7 +356,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         await _commentRepo.Push(new CommentCreateDTO() {Content = "comment3", CreatedBy = 1, AttachedToResource = 1});
     }
 
-
+    /// <summary>
+    /// Test the resourceRepository's update method for existing user
+    /// to ensure all attributes of the user is updated accordingly in the DB
+    /// </summary>
     [Fact]
     public async Task Update_updates_all_attributes()
     {
@@ -361,6 +407,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         expected.Should().BeEquivalentTo(actual.Value);
     }
     
+    /// <summary>
+    /// Test the resourceRepository's push method with a negative lixNumber
+    /// to ensure it sets the lixNumber to 0 and the skillLevel accordingly
+    /// </summary>
     [Fact]
     public async Task Push_given_negative_lixNumber_sets_lixNumber_to_0_and_returns_skillLevel_equals_1()
     {
@@ -386,6 +436,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         Assert.Equal(1, actualObject.Value.SkillLevel);
     }
     
+    /// <summary>
+    /// Test the resourceRepository's push method with invalid url
+    /// to ensure exception is thrown
+    /// </summary>
     [Fact]
     public async Task Push_given_invalid_url_throws_exception()
     {
@@ -402,10 +456,16 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
             Categories = new Collection<string>() {"Programming"},
             Tags = new Collection<string>() {"C#"}
         };
+        var expected = Status.BadRequest;
+        var actual = await _repo.Push(resource);
         
-        await Assert.ThrowsAsync<Exception>(() => _repo.Push(resource));
+        Assert.Equal(expected, actual);
     }
 
+    /// <summary>
+    /// Test the resourceRepository's delete method for a non existing resource
+    /// to ensure the action result notfound is returned
+    /// </summary>
     [Fact]
     public async Task Delete_returns_NotFound_for_no_existing_resource()
     {
@@ -414,6 +474,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         Assert.Equal(Status.NotFound, actual);
     }
     
+    /// <summary>
+    /// Test the resourceRepository's delete method for existing resource
+    /// to ensure the action result deleted is returned
+    /// </summary>
     [Fact]
     public async Task Delete_returns_Deleted_for_existing_resource()
     {
@@ -423,6 +487,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         Assert.Equal(Status.Deleted, actual);
     }
     
+    /// <summary>
+    /// Test the resourceRepository's delete method for existing resource
+    /// to ensure the resource is deleted in the DB
+    /// </summary>
     [Fact]
     public async Task Delete_actually_deletes_resource()
     {
@@ -460,25 +528,489 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
 
         _pgContext.Comments.Should().BeEmpty();
     }
-
-    private ICollection<Comment> GetComments(int resourceId)
+    [Fact]
+    public async Task comments_attachedToResource_are_attached()
     {
-        var collection = new Collection<Comment>();
+        await _pgContext.Resources.AddAsync(new Resource()
+        {
+            Created = Created,
+            Author = "author",
+            SiteTitle = "title",
+            LixNumber = 1,
+            SiteUrl = "https://www.example.com",
+            Language = "Danish",
+            MaterialType = ResourceType.Video,
+            ContentSource = "example.com",
+            Categories = new Collection<Category>(),
+            Tags = new Collection<Tag>(),
+            Comments = new List<Comment>() 
+        });
+        await _pgContext.Resources.AddAsync(new Resource()
+        {
+            Created = Created,
+            Author = "author2",
+            SiteTitle = "title2",
+            LixNumber = 2,
+            SiteUrl = "https://www.example2.com",
+            Language = "Danish",
+            MaterialType = ResourceType.Video,
+            ContentSource = "example2.com",
+            Categories = new Collection<Category>(),
+            Tags = new Collection<Tag>(),
+            Comments = new List<Comment>() 
+        });
+        var commentHello = _pgContext.Comments.Add(new Comment() {AttachedToResource = 1, Content = "hello", CreatedBy = 0}).Entity;
+        var commentNice = _pgContext.Comments.Add(new Comment() {AttachedToResource = 1, Content = "nice", CreatedBy = 0}).Entity;
+        var commentGreat = _pgContext.Comments.Add(new Comment() {AttachedToResource = 2, Content = "great", CreatedBy = 0}).Entity;
+        await _pgContext.SaveChangesAsync();
+
+        var expected = new List<Comment>() {commentHello, commentNice};
+        var expected2 = new List<Comment>() {commentGreat};
+        GetComments(1).Should().Equal(expected);
+        GetComments(2).Should().Equal(expected2);
+    }
+    
+    /// <summary>
+    /// Returns all comments for a resource
+    /// </summary>
+    /// <param name="resourceId">The id of the resource</param>
+    /// <returns>A collection of all the comments on the resource</returns>
+    private List<Comment> GetComments(int resourceId)
+    {
+        var collection = new List<Comment>();
 
         foreach (var comment in _pgContext.Comments)
         {
             if (comment.AttachedToResource == resourceId)
             {
-                collection.Add(
-                    new Comment() {Content = comment.Content, CreatedBy = 0, AttachedToResource = resourceId});
+                collection.Add(comment);
             }
         }
         return collection;
     }
-    
-    
+[Fact]
+    public async Task Get_Resources_returns_last_3_resources_with_tag_a_and_b_given_13_resources_with_tag_a_and_b_and_others_and_no_category_and_skip_10_and_count_10_and_tags_a_and_b()
+    {
+        var tagRepo = new TagRepository(_pgContext);
+        var atag = await tagRepo.Push(new TagCreateDTO() {Name = "aaaaaaaaaaaaaaa", TagSynonyms = new List<string>()});
+        var btag = await tagRepo.Push(new TagCreateDTO() {Name = "bbbbbbbbbbbbbb", TagSynonyms = new List<string>()});
+        var ctag = await tagRepo.Push(new TagCreateDTO() {Name = "ccccccccccccccccccccccccccc", TagSynonyms = new List<string>()});
+        
+        
+        var resources = new List<ResourceCreateDTO>()
+        {
+            
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title1",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa", "bbbbbbbbbbbbbb", "ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title2",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa", "bbbbbbbbbbbbbb"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title3",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title4",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa", "ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title5",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"bbbbbbbbbbbbbb", "ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title6",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"bbbbbbbbbbbbbb"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title7",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa", "bbbbbbbbbbbbbb", "ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title8",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa", "bbbbbbbbbbbbbb"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title9",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title10",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa", "ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title11",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"bbbbbbbbbbbbbb", "ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title12",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"bbbbbbbbbbbbbb"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title13",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"bbbbbbbbbbbbbb"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title14",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+        };
+        var created = new List<string>();
+        foreach (var createDto in resources)
+        {
+            await _repo.Push(createDto);
+            created.Add(createDto.SiteTitle);
+        }
+
+        
+        var expected = created.GetRange(10,3);
+        var tags = new List<TagDTO>() {atag, btag};
+        List<ResourceDTO> actual = (List<ResourceDTO>) await _repo.GetResources(0, "title", tags, 10, 10);
+        actual.Should().HaveSameCount(expected);
+        expected.Should().BeEquivalentTo(actual.Select(a => a.SiteTitle));
+    }
+    [Fact]
+    public async Task Get_Resources_returns_first_10_resources_with_tag_a_and_b_given_13_resources_with_tag_a_and_b_and_others_and_no_category_and_skip_0_and_count_10_and_tags_a_and_b()
+    {
+        var tagRepo = new TagRepository(_pgContext);
+        var atag = await tagRepo.Push(new TagCreateDTO() {Name = "aaaaaaaaaaaaaaa", TagSynonyms = new List<string>()});
+        var btag = await tagRepo.Push(new TagCreateDTO() {Name = "bbbbbbbbbbbbbb", TagSynonyms = new List<string>()});
+        var ctag = await tagRepo.Push(new TagCreateDTO() {Name = "ccccccccccccccccccccccccccc", TagSynonyms = new List<string>()});
+        
+        
+        var resources = new List<ResourceCreateDTO>()
+        {
+            
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title1",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa", "bbbbbbbbbbbbbb", "ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title2",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa", "bbbbbbbbbbbbbb"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title3",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title4",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa", "ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title5",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"bbbbbbbbbbbbbb", "ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title6",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"bbbbbbbbbbbbbb"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title7",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa", "bbbbbbbbbbbbbb", "ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title8",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa", "bbbbbbbbbbbbbb"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title9",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title10",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa", "ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title11",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"bbbbbbbbbbbbbb", "ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title12",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"bbbbbbbbbbbbbb"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title13",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"bbbbbbbbbbbbbb"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title14",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+        };
+        var created = new List<string>();
+        foreach (var createDto in resources)
+        {
+            await _repo.Push(createDto);
+            created.Add(createDto.SiteTitle);
+        }
+
+        
+        var expected = created.GetRange(1,9);
+        expected.Add(created[13]);
+        var tags = new List<TagDTO>() {atag, btag};
+        List<ResourceDTO> actual = (List<ResourceDTO>) await _repo.GetResources(0, "title", tags, 10, 0);
+        actual.Should().HaveSameCount(expected);
+        expected.Should().BeEquivalentTo(actual.Select(a => a.SiteTitle));
+    }
+
     /* Dispose code has been taken from  https://github.com/ondfisk/BDSA2021/blob/main/MyApp.Infrastructure.Tests/CityRepositoryTests.cs*/
     private bool _disposed;
+
+    /// <summary>
+    /// If we haven't disposed yet, we start disposing our context
+    /// </summary>
+    /// <param name="disposing"> Boolean for if we have disposed yet</param>
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposed)
