@@ -1,5 +1,8 @@
 ﻿namespace VideoOverflow.Infrastructure.Entities;
 
+/// <summary>
+/// The user entity
+/// </summary>
 public class User
 {
     //Attributes

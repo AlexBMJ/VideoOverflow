@@ -1,7 +1,14 @@
 ﻿namespace VideoOverflow.Server.Tests;
 
+/// <summary>
+/// Tests for our categoryController
+/// </summary>
 public class CategoryControllerTests
 {
+    /// <summary>
+    /// Test our categoryController's get all methods
+    /// to ensure it returns all entries in the category relation in the DB
+    /// </summary>
     [Fact]
     public async Task GetAll_Returns_AllCategories()
     {

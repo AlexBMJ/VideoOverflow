@@ -1,5 +1,8 @@
 ﻿namespace VideoOverflow.Infrastructure.Context;
 
+/// <summary>
+/// The context for our database
+/// </summary>
 public class VideoOverflowContext : DbContext, IVideoOverflowContext
 {
     public DbSet<Tag> Tags => Set<Tag>();
@@ -14,6 +17,10 @@ public class VideoOverflowContext : DbContext, IVideoOverflowContext
     {
     }
 
+    /// <summary>
+    /// Creates the different relationships and attributes in our relations in the database
+    /// </summary>
+    /// <param name="modelBuilder"></param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Many to Many

@@ -1,4 +1,8 @@
 ﻿namespace VideoOverflow.Infrastructure.Entities;
+
+/// <summary>
+/// The tag entity
+/// </summary>
 public class Tag
 {
     //Attributes

@@ -8,6 +8,9 @@ using VideoOverflow.Infrastructure.Entities;
 
 namespace Server;
 
+/// <summary>
+/// Factory to seed the database
+/// </summary>
 public static class DataFactory
 {
     private static IList<string> _categories = new List<string>();
@@ -52,7 +55,12 @@ public static class DataFactory
     };
     private static readonly int _amountOfResources = 1000;
     private static Random rnd = new Random();
-    private static readonly int _dateRange = 30*365; //30 years    
+    private static readonly int _dateRange = 30*365; //30 years
+    /// <summary>
+    /// Fills the database based on the context made from the user secrets
+    /// </summary>
+    /// <param name="host"></param>
+    /// <returns></returns>
     public static async Task<IHost> FillDatabase(this IHost host)
     {
         using (var scope = host.Services.CreateScope())
@@ -65,6 +73,10 @@ public static class DataFactory
         return host;
     }
 
+    /// <summary>
+    /// Creates data for the database and fills it
+    /// </summary>
+    /// <param name="context">The context for the database</param>
     private static async Task CreateDemoData(VideoOverflowContext context)
     {
         await context.Database.MigrateAsync();
@@ -135,6 +147,10 @@ public static class DataFactory
 
     }
 
+    /// <summary>
+    /// Generates a bunch of comments based on some predefined ones
+    /// </summary>
+    /// <param name="context">The context of the DB</param>
     private static async Task GenerateComments(VideoOverflowContext context)
     {
         var commentContent = new Collection<string>()
@@ -160,6 +176,10 @@ public static class DataFactory
         await context.SaveChangesAsync();
     }
 
+    /// <summary>
+    /// Attaches the generated comments to users and resources
+    /// </summary>
+    /// <param name="context">The context for the DB</param>
     private static async Task AttachCommentsToUsersAndResources(VideoOverflowContext context) {
         var comments = from user in context.Users
             join comment in context.Comments
@@ -182,6 +202,10 @@ public static class DataFactory
     }
 
     // The indexes of each list to generate a resource that matches the real information.
+    /// <summary>
+    /// Generates a predefined amount of resources based on some predefined tags, categories, siteurls etc.
+    /// </summary>
+    /// <param name="context">The context for the DB</param>
     private static async Task GenerateResources(VideoOverflowContext context)
     {
         var siteTitles = new Collection<string>();
@@ -247,6 +271,12 @@ public static class DataFactory
     
     }
 
+    /// <summary>
+    /// Finds all the tags in the DB that correlates to the names from a collection
+    /// </summary>
+    /// <param name="context">The context of the DB</param>
+    /// <param name="tagNames">The collection of tag names</param>
+    /// <returns>All tags in the DB from the tag names</returns>
     private static Collection<Tag> FindTags(VideoOverflowContext context, ICollection<string> tagNames)
     {
         var tags = new Collection<Tag>();
@@ -265,6 +295,12 @@ public static class DataFactory
         return tags;
     }
 
+    /// <summary>
+    /// Finds all the categories in the DB that correlates to the names from a collection
+    /// </summary>
+    /// <param name="context">The context for the DB</param>
+    /// <param name="categories">The collection of category names</param>
+    /// <returns>All categories in the DB from the category names</returns>
     private static Collection<Category> FindCategories(VideoOverflowContext context, ICollection<string> categories)
     {
         var categoriesFound = new Collection<Category>();
@@ -283,16 +319,32 @@ public static class DataFactory
         return categoriesFound;
     }
 
+    /// <summary>
+    /// Gets the skillLevel based on the lix
+    /// </summary>
+    /// <param name="lix">The lixnumber</param>
+    /// <returns>The skillLevel based on the lixNumber</returns>
     private static int GetSkillLevel(int lix)
     {
         return lix < 25 ? 1 : lix < 35 ? 2 : lix < 45 ? 3 : lix < 55 ? 4 : 5;
     }
 
+    /// <summary>
+    /// Gets the contentSource from a url
+    /// </summary>
+    /// <param name="url">A url to get the contentSource from</param>
+    /// <returns>The contentSource from the url</returns>
     private static string GetContentSource(string url)
     {
         return new Regex(@"^(?:.*:\/\/)?(?:www\.)?(?<site>[^:\/]*).*$").Match(url).Groups[1].Value;
     }
 
+    /// <summary>
+    /// Populates a list with a random amount of items from another list
+    /// </summary>
+    /// <param name="populateWith">The list to get items from</param>
+    /// <param name="toPopulate">The list to populate</param>
+    /// <typeparam name="T">The type of the two lists</typeparam>
     private static void PopulateList<T>(ref IList<T> populateWith, ref Collection<ICollection<T>> toPopulate)
     {
         for (var i = 0; i < _amountOfResources; i++)

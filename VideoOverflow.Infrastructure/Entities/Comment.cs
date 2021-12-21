@@ -1,4 +1,8 @@
 ﻿namespace VideoOverflow.Infrastructure.Entities;
+
+/// <summary>
+/// The comment entity
+/// </summary>
 public class Comment
 {
     //Attributes

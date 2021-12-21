@@ -1,6 +1,11 @@
 using VideoOverflow.Core.DTOs;
 
 namespace VideoOverflow.Core.IRepositories;
+
+/// <summary>
+/// The interface for the resource repository. This ensures all the crud methods are implemented as well as a
+/// GetResources method which gets all resources based on a query from the user
+/// </summary>
 public interface IResourceRepository
 {
     public Task<IEnumerable<ResourceDTO>> GetAll();

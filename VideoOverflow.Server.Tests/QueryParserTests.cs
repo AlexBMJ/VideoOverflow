@@ -4,6 +4,9 @@ using VideoOverflow.Infrastructure.Tests;
 
 namespace VideoOverflow.Server.Tests;
 
+/// <summary>
+/// Tests for our queryParser
+/// </summary>
 [Collection("Database")]
 public class QueryParserTests : DatabaseTestCase {
     private readonly TagRepository _tagRepo;
