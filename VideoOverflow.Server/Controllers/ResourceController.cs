@@ -72,12 +72,10 @@ namespace Server.Controllers
         /// <param name="resource">The resource to post</param>
         /// <returns>The action result of the push</returns>
         [HttpPost]  
-        [ProducesResponseType(typeof(ResourceDTO), 201)]
-        public async Task<IActionResult> Post(ResourceCreateDTO resource) {
-            var created = await _repository.Push(resource);
-            return CreatedAtAction(nameof(Get), new { created.Id }, created);
-        }
-
+        [ProducesResponseType(typeof(Status), 201)]
+        public async Task<IActionResult> Post(ResourceCreateDTO resource) 
+           => (await _repository.Push(resource)).ToActionResult("Api/Resource/",resource);
+        
         /// <summary>
         /// Updates a resource based on the input resource
         /// </summary>

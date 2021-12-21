@@ -4,72 +4,59 @@
 @using System.ComponentModel.DataAnnotations
 @using System.Linq
 @using System.Text.RegularExpressions
-@using FluentAssertions.Extensions
-@using Microsoft.AspNetCore.Authorization
 @using VideoOverflow.Core
 @inject HttpClient _http
 @inject NavigationManager _navigationManager
-@inject ISnackbar Snackbar
+@inject ISnackbar _snackbar
 
 <MudContainer Class="ma-2">
-    <h1>Create Resource</h1>
+    <MudText Class="ma-2" Typo="Typo.h4">Create Resource</MudText>
     <MudDivider/>
-    <MudForm Model="_createForm" >
-        <MudTextField T="string" Label="Site Title" @bind-Value="_createForm.SiteTitle"/>
-        <MudTextField T="string" Label="Site Url" @bind-Value="_createForm.SiteUrl"/>
-        <MudSelect T="string" Label="MaterialType" Variant="Variant.Outlined" @bind-Value="_createForm.MaterialType" AnchorOrigin="Origin.BottomCenter">
+    <MudForm Model="_createForm">
+        <MudTextField T="string" Label="Site Title" @bind-Value="_createForm.SiteTitle" HelperTextOnFocus="true" HelperText="Please give your resource a name" Required="true" RequiredError="Title is required!"/>
+        <MudTextField T="string" Label="Site Url" @bind-Value="_createForm.SiteUrl" HelperTextOnFocus="true" HelperText="Please enter a valid url for the resource" Required="true" RequiredError="Url is required and must be valid!"/>
+        <MudSelect T="string" Label="MaterialType" @bind-Value="_createForm.MaterialType" AnchorOrigin="Origin.BottomCenter" HelperTextOnFocus="true" HelperText="Choose a material type" Required="true" RequiredError="A material type is required!">
+
             <MudSelectItem Value="@("Video")"/>
             <MudSelectItem Value="@("Article")"/>
             <MudSelectItem Value="@("Book")"/>
         </MudSelect>
-        <MudTextField T="string" Label="Author" @bind-Value="_createForm.Author"/>
-
-        <MudNumericField @bind-Value="_createForm.LixNumber" HelperText="Lix" Variant="Variant.Text" HideSpinButtons="true" />
-    	    
-        <MudTextField T="string" Label="Language" @bind-Value="_createForm.Language"/>
-        <MudTextField T="string" Label="Tags" @bind-Value="_createForm.Tags"/>
-        
-        <MudGrid>
-            <MudItem xs="12" md="12">
-                <MudSelect T="string" Label="Categories" HelperText="Pick the categories"
-                           MultiSelection="true" OffsetY="true" DelimitedStringSeparator="^" SelectAll="false" SelectAllText="Select all categories"
-                           @bind-Value="value" @bind-SelectedValues="options" AdornmentIcon="@Icons.Material.Filled.Search"
-                           MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))">
-                    @foreach (var category in Categories)
-                    {
-                        <MudSelectItem T="string" Value="@category.Name">@category.Name</MudSelectItem>
-                    }
-                </MudSelect>
-            </MudItem>
-        </MudGrid>
-
-        <MudDatePicker Label="DateCreated" @bind-Date="_date"/>
-
+        <MudTextField T="string" Label="Author" @bind-Value="_createForm.Author" HelperTextOnFocus="true" HelperText="Please enter a name of the author of the resource"/>
+        <MudNumericField @bind-Value="_createForm.LixNumber" Label="Lix" Variant="Variant.Text" HideSpinButtons="true" HelperTextOnFocus="true" HelperText="Please give your resource a lix number (difficulty of content)" Required="true" RequiredError="Lix number is required!"/>
+        <MudTextField T="string" Label="Language" @bind-Value="_createForm.Language" HelperTextOnFocus="true" HelperText="Please give your resource a language" Required="true" RequiredError="Language is required!"/>
+        <MudTextField T="string" Label="Tags" @bind-Value="_createForm.Tags" HelperTextOnFocus="true" HelperText="Please give your resource one ore more tags"/>
+        <MudSelect T="string" Label="Categories" MultiSelection="true" SelectAll="false" SelectAllText="Select all categories" @bind-Value="Value" @bind-SelectedValues="Options" AdornmentIcon="@Icons.Material.Filled.Search" MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText!))"
+                   HelperTextOnFocus="true" HelperText="Please give your resource one or more categories">
+            @foreach (var category in _categories)
+            {
+                <MudSelectItem T="string" Value="@category.Name">@category.Name</MudSelectItem>
+            }
+        </MudSelect>
+        <MudDatePicker Label="DateCreated" @bind-Date="_createForm.Created" Required="true" RequiredError="Creation date is required!" HelperTextOnFocus="true" HelperText="Please give your resource a valid creation date"/>
     </MudForm>
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await HandleValidSubmit())">Submit</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto ma-4" OnClick="@(async () => await HandleValidSubmit())">Submit</MudButton>
 </MudContainer>
 
 
 @code {
-    private CreateForm _createForm = new();
-    private DateTime? _date = DateTime.Today;
-    private string value { get; set; } = "Nothing selected";
-    private List<CategoryDTO> Categories = new List<CategoryDTO>();
-    private IEnumerable<string> options { get; set; } = new HashSet<string>() { };
+    private readonly CreateForm _createForm = new();
+    private string Value { get; set; } = "Nothing selected";
+    private List<CategoryDTO> _categories = new List<CategoryDTO>();
+    private IEnumerable<string> Options { get; set; } = new HashSet<string>();
     
     
         private async Task HandleValidSubmit()
         {
 
-            if (!isValidUrl(_createForm.SiteUrl))
+            if (!IsValidUrl(_createForm.SiteUrl))
             {
-                Snackbar.Add("INVALID URL!");
+                _snackbar.Add("INVALID URL!");
                 return;
             }
             
-            if (_date > DateTime.Now)
+            if (_createForm.Created > DateTime.UtcNow)
             {
-                Snackbar.Add("Please pick a valid date");
+                _snackbar.Add("Please pick a valid date");
                 return;
             }
             
@@ -80,55 +67,62 @@
 
             var payload = new ResourceCreateDTO()
             {
-                Created = DateTime.Parse(_date.Value.Day + "-" + _date.Value.Month + "-" + _date.Value.Year).AsUtc(),
-                MaterialType = _createForm.MaterialType == "Video" ? ResourceType.Video :
-                    _createForm.MaterialType == "Article" ? ResourceType.Article : ResourceType.Book,
+                Created = _createForm.Created.GetValueOrDefault(DateTime.UtcNow).ToUniversalTime(),
+                MaterialType = _createForm.MaterialType switch
+                {
+                    "Video" => ResourceType.Video,
+                    "Article" => ResourceType.Article,
+                    _ => ResourceType.Book
+                    },
                 SiteUrl = _createForm.SiteUrl,
                 SiteTitle = _createForm.SiteTitle,
-                Author = _createForm.Author == null ? "Unknown" : _createForm.Author,
-                LixNumber = _createForm.LixNumber,
+                Author = _createForm.Author ?? "Unknown",
+                LixNumber = _createForm.LixNumber.GetValueOrDefault(0),
                 Language = _createForm.Language,
                 Tags = _createForm.Tags.Split(", "),
-                Categories = options.Select(c => c).ToList()
+                Categories = Options.Select(c => c).ToList()
             };
 
             var response = await _http.PostAsJsonAsync("api/resource", payload);
 
             if (response.IsSuccessStatusCode)
             {
-                Snackbar.Add("You have successfully added a resource");
+                _snackbar.Add("You have successfully added a resource");
             }
         }
     
-    private string GetMultiSelectionText(List<string> selectedValues)
+    private static string? GetMultiSelectionText(List<string> selectedValues)
     {
-        return $"{selectedValues.Count} {(selectedValues.Count > 1 ? "categories have" : "category has")} been selected";
+        return selectedValues.Count == 0 ? null : $"{selectedValues.Count} {(selectedValues.Count > 1 ? "categories have" : "category has")} been selected";
     }
     
     private class CreateForm
     {
         [Required]
-        public string SiteTitle { get; set; }
+        public string SiteTitle { get; set; } = null!;
 
         [Required]
-        public string SiteUrl { get; set; }
+        public string SiteUrl { get; set; } = null!;
 
         [Required]
-        public string MaterialType { get; set; }
+        public string MaterialType { get; set; } = null!;
 
         public string? Author { get; set; }
 
         [Required]
-        public int LixNumber { get; set; }
+        public int? LixNumber { get; set; }
 
         [Required]
-        public string Language { get; set; }
+        public string Language { get; set; } = null!;
 
         [Required]
-        public string Tags { get; set; }
+        public string Tags { get; set; } = null!;
+
+        [Required]
+        public DateTime? Created { get; set; }
     }
 
-    private bool isValidUrl(string url)
+    private static bool IsValidUrl(string url)
     {
         return new Regex(@"(https?:\/\/|www\.)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)").Match(url).Success;
     }
@@ -140,7 +134,7 @@
 
             if (categories != null)
             {
-                Categories = categories;
+                _categories = categories;
             }
         }
     }
