@@ -1,13 +1,6 @@
 ﻿@page "/home"
 @inject NavigationManager _navigation
 
-@using Microsoft.AspNetCore.Components.Authorization;
-
-
-<AuthorizeView Roles="@AdministrationRole">
-
-    <p>You are an Administrator</p>
-</AuthorizeView>
 <AuthorizeView>
     <Authorized>
         <MudPaper Style="height: 400px; background-size: contain;background: url(background.svg) bottom;" Class="d-flex align-center justify-center">
@@ -62,10 +55,6 @@
 {
     [CascadingParameter]
     private Task<AuthenticationState> AuthenticationStateTask { get; set; } = null!;
-
-        private const string AdministrationRole = "developer";
-
-
         private const bool Arrows = false;
         private const bool Delimiters = true;
         private const bool AutoCycle = true;

@@ -5,7 +5,7 @@ namespace Server.Controllers
     /// <summary>
     /// Controller for the resourceRepository
     /// </summary>
-
+    [Authorize]
     [ApiController]
     [Route("Api/[controller]")]
     [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]
@@ -31,6 +31,7 @@ namespace Server.Controllers
         /// Get all resources from the repository
         /// </summary>
         /// <returns>All resources from the repository</returns>
+        [Authorize]
         [HttpGet]
         public async Task<IEnumerable<ResourceDetailsDTO>> GetAll()
             => await _repository.GetAll();
@@ -43,7 +44,7 @@ namespace Server.Controllers
         /// <param name="Count"></param>
         /// <param name="Page"></param>
         /// <returns>All resources based on the parameters</returns>
-        [Authorize]
+        [AllowAnonymous]
         [HttpGet("Search")]
         public async Task<IEnumerable<ResourceDTO>> GetResources(int Category, string Query, int Count, int Page)
             => await _repository.GetResources(Category, Query, _queryParser.ParseTags(Query), Count, Math.Max(0, Count*(Page-1)));
@@ -53,7 +54,7 @@ namespace Server.Controllers
         /// </summary>
         /// <param name="id">Id of the resource to get</param>
         /// <returns>The resource with specific id</returns>
-        [Authorize]
+        [AllowAnonymous]
         [HttpGet("Spelling")]
         public string SuggestSpelling(string Query)
             => _spellChecker.SpellCheck(Query);
@@ -71,6 +72,7 @@ namespace Server.Controllers
         /// </summary>
         /// <param name="resource">The resource to post</param>
         /// <returns>The action result of the push</returns>
+        [Authorize(Roles = "developer")]
         [HttpPost]  
         [ProducesResponseType(typeof(Status), 201)]
         public async Task<IActionResult> Post(ResourceCreateDTO resource) 
@@ -81,6 +83,7 @@ namespace Server.Controllers
         /// </summary>
         /// <param name="resource">The updated resource</param>
         /// <returns>The action result of the update</returns>
+        [Authorize(Roles = "developer")]
         [HttpPut]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
@@ -93,6 +96,7 @@ namespace Server.Controllers
         /// </summary>
         /// <param name="id">The id of the resource</param>
         /// <returns>The action result of the delete</returns>
+        [Authorize(Roles = "developer")]
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

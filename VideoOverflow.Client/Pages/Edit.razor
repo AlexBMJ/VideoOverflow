@@ -1,16 +1,13 @@
 ﻿@page "/Edit/{id:int}"
-
+@attribute [Authorize(Roles = "developer")]
 @using VideoOverflow.Core.DTOs
 @using VideoOverflow.Core
 @using Microsoft.AspNetCore.Components
 @using System.ComponentModel.DataAnnotations
-
+@using Microsoft.AspNetCore.Authorization
 @inject HttpClient _http
 @inject NavigationManager _navigationManager
 @inject ISnackbar Snackbar
-
-
-
 
 <MudContainer Class="ma-2">
     <h1>Edit Resource</h1>

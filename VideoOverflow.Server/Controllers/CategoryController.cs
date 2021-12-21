@@ -3,9 +3,9 @@
 /// <summary>
 /// A controller for our category repository
 /// </summary>
-[Authorize]
+[AllowAnonymous]
 [ApiController]
-[Route("api/[controller]")]
+[Route("Api/[controller]")]
 [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]
 public class CategoryController : ControllerBase
 {
@@ -22,7 +22,7 @@ public class CategoryController : ControllerBase
     /// Gets all categories from the repository
     /// </summary>
     /// <returns>All categories from the repository</returns>
-    [Authorize]
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IEnumerable<CategoryDTO>> GetAll()
         => await _repository.GetAll();
