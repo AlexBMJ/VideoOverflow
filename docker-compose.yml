@@ -12,7 +12,7 @@ services:
       ASPNETCORE_URLS: "http://+:80;https://+:443"
       ASPNETCORE_Kestrel__Certificates__Default__Password: "Test1234"
       ASPNETCORE_Kestrel__Certificates__Default__Path: "/app/cert.pfx"
-      ConnectionString_VideoOverflow: "Server=db;Database=VideoOverflow;UserId=postgres;Password=Test1234"
+      ConnectionString_VideoOverflow: "Server=db;Database=VideoOverflow;UserId=postgres;Password=ProdPassword"
     depends_on:
       - db
     
@@ -20,5 +20,5 @@ services:
     image: postgres
     container_name: postgres
     environment:
-      POSTGRES_PASSWORD: Test1234
+      POSTGRES_PASSWORD: ProdPassword
       POSTGRES_DB: VideoOverflow
