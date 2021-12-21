@@ -412,7 +412,7 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
     }
     
     /// <summary>
-    /// Test the resourceRepository's psuh method with invalid url
+    /// Test the resourceRepository's push method with invalid url
     /// to ensure exception is thrown
     /// </summary>
     [Fact]
