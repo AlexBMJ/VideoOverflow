@@ -2,7 +2,6 @@
 
 namespace VideoOverflow.Server.Integration.Tests;
 
-
 /* This code has directly been taken from: https://github.com/ondfisk/BDSA2021/blob/main/MyApp.Server.Integration.Tests/TestAuthHandler.cs */
 internal sealed class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
@@ -24,6 +23,7 @@ internal sealed class TestAuthHandler : AuthenticationHandler<AuthenticationSche
         {
             new Claim(ClaimTypes.Name, "Test user"),
             new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()),
+            new Claim("http://schemas.microsoft.com/identity/claims/scope", "API.Access")
         };
 
         var identity = new ClaimsIdentity(claims, "Test");

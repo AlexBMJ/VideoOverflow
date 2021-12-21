@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 using FluentAssertions.Extensions;
+using Microsoft.EntityFrameworkCore.Scaffolding;
 using Server;
 using VideoOverflow.Core;
 using VideoOverflow.Infrastructure.Context;
@@ -53,6 +54,7 @@ public class VideoOverflowWebApplicationFactory : WebApplicationFactory<Program>
             using var appContext = scope.ServiceProvider.GetRequiredService<VideoOverflowContext>();
             appContext.Database.OpenConnection();
             appContext.Database.EnsureCreated();
+            
             DataFactory.FillDatabase(appContext);
         });
         
