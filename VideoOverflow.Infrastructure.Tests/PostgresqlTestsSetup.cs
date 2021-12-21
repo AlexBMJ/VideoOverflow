@@ -13,11 +13,11 @@ public abstract class DatabaseTestCase : IDisposable, IClassFixture<DatabaseTemp
         var connection = $"Server=localhost;Database={databaseName};Port=5002;UserId=postgres;Password=test_db";
         var optionsBuilder = new DbContextOptionsBuilder<VideoOverflowContext>();
         optionsBuilder.UseNpgsql(connection);
-        DbContext = new VideoOverflowContext(optionsBuilder.Options);
+        _pgContext = new VideoOverflowContext(optionsBuilder.Options);
     }
-    public VideoOverflowContext DbContext { get; }
+    public VideoOverflowContext _pgContext { get; }
     
     public void Dispose() {
-        DbContext.Database.EnsureDeleted();
+        _pgContext.Database.EnsureDeleted();
     }
 }

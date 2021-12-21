@@ -12,7 +12,7 @@ public class QueryParserTests : DatabaseTestCase {
     private readonly TagRepository _tagRepo;
 
     public QueryParserTests(DatabaseTemplateFixture databaseFixture) : base(databaseFixture) {
-        _tagRepo = new TagRepository(DbContext);
+        _tagRepo = new TagRepository(_pgContext);
     }
     
     [Fact]

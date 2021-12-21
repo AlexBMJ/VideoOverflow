@@ -281,26 +281,17 @@ public class CommentRepositoryTests : RepositoryTestsSetup, IDisposable
     [Fact]
     public async Task Get_returns_creator()
     {
-        var user = new User() {Id = 1, Name = "SødFisk", Comments = new List<Comment>()};
+        var userCreate = new UserCreateDTO() {Name = "SødFisk", Comments = new List<string>()};
+        var userRepo = new UserRepository(_context);
+        var user = userRepo.Push(userCreate);
 
-        await _context.Users.AddAsync(user);
+        var commentCreate = new CommentCreateDTO() {CreatedBy = user.Id, Content = "This comment is created by SødFisk"};
 
-        var comment = new CommentCreateDTO() {CreatedBy = 1, Content = "This comment is created by SødFisk"};
+        var commentDTO = await _repo.Push(commentCreate);
 
-        await _repo.Push(comment);
+        var comment = await _repo.Get(commentDTO.Id);
 
-        var actual = new User();
-
-
-        foreach (var commenter in _context.Users)
-        {
-            if (commenter.Id == comment.CreatedBy)
-            {
-                actual = commenter;
-            }
-        }
-
-        Assert.Equal(actual, user);
+        Assert.Equal(user.Id, comment.CreatedBy);
     }
 
     /// <summary>

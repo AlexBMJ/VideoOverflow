@@ -1,21 +1,37 @@
 
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Xunit.Abstractions;
+using Xunit.Sdk;
+
 namespace VideoOverflow.Infrastructure.Tests;
+
 
 /// <summary>
 /// Tests for the resourceRepository
 /// </summary>
-public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
+public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
+
 {
+    private readonly ITestOutputHelper _testOutputHelper;
     private readonly ResourceRepository _repo;
+    private readonly ResourceRepository _pgRepo;
+    private readonly VideoOverflowContext _context;
     private readonly ResourceCreateDTO _resource;
 
-    /// <summary>
-    /// Instantiate each test with a fresh repository
-    /// </summary>
-    public ResourceRepositoryTests()
-    {
+    protected readonly DateTime Created = DateTime.Parse("2020-09-29");
+    public ResourceRepositoryTests(DatabaseTemplateFixture databaseFixture, ITestOutputHelper testOutputHelper) : base(databaseFixture) {
+        _testOutputHelper = testOutputHelper;
+        _pgRepo = new ResourceRepository(_pgContext);
+        
+        var connection = new SqliteConnection("Filename=:memory:");
+        connection.Open();
+        var builder = new DbContextOptionsBuilder<VideoOverflowContext>();
+        builder.UseSqlite(connection);
+        var context = new VideoOverflowContext(builder.Options);
+        context.Database.EnsureCreated();
+        context.SaveChanges();
+        _context = context;
         _repo = new ResourceRepository(_context);
-
         _resource = new ResourceCreateDTO()
         {
             Created = Created,
@@ -487,30 +503,485 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
 
         _context.Comments.Should().BeEmpty();
     }
+    [Fact]
+    public async Task comments_attachedToResource_are_attached()
+    {
+        await _context.Resources.AddAsync(new Resource()
+        {
+            Created = Created,
+            Author = "author",
+            SiteTitle = "title",
+            LixNumber = 1,
+            SiteUrl = "https://www.example.com",
+            Language = "Danish",
+            MaterialType = ResourceType.Video,
+            ContentSource = "example.com",
+            Categories = new Collection<Category>(),
+            Tags = new Collection<Tag>(),
+            Comments = new List<Comment>() 
+        });
+        await _context.Resources.AddAsync(new Resource()
+        {
+            Created = Created,
+            Author = "author2",
+            SiteTitle = "title2",
+            LixNumber = 2,
+            SiteUrl = "https://www.example2.com",
+            Language = "Danish",
+            MaterialType = ResourceType.Video,
+            ContentSource = "example2.com",
+            Categories = new Collection<Category>(),
+            Tags = new Collection<Tag>(),
+            Comments = new List<Comment>() 
+        });
+        var commentHello = _context.Comments.Add(new Comment() {AttachedToResource = 1, Content = "hello", CreatedBy = 0}).Entity;
+        var commentNice = _context.Comments.Add(new Comment() {AttachedToResource = 1, Content = "nice", CreatedBy = 0}).Entity;
+        var commentGreat = _context.Comments.Add(new Comment() {AttachedToResource = 2, Content = "great", CreatedBy = 0}).Entity;
+        await _context.SaveChangesAsync();
 
+        var expected = new List<Comment>() {commentHello, commentNice};
+        var expected2 = new List<Comment>() {commentGreat};
+        GetComments(1).Should().Equal(expected);
+        GetComments(2).Should().Equal(expected2);
+    }
+    
     /// <summary>
     /// Returns all comments for a resource
     /// </summary>
     /// <param name="resourceId">The id of the resource</param>
     /// <returns>A collection of all the comments on the resource</returns>
-    private ICollection<Comment> GetComments(int resourceId)
+    private List<Comment> GetComments(int resourceId)
     {
-        var collection = new Collection<Comment>();
+        var collection = new List<Comment>();
 
         foreach (var comment in _context.Comments)
         {
             if (comment.AttachedToResource == resourceId)
             {
-                collection.Add(
-                    new Comment() {Content = comment.Content, CreatedBy = 0, AttachedToResource = resourceId});
+                collection.Add(comment);
             }
         }
         return collection;
     }
-    
-    
+[Fact]
+    public async Task Get_Resources_returns_last_3_resources_with_tag_a_and_b_given_13_resources_with_tag_a_and_b_and_others_and_no_category_and_skip_10_and_count_10_and_tags_a_and_b()
+    {
+        var tagRepo = new TagRepository(_pgContext);
+        var atag = await tagRepo.Push(new TagCreateDTO() {Name = "aaaaaaaaaaaaaaa", TagSynonyms = new List<string>()});
+        var btag = await tagRepo.Push(new TagCreateDTO() {Name = "bbbbbbbbbbbbbb", TagSynonyms = new List<string>()});
+        var ctag = await tagRepo.Push(new TagCreateDTO() {Name = "ccccccccccccccccccccccccccc", TagSynonyms = new List<string>()});
+        
+        
+        var resources = new List<ResourceCreateDTO>()
+        {
+            
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title1",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa", "bbbbbbbbbbbbbb", "ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title2",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa", "bbbbbbbbbbbbbb"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title3",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title4",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa", "ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title5",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"bbbbbbbbbbbbbb", "ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title6",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"bbbbbbbbbbbbbb"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title7",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa", "bbbbbbbbbbbbbb", "ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title8",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa", "bbbbbbbbbbbbbb"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title9",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title10",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa", "ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title11",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"bbbbbbbbbbbbbb", "ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title12",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"bbbbbbbbbbbbbb"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title13",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"bbbbbbbbbbbbbb"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title14",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+        };
+        var created = new List<string>();
+        foreach (var createDto in resources)
+        {
+            await _pgRepo.Push(createDto);
+            created.Add(createDto.SiteTitle);
+        }
+
+        
+        var expected = created.GetRange(10,3);
+        var tags = new List<TagDTO>() {atag, btag};
+        List<ResourceDTO> actual = (List<ResourceDTO>) await _pgRepo.GetResources(0, "title", tags, 10, 10);
+        actual.Should().HaveSameCount(expected);
+        expected.Should().BeEquivalentTo(actual.Select(a => a.SiteTitle));
+    }
+    [Fact]
+    public async Task Get_Resources_returns_first_10_resources_with_tag_a_and_b_given_13_resources_with_tag_a_and_b_and_others_and_no_category_and_skip_0_and_count_10_and_tags_a_and_b()
+    {
+        var tagRepo = new TagRepository(_pgContext);
+        var atag = await tagRepo.Push(new TagCreateDTO() {Name = "aaaaaaaaaaaaaaa", TagSynonyms = new List<string>()});
+        var btag = await tagRepo.Push(new TagCreateDTO() {Name = "bbbbbbbbbbbbbb", TagSynonyms = new List<string>()});
+        var ctag = await tagRepo.Push(new TagCreateDTO() {Name = "ccccccccccccccccccccccccccc", TagSynonyms = new List<string>()});
+        
+        
+        var resources = new List<ResourceCreateDTO>()
+        {
+            
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title1",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa", "bbbbbbbbbbbbbb", "ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title2",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa", "bbbbbbbbbbbbbb"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title3",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title4",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa", "ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title5",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"bbbbbbbbbbbbbb", "ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title6",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"bbbbbbbbbbbbbb"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title7",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa", "bbbbbbbbbbbbbb", "ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title8",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa", "bbbbbbbbbbbbbb"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title9",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title10",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"aaaaaaaaaaaaaaa", "ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title11",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"bbbbbbbbbbbbbb", "ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title12",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"bbbbbbbbbbbbbb"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title13",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"bbbbbbbbbbbbbb"},
+                Categories = new List<string>()
+            },
+            new()
+            {
+                Created = DateTime.MinValue,
+                MaterialType = ResourceType.Article, 
+                SiteUrl = "https://a.dk",
+                SiteTitle = "title14",
+                Author = "mememememe",
+                LixNumber = 1,
+                Language = "Danish",
+                Tags = new List<string>() {"ccccccccccccccccccccccccccc"},
+                Categories = new List<string>()
+            },
+        };
+        var created = new List<string>();
+        foreach (var createDto in resources)
+        {
+            await _pgRepo.Push(createDto);
+            created.Add(createDto.SiteTitle);
+        }
+
+        
+        var expected = created.GetRange(1,9);
+        expected.Add(created[13]);
+        var tags = new List<TagDTO>() {atag, btag};
+        List<ResourceDTO> actual = (List<ResourceDTO>) await _pgRepo.GetResources(0, "title", tags, 10, 0);
+        actual.Should().HaveSameCount(expected);
+        expected.Should().BeEquivalentTo(actual.Select(a => a.SiteTitle));
+    }
+
     /* Dispose code has been taken from  https://github.com/ondfisk/BDSA2021/blob/main/MyApp.Infrastructure.Tests/CityRepositoryTests.cs*/
     private bool _disposed;
+
     /// <summary>
     /// If we haven't disposed yet, we start disposing our context
     /// </summary>
