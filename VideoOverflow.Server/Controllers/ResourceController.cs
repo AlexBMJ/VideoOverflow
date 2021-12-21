@@ -32,7 +32,7 @@ namespace Server.Controllers
         /// </summary>
         /// <returns>All resources from the repository</returns>
         [HttpGet]
-        public async Task<IEnumerable<ResourceDTO>> GetAll()
+        public async Task<IEnumerable<ResourceDetailsDTO>> GetAll()
             => await _repository.GetAll();
 
         /// <summary>
