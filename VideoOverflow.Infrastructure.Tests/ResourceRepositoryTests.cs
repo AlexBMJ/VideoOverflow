@@ -2,10 +2,10 @@ using FluentAssertions.Extensions;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Xunit.Abstractions;
 using Xunit.Sdk;
-
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Xunit.Abstractions;
 using Xunit.Sdk;
+
 
 namespace VideoOverflow.Infrastructure.Tests;
 
@@ -542,7 +542,6 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
     {
 
         await _pgContext.Resources.AddAsync(new Resource()
-
         {
             Created = Created,
             Author = "author",
