@@ -39,7 +39,7 @@
             <MudItem xl="2" lg="2" md="2" sm="2" Class="d-flex align-center">@context.Item2.Author</MudItem>
             <MudItem xl="1" lg="2" md="2" sm="2" Class="d-flex align-center">@context.Item2.Created.Value.Day-@context.Item2.Created.Value.Month-@context.Item2.Created.Value.Year </MudItem>
             <MudItem xl="1" lg="1" md="1" sm="1" Class="d-flex align-center">
-                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" aria-label="edit"/>
+                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" aria-label="edit" OnClick="@(() => NavigateToResource(context.Item2.Id))"/>
             </MudItem>
             <MudItem xl="1" lg="1" md="1" sm="1" Class="d-flex align-center">
                 <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(() => Delete(context.Item2.Id))"/>
@@ -165,6 +165,11 @@
             Item1 = i1;
             Item2 = i2;
         }
+    }
+    
+    private void NavigateToResource(int id)
+    {
+        _navigationManager.NavigateTo($"Edit/{id}");
     }
 
 }

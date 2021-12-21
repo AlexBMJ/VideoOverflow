@@ -40,7 +40,7 @@ public class ResourcesControllerTests
     public async Task GetAll_returns_All_Resources_from_repo() {
         // Arrange
         var logger = new Mock<ILogger<ResourceController>>();
-        var expected = Array.Empty<ResourceDTO>();
+        var expected = Array.Empty<ResourceDetailsDTO>();
         var repository = new Mock<IResourceRepository>();
         var tagRepo = new Mock<ITagRepository>();
         repository.Setup(m => m.GetAll()).ReturnsAsync(expected);

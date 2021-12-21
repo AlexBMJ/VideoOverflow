@@ -8,7 +8,7 @@ namespace VideoOverflow.Core.IRepositories;
 /// </summary>
 public interface IResourceRepository
 {
-    public Task<IEnumerable<ResourceDTO>> GetAll();
+    public Task<IEnumerable<ResourceDetailsDTO>> GetAll();
     public Task<IEnumerable<ResourceDTO>> GetResources(int category, string query, IEnumerable<TagDTO> tags, int count, int skip);
     public Task<Option<ResourceDetailsDTO>> Get(int id);
     public Task<Status> Push(ResourceCreateDTO create);

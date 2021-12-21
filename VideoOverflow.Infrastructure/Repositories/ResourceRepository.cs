@@ -24,17 +24,24 @@ public class ResourceRepository : IResourceRepository
     /// Gets all resources from the resource relation in the DB
     /// </summary>
     /// <returns>A collection of all resources</returns>
-    public async Task<IEnumerable<ResourceDTO>> GetAll()
+    public async Task<IEnumerable<ResourceDetailsDTO>> GetAll()
     {
         // Give resourceDTO
-        return await _context.Resources.Select(c => new ResourceDTO(
-            c.Id,
-            c.MaterialType,
-            c.SiteUrl,
-            c.SiteTitle,
-            c.Created,
-            c.Author,
-            c.Language)).ToListAsync();
+        return await _context.Resources.Select(c => new ResourceDetailsDTO() {
+            Id = c.Id,
+            MaterialType = c.MaterialType,
+            Author = c.Author,
+            SiteTitle = c.SiteTitle,
+            ContentSource = c.ContentSource,
+            SiteUrl = c.SiteUrl,
+            Created = c.Created,
+            Language = c.Language,
+            LixNumber = c.LixNumber,
+            SkillLevel = c.SkillLevel,
+            Categories = c.Categories.Select(category => category.Name).ToList(),
+            Comments = c.Comments.Select(comment => comment.Content).ToList(),
+            Tags = c.Tags.Select(t => t.Name).ToList()
+        }).ToListAsync();
     }
     
     /// <summary>
@@ -129,8 +136,7 @@ public class ResourceRepository : IResourceRepository
     /// <returns>The status of the update</returns>
     public async Task<Status> Update(ResourceUpdateDTO update)
     {
-        var entity = await _context.Resources.Where(resource => resource.Id == update.Id).Select(c => c)
-            .FirstOrDefaultAsync();
+        var entity = await _context.Resources.FirstOrDefaultAsync(resource => resource.Id == update.Id);
 
         if (entity == null)
         {
@@ -150,8 +156,6 @@ public class ResourceRepository : IResourceRepository
         entity.Language = update.Language;
         entity.MaterialType = update.MaterialType;
         entity.SiteTitle = update.SiteTitle;
-        entity.Categories = await GetCategories(update.Categories);
-        entity.Tags = await GetTags(update.Tags);
         entity.SiteUrl = update.SiteUrl;
         entity.Created = update.Created;
         entity.SkillLevel = GetSkillLevel(update.LixNumber);
@@ -273,6 +277,7 @@ public class ResourceRepository : IResourceRepository
     {
         return new Regex(@"^(?:.*:\/\/)?(?:www\.)?(?<site>[^:\/]*).*$").Match(url).Groups[1].Value;
     }
+    
 
     /// <summary>
     /// Gets all comments based on a collection of comments' content
@@ -281,7 +286,7 @@ public class ResourceRepository : IResourceRepository
     /// <returns>A collection of comments with the specified content</returns>
     private async Task<ICollection<Comment>> GetComments(IEnumerable<string> comments)
     {
-        var collectionOfCategories = new Collection<Comment>();
+        var collectionOfComments = new Collection<Comment>();
         foreach (var comment in comments)
         {
             var exists = await _context.Comments.FirstOrDefaultAsync(c => c.Content == comment);
@@ -293,9 +298,9 @@ public class ResourceRepository : IResourceRepository
                 await _context.SaveChangesAsync();
             }
 
-            collectionOfCategories.Add(exists);
+            collectionOfComments.Add(exists);
         }
 
-        return collectionOfCategories;
+        return collectionOfComments;
     }
 }
