@@ -114,8 +114,7 @@ public class ResourceRepository : IResourceRepository
 
     public async Task<Status> Update(ResourceUpdateDTO update)
     {
-        var entity = await _context.Resources.Where(resource => resource.Id == update.Id).Select(c => c)
-            .FirstOrDefaultAsync();
+        var entity = await _context.Resources.FirstOrDefaultAsync(resource => resource.Id == update.Id);
 
         if (entity == null)
         {
@@ -137,8 +136,6 @@ public class ResourceRepository : IResourceRepository
         entity.SiteTitle = update.SiteTitle;
         entity.SiteUrl = update.SiteUrl;
         entity.Created = update.Created;
-        entity.Categories = await GetCategories(update.Categories);
-        entity.Tags = await GetTags(update.Tags);
         entity.SkillLevel = GetSkillLevel(update.LixNumber);
         entity.ContentSource = GetContentSource(update.SiteUrl);
         if (update.Comments != null)

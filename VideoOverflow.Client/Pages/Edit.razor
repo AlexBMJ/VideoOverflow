@@ -39,6 +39,7 @@
 @code {
 
     private ResourceForm _ResourceForm = new();
+    private ResourceDetailsDTO? _resourceDetailsDto;
 
     public class ResourceForm
     {
@@ -66,10 +67,7 @@
         [Required]
         public string Tags { get; set; }
         
-        [Required]
         public string Categories { get; set; }
-        
-        [Required]
         public string Comments { get; set; }
     }
 
@@ -89,49 +87,45 @@
     /// Fetch detailed information about the resource you want to edit and bind them to the variables
     private async Task SetInitValues(int id)
     {
-        var details = await _http.GetFromJsonAsync<ResourceDetailsDTO>($"api/resource/{id}");
+        _resourceDetailsDto = await _http.GetFromJsonAsync<ResourceDetailsDTO>($"Api/Resource/{id}");
 
-        _ResourceForm.Created = details.Created;
-        _ResourceForm.MaterialType = details.MaterialType.ToString();
-        _ResourceForm.SiteUrl = details.SiteUrl;
-        _ResourceForm.SiteTitle = details.SiteTitle;
-        _ResourceForm.Author = details.Author;
-        _ResourceForm.LixNumber = details.LixNumber;
-        _ResourceForm.Language = details.Language;
-        _ResourceForm.Comments = string.Join(", ", details.Comments);
-        _ResourceForm.Tags = string.Join(", ", details.Tags);
-        _ResourceForm.Categories = string.Join(", ", details.Categories);
-
+        _ResourceForm.Created = _resourceDetailsDto.Created;
+        _ResourceForm.MaterialType = _resourceDetailsDto.MaterialType.ToString();
+        _ResourceForm.SiteUrl = _resourceDetailsDto.SiteUrl;
+        _ResourceForm.SiteTitle = _resourceDetailsDto.SiteTitle;
+        _ResourceForm.Author = _resourceDetailsDto.Author;
+        _ResourceForm.LixNumber = _resourceDetailsDto.LixNumber;
+        _ResourceForm.Language = _resourceDetailsDto.Language;
+        _ResourceForm.Tags = string.Join(", ", _resourceDetailsDto.Tags);
     }
 
 
     private async Task EditResource()
     {
+        Console.WriteLine(_resourceDetailsDto);
+        Console.WriteLine(_ResourceForm);
+        if (_resourceDetailsDto != null) {
+            var update = new ResourceUpdateDTO() {
+                Id = id,
+                Created = _ResourceForm.Created,
+                MaterialType = (ResourceType) Enum.Parse(typeof(ResourceType), _ResourceForm.MaterialType),
+                SiteUrl = _ResourceForm.SiteUrl,
+                SiteTitle = _ResourceForm.SiteTitle,
+                Author = _ResourceForm.Author,
+                LixNumber = _ResourceForm.LixNumber,
+                Language = _ResourceForm.Language,
 
-        var update = new ResourceUpdateDTO()
-        {
-            Id = id,
-            Created = _ResourceForm.Created,
-            MaterialType = (ResourceType)Enum.Parse(typeof(ResourceType), _ResourceForm.MaterialType),
-            SiteUrl = _ResourceForm.SiteUrl,
-            SiteTitle = _ResourceForm.SiteTitle,
-            Author = _ResourceForm.Author,
-            LixNumber = _ResourceForm.LixNumber,
-            Language = _ResourceForm.Language,
+                Tags = _resourceDetailsDto.Tags,
+                Categories = _resourceDetailsDto.Categories,
+                Comments = _resourceDetailsDto.Comments
+            };
+            Console.WriteLine(update);
 
-            Tags = _ResourceForm.Tags.Split(", "),
-            Categories = _ResourceForm.Categories.Split(", "),
-            Comments = _ResourceForm.Comments.Split(", ")
-        };
-        
-        var response = await _http.PutAsJsonAsync<ResourceUpdateDTO>($"api/Resource", update);
+            var response = await _http.PutAsJsonAsync("Api/Resource", update);
 
-        if (response.IsSuccessStatusCode)
-        {
-            Snackbar.Add("You have successfully edited resource with id: " + id);
-            
+            if (response.IsSuccessStatusCode) {
+                Snackbar.Add("You have successfully edited resource with id: " + id);
+            }
         }
-
     }
-    
 }
