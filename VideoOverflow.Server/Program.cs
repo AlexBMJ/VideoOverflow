@@ -37,8 +37,8 @@ builder.Services.AddRazorPages();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddDbContext<VideoOverflowContext>(options => options.UseNpgsql(builder
-    .Configuration.GetConnectionString("VideoOverflow")));
+builder.Services.AddDbContext<VideoOverflowContext>(options => options.UseNpgsql((builder.Environment.IsProduction() ?
+    Environment.GetEnvironmentVariable("ConnectionString_VideoOverflow") : builder.Configuration.GetConnectionString("VideoOverflow")) ?? string.Empty));
 builder.Services.AddScoped<IVideoOverflowContext, VideoOverflowContext>();
 builder.Services.AddScoped<IResourceRepository, ResourceRepository>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
