@@ -30,20 +30,8 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
 
         var actual = await _repo.Push(_resource);
 
-        var expected = new ResourceDTO(
-            1,
-            ResourceType.Video,
-            "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
-            "learnit.itu.dk",
-            "My first Page",
-            Created,
-            "Deniz",
-            "Danish",
-            new Collection<string>() {"C#"},
-            new Collection<string>() {"Programming"},
-            new Collection<string>());
-
-        expected.Should().BeEquivalentTo(actual);
+        var expected = Status.Created;
+        Assert.Equal(expected, actual);
     }
 
     [Fact]
@@ -157,27 +145,19 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
             1,
             ResourceType.Video,
             "https://learnit.itu.dk/pluginfile.php/306649/mod_resource/content/3/06-normalization.pdf",
-            "learnit.itu.dk",
             "My first Page",
             Created,
             "Deniz",
-            "Danish",
-            new Collection<string>() {"C#"},
-            new Collection<string>() {"Programming"},
-            new Collection<string>());
+            "Danish");
 
         var microsoftResourceDTO = new ResourceDTO(
             2,
             ResourceType.Article,
             "https://docs.microsoft.com/da-dk/dynamics365/marketing/teams-webinar",
-            "docs.microsoft.com",
             "Opret et Microsoft Teams webinar",
             Created,
             "OndFisk",
-            "Danish",
-            new Collection<string>() { },
-            new Collection<string>() { },
-            new Collection<string>()
+            "Danish"
         );
 
         var expected = new Collection<ResourceDTO>() {learnItResourceDTO, microsoftResourceDTO};
@@ -371,8 +351,10 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
             Categories = new Collection<string>() {"Programming"},
             Tags = new Collection<string>() {"C#"}
         };
+        var expected = Status.BadRequest;
+        var actual = await _repo.Push(resource);
         
-        await Assert.ThrowsAsync<Exception>(() => _repo.Push(resource));
+        Assert.Equal(expected, actual);
     }
 
     [Fact]

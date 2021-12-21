@@ -6,14 +6,10 @@ public record ResourceDTO(
     int Id,
     ResourceType MaterialType,
     string SiteUrl,
-    string ContentSource,
     string SiteTitle,
     DateTime? Created,
     string? Author,
-    string Language,
-    ICollection<string> Tags,
-    ICollection<string> Categories,
-    ICollection<string>? Comments);
+    string Language);
 
 public record ResourceDetailsDTO()
 {

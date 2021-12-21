@@ -1,4 +1,5 @@
 using FluentAssertions.Extensions;
+using Server.Model;
 
 namespace VideoOverflow.Server.Tests;
 
@@ -8,38 +9,21 @@ public class ResourcesControllerTests
     [Fact]
     public async Task Post_creates_Resource()
     {
-
         // Arrange
         var logger = new Mock<ILogger<ResourceController>>();
         var toCreate = new ResourceCreateDTO();
-        var created = new ResourceDTO(
-            1, ResourceType.Video,
-            "https://www.youtube.com",
-            "youtube",
-            "Youtube",
-            DateTime.Parse("08-08-2012").AsUtc(),
-            "A",
-            "english",
-            new Collection<string>(),
-            new Collection<string>(),
-            new Collection<string>()
-        );
         var repository = new Mock<IResourceRepository>();
-      
+        var expected = Created;
         var tagRepo = new Mock<ITagRepository>();
-        repository.Setup(m => m.Push(toCreate)).ReturnsAsync(created);
+        repository.Setup(m => m.Push(toCreate)).ReturnsAsync(expected).Verifiable();
         var controller = new ResourceController(logger.Object, repository.Object, tagRepo.Object);
-
-
+        
         // Act
-        var result = await controller.Post(toCreate) as CreatedAtActionResult;
+        var result = await controller.Post(toCreate) as CreatedResult;
 
         // Assert
-        Assert.Equal(created, result?.Value);
-        Assert.Equal("Get", result?.ActionName);
-        Assert.Equal(KeyValuePair.Create("Id", (object?) 1), result?.RouteValues?.Single());
-
-
+        Assert.Equal(201, result?.StatusCode);
+        
     }
 
     [Fact]
