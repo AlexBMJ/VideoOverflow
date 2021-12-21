@@ -34,7 +34,7 @@
             <MudItem xl="1" lg="1" md="1" sm="1" Class="d-flex align-center">
                 <MudIcon Icon="@GetMaterialIcon(context.Item2.MaterialType)"/>
             </MudItem>
-            <MudItem xl="4" lg="3" md="2" sm="2" Class="d-flex align-center">@context.Item2.SiteTitle</MudItem>
+            <MudLink @onclick="@(() => _navigationManager.NavigateTo($"/ResourceDetails/{context.Item2.Id}"))" xl="4" lg="3" md="2" sm="2" Class="d-flex align-center">@context.Item2.SiteTitle</MudLink>
             <MudItem xl="1" lg="1" md="1" sm="2" Class="d-flex align-center">@context.Item2.Language</MudItem>
             <MudItem xl="2" lg="2" md="2" sm="2" Class="d-flex align-center">@context.Item2.Author</MudItem>
             <MudItem xl="1" lg="2" md="2" sm="2" Class="d-flex align-center">@context.Item2.Created.Value.Day-@context.Item2.Created.Value.Month-@context.Item2.Created.Value.Year </MudItem>
@@ -49,44 +49,6 @@
     </RowTemplate>
     <ChildRowContent>
         @if (context.Item1) {
-            <MudItem xl="12" lg="12" md="12" >
-                <MudCard Elevation="0">
-                    <MudCardHeader>
-                        <CardHeaderContent>
-                            <MudText Typo="Typo.h6">Categories</MudText>
-                        </CardHeaderContent>
-                    </MudCardHeader>
-                    <MudCardContent Class="mt-n7 pr-4 pl-4">
-                        @foreach (var category in context.Item2.Categories)
-                        {
-                            <MudChip Class="mud-theme-secondary">@category</MudChip>
-                        }
-                    </MudCardContent>
-                </MudCard>
-            </MudItem>
-            <MudDivider/>
-            <MudItem xl="12" lg="12" md="12">
-                    <MudCard Elevation="0">
-                        <MudCardHeader>
-                            <CardHeaderContent>
-                                <MudText Typo="Typo.h6">Tags</MudText>
-                            </CardHeaderContent>
-                        </MudCardHeader>
-                        <MudCardContent Class="mt-n7 pr-4 pl-4">
-                            @if (context.Item2.Tags.Count == 0)
-                            {
-                                <MudChip Class="mud-theme-tertiary" Style="cursor: pointer; opacity: 50%">No tags</MudChip>
-                            }
-                            else
-                            {
-                                foreach (var tag in context.Item2.Tags)
-                                {
-                                    <MudChip Class="mud-theme-tertiary" Style="cursor: pointer;">@tag</MudChip>
-                                }
-                            }
-                        </MudCardContent>
-                    </MudCard>
-                </MudItem>
             <MudDivider/>
             <MudItem>
                 <MudCard Elevation="0">
@@ -101,32 +63,6 @@
                 </MudCard>
             </MudItem>
             <MudDivider/>
-            <MudItem xl="12" lg="12" md="12">
-                <MudCard Elevation="0">
-                    <MudCardHeader>
-                        <CardHeaderContent>
-                            <MudText Typo="Typo.h6">Comments</MudText>
-                        </CardHeaderContent>
-                    </MudCardHeader>
-                    <MudCardContent Class="mt-n7 pr-4 pl-4">
-                        @if (context.Item2.Comments is {Count: 0 })
-                        {
-                            <MudChip Class="mud-theme-tertiary" Style="opacity: 50%">No Comments</MudChip>
-                        }
-                        else
-                        {
-                            <MudTable Items="context.Item2.Comments" Context="comment"
-                                      Elevation="0">
-                                <RowTemplate>
-                                    <MudDivider/>
-                                    <MudText Class="py-2">@comment</MudText>
-                                </RowTemplate>
-                            </MudTable>
-                            <MudDivider/>
-                        }
-                    </MudCardContent>
-                </MudCard>
-            </MudItem>
         }
     </ChildRowContent>
 </MudTable>

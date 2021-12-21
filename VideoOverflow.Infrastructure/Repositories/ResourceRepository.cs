@@ -1,4 +1,5 @@
 ﻿
+using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 
 namespace VideoOverflow.Infrastructure.repositories;
@@ -19,14 +20,10 @@ public class ResourceRepository : IResourceRepository
             c.Id,
             c.MaterialType,
             c.SiteUrl,
-            c.ContentSource,
             c.SiteTitle,
             c.Created,
             c.Author,
-            c.Language,
-            c.Tags.Select(tag => tag.Name).ToList(),
-            c.Categories.Select(category => category.Name).ToList(),
-            c.Comments.Select(comment => comment.Content).ToList())).ToListAsync();
+            c.Language)).ToListAsync();
     }
     
     public async Task<IEnumerable<ResourceDTO>> GetResources(int category, string query, IEnumerable<TagDTO> tags, int count, int skip)
@@ -40,14 +37,10 @@ public class ResourceRepository : IResourceRepository
             r.Id,
             r.MaterialType,
             r.SiteUrl,
-            r.ContentSource,
             r.SiteTitle,
             r.Created,
             r.Author,
-            r.Language,
-            r.Tags.Select(tag => tag.Name).ToList(),
-            r.Categories.Select(category => category.Name).ToList(),
-            r.Comments.Select(comment => comment.Content).ToList())).ToListAsync();
+            r.Language)).ToListAsync();
     }
 
     public async Task<Option<ResourceDetailsDTO>> Get(int resourceId)
@@ -72,16 +65,12 @@ public class ResourceRepository : IResourceRepository
             .FirstOrDefaultAsync();
     }
 
-    public async Task<ResourceDTO> Push(ResourceCreateDTO create)
-    {
-        if (!isValidUrl(create.SiteUrl))
-        {
-            throw new Exception("Invalid URL!!");
-        }
+    public async Task<Status> Push(ResourceCreateDTO create) {
+        if (!isValidUrl(create.SiteUrl)) return Status.BadRequest;
         
         var resource = new Resource
         {
-            Author = create.Author == null ? "Unknown" : create.Author,
+            Author = create.Author ?? "Unknown",
             Created = create.Created,
             MaterialType = create.MaterialType,
             Language = create.Language,
@@ -98,18 +87,7 @@ public class ResourceRepository : IResourceRepository
         await _context.Resources.AddAsync(resource);
         await _context.SaveChangesAsync();
 
-        return new ResourceDTO(resource.Id,
-            resource.MaterialType,
-            resource.SiteUrl,
-            resource.ContentSource,
-            resource.SiteTitle,
-            resource.Created,
-            resource.Author,
-            resource.Language,
-            resource.Tags.Select(c => c.Name).ToList(),
-            resource.Categories.Select(c => c.Name).ToList(),
-            new Collection<string>()
-        );
+        return Status.Created;
     }
 
     public async Task<Status> Update(ResourceUpdateDTO update)
