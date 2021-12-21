@@ -35,5 +35,9 @@
       <HintPath>..\..\..\..\..\..\usr\share\dotnet\shared\Microsoft.AspNetCore.App\6.0.0\Microsoft.AspNetCore.WebUtilities.dll</HintPath>
     </Reference>
   </ItemGroup>
-  
+
+  <ItemGroup>
+    <TrimmerRootAssembly Include="Microsoft.Authentication.WebAssembly.Msal" />
+  </ItemGroup>
+
 </Project>

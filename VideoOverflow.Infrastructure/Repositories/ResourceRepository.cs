@@ -144,6 +144,8 @@ public class ResourceRepository : IResourceRepository
             return Status.NotFound;
         }
 
+        if (!isValidUrl(update.SiteUrl)) return Status.BadRequest;
+        
         if (update.Author == null)
         {
             entity.Author = "Unknown";
