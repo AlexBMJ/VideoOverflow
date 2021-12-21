@@ -1,85 +1,105 @@
-@page "/ResourceDetails/{id:int}"
 @using VideoOverflow.Core.DTOs
 @inject HttpClient _http
 @inject NavigationManager _navManager
 <PageTitle>@(_resource == null ? _resource?.SiteTitle : "Resource")</PageTitle>
+@if (_resource != null)
+{
+    <MudPaper Height="600px" Style="overflow-y: scroll">
 
-@if (_resource != null) {
-    <MudGrid Justify="Justify.Center" Spacing="1" Class="my-4">
-        <h1>@_resource.SiteTitle</h1>
-        <MudGrid>
-            <MudItem xs="12">
-                <MudPaper Outlined="true" Class="mud-theme-primary d-flex align-center justify-center mud-width-full py-8">
-                    <h3>Visit Page: <MudNavLink ForceLoad="true" Href="@_resource.SiteUrl">@_resource.SiteUrl</MudNavLink></h3>
-                </MudPaper>
-            </MudItem>
-            <MudItem xs="6">
-                <MudItem>
-                    <h2>Categories</h2>
-                </MudItem>
-                <MudPaper Outlined="true" Class="d-flex align-center justify-center mud-width-full py-8">
-                    <MudCard Elevation="0" Class="d-flex align-center justify-center mud-width-full py-8">
-                        <MudCardContent>
-                            @foreach (var category in _resource.Categories) {
-                                <MudChip Class="mud-theme-secondary">@category</MudChip>
-                            }
-                        </MudCardContent>
-                    </MudCard>
-                </MudPaper>
-            </MudItem>
-            <MudItem xs="6">
-                <MudItem>
-                    <h2>Tags</h2>
-                </MudItem>
-                <MudPaper Outlined="true" Class="d-flex align-center justify-center mud-width-full py-8" Elevation="3">
-                    @if (_resource.Tags.Count == 0) {
+        <MudCard Style="background-color: cadetblue">
+            <MudCardHeader>
+                <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+                    <MudText Color="Color.Info" Class="ma-1" Typo="Typo.h5">@_resource?.SiteTitle</MudText>
+                </MudHidden>
+                <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                    <MudText Class="ma-1" Typo="Typo.h6">@_resource?.SiteTitle</MudText>
+                </MudHidden>
+            </MudCardHeader>
+            <MudCardMedia Image="background.svg"></MudCardMedia>
+            <MudButton Style="height: 4rem" Class="mud-theme-primary d-flex align-center justify-center mud-width-full" Size="Size.Large" Variant="Variant.Filled" Link="@_resource.SiteUrl">Visit Page</MudButton>
+            <MudCard Square="true" Outlined="true" Elevation="0">
+                <MudCardHeader>
+                    <MudText Class="mb-n5" Typo="Typo.h6">Categories</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    @if (_resource.Categories.Count == 0)
+                    {
+                        <MudChip Class="mud-theme-secondary">No categories</MudChip>
+                    }
+                    else
+                    {
+                        foreach (var category in _resource.Categories)
+                        {
+                            <MudChip Class="mud-theme-secondary">@category</MudChip>
+                        }
+                    }
+                </MudCardContent>
+            </MudCard>
+            <MudCard Square="true" Outlined="true" Elevation="0">
+                <MudCardHeader>
+                    <MudText Class="mb-n8" Typo="Typo.h6">Tags</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    @if (_resource.Tags.Count == 0)
+                    {
                         <MudChip Class="mud-theme-tertiary" Style="cursor: pointer;">No tags</MudChip>
                     }
-                    else {
-                        <MudCard Elevation="0" Class="d-flex align-center justify-center mud-width-full py-8">
-                            <MudCardContent>
-                                @foreach (var tag in _resource.Tags) {
-                                    <MudChip Class="mud-theme-tertiary" Style="cursor: pointer;">@tag</MudChip>
-                                }
-                            </MudCardContent>
-                        </MudCard>
+                    else
+                    {
+                        <MudCardContent>
+                            @foreach (var tag in _resource.Tags)
+                            {
+                                <MudChip Class="mud-theme-tertiary" Style="cursor: pointer;">@tag</MudChip>
+                            }
+                        </MudCardContent>
                     }
-                </MudPaper>
-            </MudItem>
-            <MudItem>
-                <h2>Comments</h2>
-            </MudItem>
-            <MudItem xs="12">
-                <MudPaper Outlined="true" Class="d-flex align-center justify-center mud-width-full py-8">
-                    @if (_resource.Comments.Count == 0) {
-                            <MudChip Size="Size.Large" Class="mud-theme-primary">No Comments</MudChip>
-                        }
-                        else {
-                            <MudList Class="d-flex flex-column align-center justify-center mud-width-full py-8">
-                                @foreach (var comment in _resource.Comments) {
-                                    <MudListItem Avatar="@Icons.Filled.Person">
-                                        @comment
+                </MudCardContent>
+            </MudCard>
+            <MudCard Square="true" Outlined="true" Elevation="0">
+                <MudCardHeader Class="mb-n4">
+                    <MudText Typo="Typo.h6">Comments</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    @if (_resource.Comments.Count == 0)
+                    {
+                        <MudChip Size="Size.Small" Class="mud-theme-primary">No Comments</MudChip>
+                    }
+                    else
+                    {
+                        <MudTable Height="10rem" Items="_resource.Comments" Dense="true" Class="d-flex">
+                            <RowTemplate >
+                                <MudGrid Style=" width: calc(100% - 12px)" Class="d-flex align-center justify-left ma-2">
+                                    <MudItem xl="1" lg="1" md="1" sm="1">
+                                        <MudAvatar Class="mr-2" Variant="Variant.Filled">
+                                            <MudIcon Icon="@Icons.Material.Filled.Person"/>
+                                        </MudAvatar> 
+                                    </MudItem>
+                                    <MudItem xl="8" lg="8" md="8" sm="8">
+                                        <MudText Typo="Typo.body1">@context</MudText>
+                                    </MudItem>
+                                    <MudItem xl="3" lg="3" md="3" sm="3">
                                         <MudToggleIconButton Icon="@Icons.Material.Outlined.ThumbUp" ToggledIcon="@Icons.Material.Filled.ThumbUp" Size="Size.Medium"/>
                                         <MudToggleIconButton Icon="@Icons.Material.Outlined.ThumbDown" ToggledIcon="@Icons.Material.Filled.ThumbDown" Size="Size.Medium"/>
-                                    </MudListItem>
-                                    <MudDivider/>
-                                }
-                            </MudList>
-                        }
-                </MudPaper>
-            </MudItem>
-        </MudGrid>
-    </MudGrid>
-}
+                                    </MudItem>
+                                </MudGrid>
+                                <MudDivider></MudDivider>
+
+                            </RowTemplate>
+                        </MudTable>
+                    }
+                </MudCardContent>
+            </MudCard>
+        </MudCard>
+    </MudPaper>
+}   
 
 @code {
-
-    [Parameter]
-    public int id { get; set; }
+    [Parameter] public int id { get; set; }
 
     private ResourceDetailsDTO? _resource;
 
-    protected override async Task OnInitializedAsync() {
+    protected override async Task OnInitializedAsync()
+    {
         _resource = await _http.GetFromJsonAsync<ResourceDetailsDTO>($"Api/Resource/{id}");
         StateHasChanged();
     }
