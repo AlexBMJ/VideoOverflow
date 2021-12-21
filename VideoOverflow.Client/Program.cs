@@ -16,11 +16,12 @@ builder.Services.AddHttpClient("VideoOverflow.ServerAPI", client => client.BaseA
 // Supply HttpClient instances that include access tokens when making requests to the server project
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("VideoOverflow.ServerAPI"));
 
-builder.Services.AddMsalAuthentication(options =>
+builder.Services.AddMsalAuthentication<RemoteAuthenticationState, CustomUserAccount>(options =>
 {
     builder.Configuration.Bind("AzureAd", options.ProviderOptions.Authentication);
     options.ProviderOptions.DefaultAccessTokenScopes.Add("api://5fb0876a-b684-48df-85d0-c97c7b94ad79/API.Access");
     options.UserOptions.RoleClaim = "appRole";
-});
+}).AddAccountClaimsPrincipalFactory<RemoteAuthenticationState, CustomUserAccount,
+    CustomAccountFactory>();
 
 await builder.Build().RunAsync();

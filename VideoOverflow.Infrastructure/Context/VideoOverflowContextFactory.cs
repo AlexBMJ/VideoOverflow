@@ -1,10 +1,4 @@
-﻿using System;
-using System.IO;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.Extensions.Configuration;
-
-namespace VideoOverflow.Infrastructure.Context;
+﻿namespace VideoOverflow.Infrastructure.Context;
 
 
     public class VideoOverflowContextFactory : IDesignTimeDbContextFactory<VideoOverflowContext>

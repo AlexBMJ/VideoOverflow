@@ -1,7 +1,9 @@
 @page "/Browse"
+@attribute [AllowAnonymous]
 @using VideoOverflow.Core
 @using VideoOverflow.Core.DTOs
 @using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.AspNetCore.Authorization
 @inject HttpClient _http
 @inject NavigationManager _navigationManager
 @inject ISnackbar _snackbar
@@ -9,7 +11,7 @@
 <PageTitle>Browse</PageTitle>
 <MudGrid Justify="Justify.Center" Spacing="1" Class="my-4">
         <MudItem lg="8" md="8" sm="7" xs="12">
-            <MudTextField @bind-Value="_search" OnKeyPress="@(e => {if (e.Code == "Enter") {SpellCheck();Search();}})" Immediate="true" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" OnAdornmentClick="@(Search)" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Secondary"/>
+            <MudTextField @bind-Value="_search" OnKeyPress="@(e => {if (e.Code == "Enter") {SpellCheck();Search();}})" Immediate="true" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" OnAdornmentClick="@(Search)" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Primary"/>
             @if (!string.IsNullOrEmpty(_correctionSuggestion)) {
                 <MudChip OnClick="@(() => { _search = _correctionSuggestion; _correctionSuggestion = null; Search(); })" Label="true">Did you mean: @_correctionSuggestion</MudChip>
             }
@@ -34,16 +36,18 @@
             <MudItem xl="1" lg="1" md="1" sm="1" Class="d-flex align-center">
                 <MudIcon Icon="@GetMaterialIcon(context.Item2.MaterialType)"/>
             </MudItem>
-            <MudLink @onclick="@(() => _navigationManager.NavigateTo($"/ResourceDetails/{context.Item2.Id}"))" xl="4" lg="3" md="2" sm="2" Class="d-flex align-center">@context.Item2.SiteTitle</MudLink>
+            <MudLink @onclick="@(() => { ResourceId = context.Item2.Id; ToggleOverlay(true); })" xl="4" lg="3" md="2" sm="2" Class="d-flex align-center">@context.Item2.SiteTitle</MudLink>
             <MudItem xl="1" lg="1" md="1" sm="2" Class="d-flex align-center">@context.Item2.Language</MudItem>
             <MudItem xl="2" lg="2" md="2" sm="2" Class="d-flex align-center">@context.Item2.Author</MudItem>
             <MudItem xl="1" lg="2" md="2" sm="2" Class="d-flex align-center">@context.Item2.Created.Value.Day-@context.Item2.Created.Value.Month-@context.Item2.Created.Value.Year </MudItem>
-            <MudItem xl="1" lg="1" md="1" sm="1" Class="d-flex align-center">
-                <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" aria-label="edit" OnClick="@(() => NavigateToResource(context.Item2.Id))"/>
-            </MudItem>
-            <MudItem xl="1" lg="1" md="1" sm="1" Class="d-flex align-center">
-                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(() => Delete(context.Item2.Id))"/>
-            </MudItem>
+            <AuthorizeView Roles="developer" Context="authctx">
+                <MudItem xl="1" lg="1" md="1" sm="1" Class="d-flex align-center">
+                    <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" aria-label="edit" OnClick="@(() => NavigateToResource(context.Item2.Id))"/>
+                </MudItem>
+                <MudItem xl="1" lg="1" md="1" sm="1" Class="d-flex align-center">
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(() => Delete(context.Item2.Id))"/>
+                </MudItem>
+            </AuthorizeView>
         </MudGrid>
         <MudDivider/>
     </RowTemplate>
@@ -71,11 +75,15 @@
         <MudNumericField @bind-Value="_resultCount" Label="Results" Variant="Variant.Outlined" Step="5" Min="5" Max="50" />
     </MudItem>
     <MudItem lg="3" md="3" sm="3" xs="12">
-            <MudIconButton Class="ma-2" Variant="Variant.Filled" DisableElevation="true" Icon="@Icons.Material.Filled.ArrowBackIosNew" OnClick="@(() => {if (_page > 1) {_page -= 1; Search();}})" Size="Size.Large" />
-            <MudIconButton Class="ma-2" Variant="Variant.Filled" DisableElevation="true" Icon="@Icons.Material.Filled.ArrowForwardIos" OnClick="@(() => {_page+=1;Search();})" Size="Size.Large"  />
+        <MudIconButton Class="ma-2" Variant="Variant.Filled" DisableElevation="true" Icon="@Icons.Material.Filled.ArrowBackIosNew" OnClick="@(() => {if (_page > 1) {_page -= 1; Search();}})" Size="Size.Large" />
+        <MudIconButton Class="ma-2" Variant="Variant.Filled" DisableElevation="true" Icon="@Icons.Material.Filled.ArrowForwardIos" OnClick="@(() => {_page+=1;Search();})" Size="Size.Large"  />
 
-        </MudItem>
+    </MudItem>
 </MudGrid>
+
+<MudOverlay  AutoClose="true"  Visible="isVisible" OnClick="@(e => ToggleOverlay(false))" DarkBackground="true" Absolute="true">
+    <ResourceDetails id="@ResourceId"></ResourceDetails>
+</MudOverlay>
 
 
 @code {
@@ -86,31 +94,54 @@
     private string? _correctionSuggestion;
     private int _resultCount = 10;
     private int _page = 1;
+    private bool isVisible;
+    private int ResourceId;
+
+    public void ToggleOverlay(bool value)
+    {
+        isVisible = value;
+    }
 
     protected override async Task OnInitializedAsync() {
-        var categories = await _http.GetFromJsonAsync<CategoryDTO[]>("Api/Category");
-        if (categories != null)
-            _categories = categories.ToList();
-        _categories.Insert(0, new CategoryDTO(0, "None"));
+        try { 
+            var categories = await _http.GetFromJsonAsync<CategoryDTO[]>("Api/Category");
+            if (categories != null)
+                _categories = categories.ToList();
+            _categories.Insert(0, new CategoryDTO(0, "None"));
+        }
+        catch (Exception e) {
+            _snackbar.Add("Please login to continue", Severity.Error);
+        }
     }
 
     private async Task SpellCheck() {
-        var uri = QueryHelpers.AddQueryString("Api/Resource/Spelling",
-            new Dictionary<string, string?>() {["Query"] = _search});
-        var suggestion = await _http.GetStringAsync(uri);
-        _correctionSuggestion = suggestion != _search ? suggestion : null;
-        StateHasChanged();
+        try { 
+            var uri = QueryHelpers.AddQueryString("Api/Resource/Spelling",
+                new Dictionary<string, string?>() {["Query"] = _search});
+            var suggestion = await _http.GetStringAsync(uri);
+            _correctionSuggestion = suggestion != _search ? suggestion : null;
+            StateHasChanged();
+        }
+        catch (Exception e) {
+            _snackbar.Add("Please login to continue", Severity.Error);
+        }
     }
 
     private async Task Search() {
+        try {
         var resources = await GetResources();
         if (resources != null) {
             _resources = resources.Select(r => new SettableTuple<bool, ResourceDTO>(false, r)).ToList();
             StateHasChanged();
         }
+        }
+        catch (Exception e) {
+            _snackbar.Add("Please login to continue", Severity.Error);
+        }
     }
 
     private async Task<IEnumerable<ResourceDTO>?> GetResources() {
+        try {
         var queryStringParams = new Dictionary<string, string?>() {
             ["Category"] = _categories.First(c=>c.Name.Equals(_category)).Id.ToString(),
             ["Query"] = _search,
@@ -119,6 +150,11 @@
         };
         var uri = QueryHelpers.AddQueryString("Api/Resource/Search", queryStringParams);
         return await _http.GetFromJsonAsync<ResourceDTO[]>(uri);
+        }
+        catch (Exception e) {
+            _snackbar.Add("Please login to continue", Severity.Error);
+        }
+        return null;
     }
 
     private string GetMaterialIcon(ResourceType material) {
@@ -132,6 +168,8 @@
     }
 
     private async Task Delete(int id) {
+        try {
+        
         var response = await _http.DeleteAsync($"Api/Resource/{id}");
         
         if (response.IsSuccessStatusCode)
@@ -145,6 +183,10 @@
                 StateHasChanged();
             }
         }
+    }
+    catch (Exception e) {
+        _snackbar.Add("Please login to continue", Severity.Error);
+    }
     }
 
     private void ShowDetails(int id) {

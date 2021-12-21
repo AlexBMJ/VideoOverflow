@@ -59,6 +59,7 @@ public class ResourceRepository : IResourceRepository
         return await _context.Resources.
             Where(t => (category == 0 || t.Categories.Any(c=>c.Id == category)) && t.Tags.Any(a=> tags.Select(qt=>qt.Id).Contains(a.Id))).
             OrderByDescending(o=>EF.Functions.TrigramsSimilarity(o.SiteTitle, query)).
+            ThenBy(res=>res.Id).
             Skip(skip).
             Take(count).
             Select(r => new ResourceDTO(
@@ -143,6 +144,8 @@ public class ResourceRepository : IResourceRepository
             return Status.NotFound;
         }
 
+        if (!isValidUrl(update.SiteUrl)) return Status.BadRequest;
+        
         if (update.Author == null)
         {
             entity.Author = "Unknown";
@@ -160,10 +163,6 @@ public class ResourceRepository : IResourceRepository
         entity.Created = update.Created;
         entity.SkillLevel = GetSkillLevel(update.LixNumber);
         entity.ContentSource = GetContentSource(update.SiteUrl);
-        if (update.Comments != null)
-        {
-            entity.Comments = await GetComments(update.Comments);
-        }
 
         await _context.SaveChangesAsync();
         return Status.Updated;
