@@ -14,6 +14,10 @@ internal sealed class TestAuthHandler : AuthenticationHandler<AuthenticationSche
     {
     }
 
+    /// <summary>
+    /// Handles Authentication for our tests
+    /// </summary>
+    /// <returns> The result of the Authentication</returns>
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var claims = new[]

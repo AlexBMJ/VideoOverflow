@@ -1,5 +1,8 @@
 namespace VideoOverflow.Infrastructure.Tests;
 
+/// <summary>
+/// Tests for our tagRepository
+/// </summary>
 public class TagRepositoryTests : DatabaseTestCase, IDisposable
 {
     private readonly TagRepository _repo;
@@ -39,6 +42,10 @@ public class TagRepositoryTests : DatabaseTestCase, IDisposable
         expected.Should().BeEquivalentTo(actual);
     }
 
+    /// <summary>
+    /// Test the tagRepository's getAll method for a non empty DB
+    /// to ensure it returns all tags in the DB
+    /// </summary>
     [Fact]
     public async Task GetTagByNameAndSynonym_returns_correct_tag_out_of_many()
     {
@@ -118,6 +125,10 @@ public class TagRepositoryTests : DatabaseTestCase, IDisposable
         expected.Should().BeEquivalentTo(actual);
     }
 
+    /// <summary>
+    /// Test the tagRepository's getAll method for an empty DB
+    /// to ensure it returns an empty collection
+    /// </summary>
     [Fact]
     public async Task GetAll_returns_empty_for_no_tags_in_DB()
     {
@@ -126,6 +137,10 @@ public class TagRepositoryTests : DatabaseTestCase, IDisposable
         new Collection<TagDTO>().Should().BeEquivalentTo(actual);
     }
 
+    /// <summary>
+    /// Test the tagRepository's get method for an existing tag
+    /// to ensure it returns the correct tag from the DB
+    /// </summary>
     [Fact]
     public async Task Get_existing_tag_returns_TagDTO()
     {
@@ -154,12 +169,20 @@ public class TagRepositoryTests : DatabaseTestCase, IDisposable
         expected.Should().BeEquivalentTo(actual);
     }
 
+    /// <summary>
+    /// Test the tagRepository's get method for a non existing tag
+    /// to ensure it returns null
+    /// </summary>
     [Fact]
     public async Task Get_non_existing_tag_returns_null()
     {
         Assert.Null(await _repo.Get(1000));
     }
 
+    /// <summary>
+    /// Test the tagRepository's push method
+    /// to ensure it returns the correct tag
+    /// </summary>
     [Fact]
     public async Task Push_returns_TagDTO()
     {
@@ -186,6 +209,10 @@ public class TagRepositoryTests : DatabaseTestCase, IDisposable
         expected.Should().BeEquivalentTo(actual);
     }
 
+    /// <summary>
+    /// Test the tagRepository's update method for a non existing tag
+    /// to ensure it returns the action result notfound
+    /// </summary>
     [Fact]
     public async Task Update_non_existing_Tag_returns_NotFound()
     {
@@ -194,6 +221,10 @@ public class TagRepositoryTests : DatabaseTestCase, IDisposable
         Assert.Equal(Status.NotFound, actual);
     }
     
+    /// <summary>
+    /// Test the tagRepository's update method for an existing user
+    /// to ensure it returns the updated action result
+    /// </summary>
     [Fact]
     public async Task Update_existing_tag_returns_Updated()
     {
@@ -226,6 +257,10 @@ public class TagRepositoryTests : DatabaseTestCase, IDisposable
         Assert.Equal(Status.Updated, actual);
     }
 
+    /// <summary>
+    /// Test the tagRepository's update method for an existing tag
+    /// to ensure the tag is updated accordingly in the DB
+    /// </summary>
     [Fact]
     public async Task Update_changes_name_of_tag()
     {
@@ -246,6 +281,10 @@ public class TagRepositoryTests : DatabaseTestCase, IDisposable
     
     /* Dispose code has been taken from  https://github.com/ondfisk/BDSA2021/blob/main/MyApp.Infrastructure.Tests/CityRepositoryTests.cs*/
     private bool _disposed;
+    /// <summary>
+    /// If we haven't disposed yet, we start disposing our context
+    /// </summary>
+    /// <param name="disposing"> Boolean for if we have disposed yet</param>
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposed)

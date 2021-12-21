@@ -5,13 +5,19 @@ using Xunit.Sdk;
 
 namespace VideoOverflow.Infrastructure.Tests;
 
+
+/// <summary>
+/// Tests for the resourceRepository
+/// </summary>
 public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
+
 {
     private readonly ITestOutputHelper _testOutputHelper;
     private readonly ResourceRepository _repo;
     private readonly ResourceRepository _pgRepo;
     private readonly VideoOverflowContext _context;
     private readonly ResourceCreateDTO _resource;
+
     protected readonly DateTime Created = DateTime.Parse("2020-09-29");
     public ResourceRepositoryTests(DatabaseTemplateFixture databaseFixture, ITestOutputHelper testOutputHelper) : base(databaseFixture) {
         _testOutputHelper = testOutputHelper;
@@ -39,6 +45,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         };
     }
 
+    /// <summary>
+    /// Test the resourceRepository's push method
+    /// to ensure it returns the correct resourceDTO
+    /// </summary>
     [Fact]
     public async Task Push_returns_resourceDTO_with_Id()
     {
@@ -50,6 +60,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         Assert.Equal(expected, actual);
     }
 
+    /// <summary>
+    /// Test the resourceRepository's get method for a non existing resource
+    /// to ensure it returns null
+    /// </summary>
     [Fact]
     public async Task Get_returns_null_for_non_existing_resource()
     {
@@ -58,6 +72,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         Assert.True(exists.IsNone);
     }
 
+    /// <summary>
+    /// Test the resourceRepository's get method for an existing resource
+    /// to esnure it returns the correct resourceDTO
+    /// </summary>
     [Fact]
     public async Task Get_returns_resourceDTO_for_givenId()
     {
@@ -84,6 +102,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         expected.Should().BeEquivalentTo(actual.Value);
     }
 
+    /// <summary>
+    /// Test the resourceRepository's get method after the update method
+    /// to ensure the correct resource is returned with the updates
+    /// </summary>
     [Fact]
     public async Task Get_returns_added_comments_to_resource_after_initialization()
     {
@@ -136,6 +158,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         expected.Should().BeEquivalentTo(actual.Value);
     }
 
+    /// <summary>
+    /// Test the resourceRepository's getAll method for a non empty DB
+    /// return all resources in the DB
+    /// </summary>
     [Fact]
     public async Task GetAll_returns_all_resources()
     {
@@ -181,6 +207,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         expected.Should().BeEquivalentTo(actual);
     }
 
+    /// <summary>
+    /// Test the resourceRepository's getAll method for an empty DB
+    /// to ensure it returns an empty collection
+    /// </summary>
     [Fact]
     public async Task GetAll_returns_empty_for_no_resources()
     {
@@ -189,6 +219,12 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         actual.Should().BeEmpty();
     }
 
+    /// <summary>
+    /// Test the resourceRepository's getSkillLevel method
+    /// to ensure the correct skillLevel is assigned to a resource based on the lixLevel
+    /// </summary>
+    /// <param name="lixLevel">The lixLevel of the resource</param>
+    /// <param name="expectedSkillLevel">The expected skillLevel of the resource</param>
     [Theory]
     [InlineData(55, 5)]
     [InlineData(45, 4)]
@@ -217,6 +253,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         
     }
 
+    /// <summary>
+    /// Test the resourceRepository's push method with new tags
+    /// to ensure the new tags are created in the DB
+    /// </summary>
     [Fact]
     public async Task Push_resource_with_new_tags_creates_new_tags_in_DB()
     {
@@ -229,6 +269,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         expected.Should().BeEquivalentTo(actual);
     }
 
+    /// <summary>
+    /// Test the resourceRepository's push method with null author
+    /// to ensure it sets the author to "Unknown" in the DB
+    /// </summary>
     [Fact]
     public async Task Push_sets_author_to_unknown_if_author_is_null()
     {
@@ -251,6 +295,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         "Unknown".Should().BeEquivalentTo(actual.Value.Author);
     }
 
+    /// <summary>
+    /// Test the resourceRepository's update method for non existing resource
+    /// to ensure the action result notfound is returned
+    /// </summary>
     [Fact]
     public async Task Update_returns_NotFound_for_no_existing_resource()
     {
@@ -259,6 +307,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         Assert.Equal(Status.NotFound, actual);
     }
 
+    /// <summary>
+    /// Test the resourceRepository's update method for existing resource
+    /// to ensure the action result updated is returned
+    /// </summary>
     [Fact]
     public async Task Update_returns_Updated_for_updated_resource()
     {
@@ -283,6 +335,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         Assert.Equal(Status.Updated, response);
     }
 
+    /// <summary>
+    /// Test the resourceRepository's update method for existing user
+    /// to ensure all attributes of the user is updated accordingly in the DB
+    /// </summary>
     [Fact]
     public async Task Update_updates_all_attributes()
     {
@@ -326,6 +382,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         expected.Should().BeEquivalentTo(actual.Value);
     }
     
+    /// <summary>
+    /// Test the resourceRepository's push method with a negative lixNumber
+    /// to ensure it sets the lixNumber to 0 and the skillLevel accordingly
+    /// </summary>
     [Fact]
     public async Task Push_given_negative_lixNumber_sets_lixNumber_to_0_and_returns_skillLevel_equals_1()
     {
@@ -351,6 +411,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         Assert.Equal(1, actualObject.Value.SkillLevel);
     }
     
+    /// <summary>
+    /// Test the resourceRepository's push method with invalid url
+    /// to ensure exception is thrown
+    /// </summary>
     [Fact]
     public async Task Push_given_invalid_url_throws_exception()
     {
@@ -373,6 +437,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         Assert.Equal(expected, actual);
     }
 
+    /// <summary>
+    /// Test the resourceRepository's delete method for a non existing resource
+    /// to ensure the action result notfound is returned
+    /// </summary>
     [Fact]
     public async Task Delete_returns_NotFound_for_no_existing_resource()
     {
@@ -381,6 +449,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         Assert.Equal(Status.NotFound, actual);
     }
     
+    /// <summary>
+    /// Test the resourceRepository's delete method for existing resource
+    /// to ensure the action result deleted is returned
+    /// </summary>
     [Fact]
     public async Task Delete_returns_Deleted_for_existing_resource()
     {
@@ -390,6 +462,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         Assert.Equal(Status.Deleted, actual);
     }
     
+    /// <summary>
+    /// Test the resourceRepository's delete method for existing resource
+    /// to ensure the resource is deleted in the DB
+    /// </summary>
     [Fact]
     public async Task Delete_actually_deletes_resource()
     {
@@ -468,6 +544,12 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         GetComments(1).Should().Equal(expected);
         GetComments(2).Should().Equal(expected2);
     }
+    
+    /// <summary>
+    /// Returns all comments for a resource
+    /// </summary>
+    /// <param name="resourceId">The id of the resource</param>
+    /// <returns>A collection of all the comments on the resource</returns>
     private List<Comment> GetComments(int resourceId)
     {
         var collection = new List<Comment>();
@@ -899,8 +981,11 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
 
     /* Dispose code has been taken from  https://github.com/ondfisk/BDSA2021/blob/main/MyApp.Infrastructure.Tests/CityRepositoryTests.cs*/
     private bool _disposed;
-    
 
+    /// <summary>
+    /// If we haven't disposed yet, we start disposing our context
+    /// </summary>
+    /// <param name="disposing"> Boolean for if we have disposed yet</param>
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposed)
