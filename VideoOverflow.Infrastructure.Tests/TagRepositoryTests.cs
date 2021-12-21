@@ -1,14 +1,64 @@
 namespace VideoOverflow.Infrastructure.Tests;
 
-public class TagRepositoryTests : RepositoryTestsSetup, IDisposable
+public class TagRepositoryTests : DatabaseTestCase, IDisposable
 {
     private readonly TagRepository _repo;
-
-    public TagRepositoryTests()
-    {
+    private readonly TagRepository _pgRepo;
+    private readonly VideoOverflowContext _context;
+    public TagRepositoryTests(DatabaseTemplateFixture databaseFixture) : base(databaseFixture) {
+        _pgRepo = new TagRepository(_pgContext);
+        
+        var connection = new SqliteConnection("Filename=:memory:");
+        connection.Open();
+        var builder = new DbContextOptionsBuilder<VideoOverflowContext>();
+        builder.UseSqlite(connection);
+        var context = new VideoOverflowContext(builder.Options);
+        context.Database.EnsureCreated();
+        context.SaveChanges();
+        _context = context;
         _repo = new TagRepository(_context);
     }
+    
+    [Fact]
+    public async Task GetTagByName_returns_correct_tag_out_of_many()
+    {
+        var aTag = new TagCreateDTO() {Name = "a", TagSynonyms = new List<string>()};
+        var bTag = new TagCreateDTO() {Name = "b", TagSynonyms = new List<string>()};
+        var cTag = new TagCreateDTO() {Name = "c", TagSynonyms = new List<string>()};
+        var dTag = new TagCreateDTO() {Name = "d", TagSynonyms = new List<string>()};
+        
+        await _repo.Push(aTag);
+        await _repo.Push(bTag);
+        await _repo.Push(cTag);
+        await _repo.Push(dTag);
 
+        var actual = await _repo.GetTagByName("c");
+
+        var expected = new TagDTO(3, "c", new List<string>());
+
+        expected.Should().BeEquivalentTo(actual);
+    }
+
+    [Fact]
+    public async Task GetTagByNameAndSynonym_returns_correct_tag_out_of_many()
+    {
+        var aTag = new TagCreateDTO() {Name = "a", TagSynonyms = new List<string>()};
+        var bTag = new TagCreateDTO() {Name = "b", TagSynonyms = new List<string>()};
+        var cTag = new TagCreateDTO() {Name = "c", TagSynonyms = new List<string>() {"f"}};
+        var dTag = new TagCreateDTO() {Name = "d", TagSynonyms = new List<string>()};
+
+        await _pgRepo.Push(aTag);
+        await _pgRepo.Push(bTag);
+        await _pgRepo.Push(cTag);
+        await _pgRepo.Push(dTag);
+
+        var actual = await _pgRepo.GetTagByNameAndSynonym("f");
+
+        var expected = new List<TagDTO>() {new (3, "c", new List<string>() {"f"})};
+
+        expected.Should().BeEquivalentTo(actual);
+    }
+    
     [Fact]
     public async Task GetAll_returns_all_tags()
     {

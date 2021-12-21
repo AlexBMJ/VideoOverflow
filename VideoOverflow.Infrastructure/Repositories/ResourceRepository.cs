@@ -25,7 +25,7 @@ public class ResourceRepository : IResourceRepository
             c.Author,
             c.Language)).ToListAsync();
     }
-    
+
     public async Task<IEnumerable<ResourceDTO>> GetResources(int category, string query, IEnumerable<TagDTO> tags, int count, int skip)
     {
         return await _context.Resources.
