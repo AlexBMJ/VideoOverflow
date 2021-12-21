@@ -3,8 +3,8 @@
 @inject NavigationManager _navManager
 <PageTitle>@(_resource == null ? _resource?.SiteTitle : "Resource")</PageTitle>
 @if (_resource != null)
-{
-    <MudPaper Height="600px" Style="overflow-y: scroll">
+{   
+    <MudPaper Width="65vw" Height="600px" Style="overflow-y: scroll">
 
         <MudCard Style="background-color: cadetblue">
             <MudCardHeader>
@@ -12,7 +12,7 @@
                     <MudText Color="Color.Info" Class="ma-1" Typo="Typo.h5">@_resource?.SiteTitle</MudText>
                 </MudHidden>
                 <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
-                    <MudText Class="ma-1" Typo="Typo.h6">@_resource?.SiteTitle</MudText>
+                    <MudText Color="Color.Info" Class="ma-1" Typo="Typo.h6">@_resource?.SiteTitle</MudText>
                 </MudHidden>
             </MudCardHeader>
             <MudCardMedia Image="background.svg"></MudCardMedia>
@@ -83,7 +83,6 @@
                                     </MudItem>
                                 </MudGrid>
                                 <MudDivider></MudDivider>
-
                             </RowTemplate>
                         </MudTable>
                     }

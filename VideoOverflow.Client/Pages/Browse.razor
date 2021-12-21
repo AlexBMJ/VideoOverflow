@@ -77,7 +77,7 @@
     </MudItem>
 </MudGrid>
 
-<MudOverlay  AutoClose="true"  Visible="isVisible" DarkBackground="true" Absolute="true">
+<MudOverlay  AutoClose="true"  Visible="isVisible" OnClick="@(e => ToggleOverlay(false))" DarkBackground="true" Absolute="true">
     <ResourceDetails id="@ResourceId"></ResourceDetails>
 </MudOverlay>
 
