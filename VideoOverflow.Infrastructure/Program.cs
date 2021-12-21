@@ -10,7 +10,7 @@ public class Program
 
         var optionsBuilder = new DbContextOptionsBuilder<VideoOverflowContext>().UseNpgsql(connectionString);
         using var context = new VideoOverflowContext(optionsBuilder.Options);
-     
+        context.Database.Migrate();
     }
 
     static IConfiguration LoadConfiguration()
