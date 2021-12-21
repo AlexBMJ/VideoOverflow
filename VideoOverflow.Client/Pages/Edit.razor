@@ -1,0 +1,131 @@
+﻿@page "/Edit/{id:int}"
+
+@using VideoOverflow.Core.DTOs
+@using VideoOverflow.Core
+@using Microsoft.AspNetCore.Components
+@using System.ComponentModel.DataAnnotations
+
+@inject HttpClient _http
+@inject NavigationManager _navigationManager
+@inject ISnackbar Snackbar
+
+
+
+
+<MudContainer Class="ma-2">
+    <h1>Edit Resource</h1>
+    <MudDivider/>
+    <MudForm Model="_ResourceForm" >
+        <MudTextField T="string" Label="Site Title" @bind-Value="_ResourceForm.SiteTitle"/>
+        <MudTextField T="string" Label="Site Url" @bind-Value="_ResourceForm.SiteUrl"/>
+        <MudSelect T="string" Label="MaterialType" Variant="Variant.Outlined" @bind-Value="_ResourceForm.MaterialType" AnchorOrigin="Origin.BottomCenter">
+            <MudSelectItem Value="@("Video")"/>
+            <MudSelectItem Value="@("Article")"/>
+            <MudSelectItem Value="@("Book")"/>
+        </MudSelect>
+        <MudTextField T="string" Label="Author" @bind-Value="_ResourceForm.Author"/>
+
+        <MudNumericField @bind-Value="_ResourceForm.LixNumber" HelperText="Lix" Variant="Variant.Text" HideSpinButtons="true" />
+    	    
+        <MudTextField T="string" Label="Language" @bind-Value="_ResourceForm.Language"/>
+
+        <MudDatePicker Label="DateCreated" @bind-Date="_ResourceForm.Created"/>
+
+    </MudForm>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await EditResource())">Edit</MudButton>
+</MudContainer>
+
+
+@code {
+
+    private ResourceForm _ResourceForm = new();
+    private ResourceDetailsDTO? _resourceDetailsDto;
+
+    public class ResourceForm
+    {
+        
+        [Required]
+        public string SiteTitle { get; set; }
+
+        [Required] 
+        public DateTime? Created { get; set; }
+        
+        [Required]
+        public string SiteUrl { get; set; }
+
+        [Required]
+        public string MaterialType { get; set; }
+
+        public string? Author { get; set; }
+
+        [Required]
+        public int LixNumber { get; set; }
+
+        [Required]
+        public string Language { get; set; }
+
+        [Required]
+        public string Tags { get; set; }
+        
+        public string Categories { get; set; }
+        public string Comments { get; set; }
+    }
+
+
+    [Parameter]
+    public int id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine("HITT");
+        
+        await SetInitValues(id);
+        
+        Console.WriteLine("Update resource ID:" + id);
+    }
+
+    /// Fetch detailed information about the resource you want to edit and bind them to the variables
+    private async Task SetInitValues(int id)
+    {
+        _resourceDetailsDto = await _http.GetFromJsonAsync<ResourceDetailsDTO>($"Api/Resource/{id}");
+
+        _ResourceForm.Created = _resourceDetailsDto.Created;
+        _ResourceForm.MaterialType = _resourceDetailsDto.MaterialType.ToString();
+        _ResourceForm.SiteUrl = _resourceDetailsDto.SiteUrl;
+        _ResourceForm.SiteTitle = _resourceDetailsDto.SiteTitle;
+        _ResourceForm.Author = _resourceDetailsDto.Author;
+        _ResourceForm.LixNumber = _resourceDetailsDto.LixNumber;
+        _ResourceForm.Language = _resourceDetailsDto.Language;
+        _ResourceForm.Tags = string.Join(", ", _resourceDetailsDto.Tags);
+    }
+
+
+    private async Task EditResource()
+    {
+        Console.WriteLine(_resourceDetailsDto);
+        Console.WriteLine(_ResourceForm);
+        if (_resourceDetailsDto != null) {
+            var update = new ResourceUpdateDTO() {
+                Id = id,
+                Created = _ResourceForm.Created,
+                MaterialType = (ResourceType) Enum.Parse(typeof(ResourceType), _ResourceForm.MaterialType),
+                SiteUrl = _ResourceForm.SiteUrl,
+                SiteTitle = _ResourceForm.SiteTitle,
+                Author = _ResourceForm.Author,
+                LixNumber = _ResourceForm.LixNumber,
+                Language = _ResourceForm.Language,
+
+                Tags = _resourceDetailsDto.Tags,
+                Categories = _resourceDetailsDto.Categories,
+                Comments = _resourceDetailsDto.Comments
+            };
+            Console.WriteLine(update);
+
+            var response = await _http.PutAsJsonAsync("Api/Resource", update);
+
+            if (response.IsSuccessStatusCode) {
+                Snackbar.Add("You have successfully edited resource with id: " + id);
+            }
+        }
+    }
+}

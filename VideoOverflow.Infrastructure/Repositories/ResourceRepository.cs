@@ -129,8 +129,7 @@ public class ResourceRepository : IResourceRepository
     /// <returns>The status of the update</returns>
     public async Task<Status> Update(ResourceUpdateDTO update)
     {
-        var entity = await _context.Resources.Where(resource => resource.Id == update.Id).Select(c => c)
-            .FirstOrDefaultAsync();
+        var entity = await _context.Resources.FirstOrDefaultAsync(resource => resource.Id == update.Id);
 
         if (entity == null)
         {
@@ -150,8 +149,6 @@ public class ResourceRepository : IResourceRepository
         entity.Language = update.Language;
         entity.MaterialType = update.MaterialType;
         entity.SiteTitle = update.SiteTitle;
-        entity.Categories = await GetCategories(update.Categories);
-        entity.Tags = await GetTags(update.Tags);
         entity.SiteUrl = update.SiteUrl;
         entity.Created = update.Created;
         entity.SkillLevel = GetSkillLevel(update.LixNumber);
@@ -273,6 +270,7 @@ public class ResourceRepository : IResourceRepository
     {
         return new Regex(@"^(?:.*:\/\/)?(?:www\.)?(?<site>[^:\/]*).*$").Match(url).Groups[1].Value;
     }
+    
 
     /// <summary>
     /// Gets all comments based on a collection of comments' content
@@ -281,7 +279,7 @@ public class ResourceRepository : IResourceRepository
     /// <returns>A collection of comments with the specified content</returns>
     private async Task<ICollection<Comment>> GetComments(IEnumerable<string> comments)
     {
-        var collectionOfCategories = new Collection<Comment>();
+        var collectionOfComments = new Collection<Comment>();
         foreach (var comment in comments)
         {
             var exists = await _context.Comments.FirstOrDefaultAsync(c => c.Content == comment);
@@ -293,9 +291,9 @@ public class ResourceRepository : IResourceRepository
                 await _context.SaveChangesAsync();
             }
 
-            collectionOfCategories.Add(exists);
+            collectionOfComments.Add(exists);
         }
 
-        return collectionOfCategories;
+        return collectionOfComments;
     }
 }

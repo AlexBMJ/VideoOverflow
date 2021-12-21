@@ -1,10 +1,9 @@
-
+using FluentAssertions.Extensions;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace VideoOverflow.Infrastructure.Tests;
-
 
 /// <summary>
 /// Tests for the resourceRepository
@@ -14,24 +13,20 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
 {
     private readonly ITestOutputHelper _testOutputHelper;
     private readonly ResourceRepository _repo;
+    private readonly TagRepository _tagRepo;
+    private readonly CategoryRepository _categoryRepo;
+    private readonly CommentRepository _commentRepo;
     private readonly ResourceRepository _pgRepo;
-    private readonly VideoOverflowContext _context;
     private readonly ResourceCreateDTO _resource;
+    private readonly DateTime Created = DateTime.Parse("2020-09-29").AsUtc();
 
-    protected readonly DateTime Created = DateTime.Parse("2020-09-29");
-    public ResourceRepositoryTests(DatabaseTemplateFixture databaseFixture, ITestOutputHelper testOutputHelper) : base(databaseFixture) {
+    public ResourceRepositoryTests(DatabaseTemplateFixture databaseFixture) : base(databaseFixture) {
         _testOutputHelper = testOutputHelper;
-        _pgRepo = new ResourceRepository(_pgContext);
-        
-        var connection = new SqliteConnection("Filename=:memory:");
-        connection.Open();
-        var builder = new DbContextOptionsBuilder<VideoOverflowContext>();
-        builder.UseSqlite(connection);
-        var context = new VideoOverflowContext(builder.Options);
-        context.Database.EnsureCreated();
-        context.SaveChanges();
-        _context = context;
-        _repo = new ResourceRepository(_context);
+        _repo = new ResourceRepository(_pgContext);
+        _tagRepo = new TagRepository(_pgContext);
+        _categoryRepo = new CategoryRepository(_pgContext);
+        _commentRepo = new CommentRepository(_pgContext);
+
         _resource = new ResourceCreateDTO()
         {
             Created = Created,
@@ -132,10 +127,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
             Comments = new List<string>() {comment.Content}
         };
         
-        await _context.Comments.AddAsync(comment);
-        await _context.SaveChangesAsync();
+        await _pgContext.Comments.AddAsync(comment);
+        await _pgContext.SaveChangesAsync();
 
-        var updateResponse = _repo.Update(update);
+        await _repo.Update(update);
 
         var expected = new ResourceDetailsDTO()
         {
@@ -262,7 +257,7 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
     {
         await _repo.Push(_resource);
 
-        var actual = await _context.Tags.Select(c => c.Name).ToListAsync();
+        var actual = await _pgContext.Tags.Select(c => c.Name).ToListAsync();
 
         var expected = new Collection<string>() {"C#"};
 
@@ -334,6 +329,23 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
 
         Assert.Equal(Status.Updated, response);
     }
+    
+    
+    private async Task AddTags() {
+        await _tagRepo.Push(new TagCreateDTO() {Name = "C#", TagSynonyms = new List<string>()});
+        await _tagRepo.Push(new TagCreateDTO() {Name = "GIT", TagSynonyms = new List<string>()});
+    }
+    
+    private async Task AddCategories() {
+        await _categoryRepo.Push(new CategoryCreateDTO() {Name = "Programming"});
+        await _categoryRepo.Push(new CategoryCreateDTO() {Name = "Testing"});
+    }
+    
+    private async Task AddComments() {
+        await _commentRepo.Push(new CommentCreateDTO() {Content = "comment1", CreatedBy = 1, AttachedToResource = 1});
+        await _commentRepo.Push(new CommentCreateDTO() {Content = "comment2", CreatedBy = 1, AttachedToResource = 1});
+        await _commentRepo.Push(new CommentCreateDTO() {Content = "comment3", CreatedBy = 1, AttachedToResource = 1});
+    }
 
     /// <summary>
     /// Test the resourceRepository's update method for existing user
@@ -342,6 +354,9 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
     [Fact]
     public async Task Update_updates_all_attributes()
     {
+        await AddTags();
+        await AddCategories();
+        await AddComments();
         await _repo.Push(_resource);
 
         var updated = new ResourceUpdateDTO()
@@ -352,10 +367,11 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
             Language = "English",
             MaterialType = ResourceType.Article,
             SiteUrl = "https://docs.microsoft.com/da-dk/dynamics365/marketing/teams-webinar",
-            Categories = new Collection<string>(),
-            Tags = new Collection<string>(),
+            Categories = new Collection<string>(){"Programming"},
+            Tags = new Collection<string>(){"C#"},
             SiteTitle = "Changed to this topic",
-            Created = Created
+            Created = Created,
+            Comments = new Collection<string>() {"comment1", "comment2", "comment3"}
         };
 
         await _repo.Update(updated);
@@ -374,9 +390,9 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
             SiteTitle = "Changed to this topic",
             Author = "Unknown",
             Language = "English",
-            Tags = new Collection<string>() { },
-            Categories = new Collection<string>() { },
-            Comments = new Collection<string>()
+            Tags = new Collection<string>() {"C#"},
+            Categories = new Collection<string>() {"Programming"},
+            Comments = new Collection<string>() {"comment1", "comment2", "comment3"}
         };
 
         expected.Should().BeEquivalentTo(actual.Value);
@@ -480,9 +496,9 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
     [Fact]
     public async Task Delete_deletes_comments_attachedToResource()
     {
-        var comment = _context.Comments.Add(new Comment() {AttachedToResource = 1, Content = "hello", CreatedBy = 0}).Entity;
+        var comment = _pgContext.Comments.Add(new Comment() {AttachedToResource = 1, Content = "hello", CreatedBy = 0}).Entity;
 
-        await _context.Resources.AddAsync(new Resource()
+        await _pgContext.Resources.AddAsync(new Resource()
         {
             Created = Created,
             Author = "Deniz",
@@ -497,11 +513,11 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
             Comments = new List<Comment>() {comment}
         });
         
-        await _context.SaveChangesAsync();
+        await _pgContext.SaveChangesAsync();
         
         await _repo.Delete(1);
 
-        _context.Comments.Should().BeEmpty();
+        _pgContext.Comments.Should().BeEmpty();
     }
     [Fact]
     public async Task comments_attachedToResource_are_attached()
@@ -554,7 +570,7 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
     {
         var collection = new List<Comment>();
 
-        foreach (var comment in _context.Comments)
+        foreach (var comment in _pgContext.Comments)
         {
             if (comment.AttachedToResource == resourceId)
             {
@@ -992,7 +1008,7 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         {
             if (disposing)
             {
-                _context.Dispose();
+                _pgContext.Dispose();
             }
 
             _disposed = true;
