@@ -12,8 +12,7 @@ public class ResourceTests : IClassFixture<VideoOverflowWebApplicationFactory>
     public ResourceTests(VideoOverflowWebApplicationFactory factory)
     {
         _factory = factory;
-        _client = factory.CreateClient(new WebApplicationFactoryClientOptions
-        {
+        _client = factory.CreateClient(new WebApplicationFactoryClientOptions {
             AllowAutoRedirect = false
         });
     }
