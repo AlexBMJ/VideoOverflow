@@ -2,6 +2,10 @@ using FluentAssertions.Extensions;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Xunit.Abstractions;
 using Xunit.Sdk;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Xunit.Abstractions;
+using Xunit.Sdk;
+
 
 namespace VideoOverflow.Infrastructure.Tests;
 
@@ -11,10 +15,12 @@ namespace VideoOverflow.Infrastructure.Tests;
 public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
 
 {
+    private readonly ITestOutputHelper _testOutputHelper;
     private readonly ResourceRepository _repo;
     private readonly TagRepository _tagRepo;
     private readonly CategoryRepository _categoryRepo;
     private readonly CommentRepository _commentRepo;
+
     private readonly ResourceCreateDTO _resource;
     private readonly DateTime Created = DateTime.Parse("2020-09-29").AsUtc();
 
@@ -23,6 +29,7 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         _tagRepo = new TagRepository(_pgContext);
         _categoryRepo = new CategoryRepository(_pgContext);
         _commentRepo = new CommentRepository(_pgContext);
+
 
         _resource = new ResourceCreateDTO()
         {
@@ -175,6 +182,7 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
 
         var actual = await _repo.GetAll();
 
+
         var learnItResourceDTO = new ResourceDetailsDTO() {
             Id = 1,
             MaterialType = ResourceType.Video,
@@ -207,6 +215,7 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         };
 
         var expected = new Collection<ResourceDetailsDTO>() {learnItResourceDTO, microsoftResourceDTO};
+
 
         expected.Should().BeEquivalentTo(actual);
     }
@@ -531,6 +540,7 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
     [Fact]
     public async Task comments_attachedToResource_are_attached()
     {
+
         await _pgContext.Resources.AddAsync(new Resource()
         {
             Created = Created,
@@ -546,6 +556,7 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
             Comments = new List<Comment>() 
         });
         await _pgContext.Resources.AddAsync(new Resource()
+
         {
             Created = Created,
             Author = "author2",
@@ -563,6 +574,7 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         var commentNice = _pgContext.Comments.Add(new Comment() {AttachedToResource = 1, Content = "nice", CreatedBy = 0}).Entity;
         var commentGreat = _pgContext.Comments.Add(new Comment() {AttachedToResource = 2, Content = "great", CreatedBy = 0}).Entity;
         await _pgContext.SaveChangesAsync();
+
 
         var expected = new List<Comment>() {commentHello, commentNice};
         var expected2 = new List<Comment>() {commentGreat};
@@ -785,6 +797,7 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         foreach (var createDto in resources)
         {
             await _repo.Push(createDto);
+
             created.Add(createDto.SiteTitle);
         }
 
@@ -792,6 +805,7 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         var expected = created.GetRange(10,3);
         var tags = new List<TagDTO>() {atag, btag};
         List<ResourceDTO> actual = (List<ResourceDTO>) await _repo.GetResources(0, "title", tags, 10, 10);
+
         actual.Should().HaveSameCount(expected);
         expected.Should().BeEquivalentTo(actual.Select(a => a.SiteTitle));
     }
@@ -992,6 +1006,7 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         foreach (var createDto in resources)
         {
             await _repo.Push(createDto);
+
             created.Add(createDto.SiteTitle);
         }
 
@@ -1000,6 +1015,7 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         expected.Add(created[13]);
         var tags = new List<TagDTO>() {atag, btag};
         List<ResourceDTO> actual = (List<ResourceDTO>) await _repo.GetResources(0, "title", tags, 10, 0);
+
         actual.Should().HaveSameCount(expected);
         expected.Should().BeEquivalentTo(actual.Select(a => a.SiteTitle));
     }
