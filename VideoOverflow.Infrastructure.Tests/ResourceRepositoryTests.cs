@@ -109,7 +109,7 @@ public class ResourceRepositoryTests : RepositoryTestsSetup, IDisposable
         await _context.Comments.AddAsync(comment);
         await _context.SaveChangesAsync();
 
-        var updateResponse = _repo.Update(update);
+        await _repo.Update(update);
 
         var expected = new ResourceDetailsDTO()
         {
