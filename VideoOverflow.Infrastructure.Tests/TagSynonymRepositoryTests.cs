@@ -9,6 +9,36 @@ public class TagSynonymRepositoryTests : RepositoryTestsSetup, IDisposable
         _repo = new TagSynonymRepository(_context);
     }
 
+    [Fact]
+    public async Task Push_returns_pushed_tag()
+    {
+        var cSharpSynonym = new TagSynonymCreateDTO() {Name = "c#"};
+
+        var tagSyn = await _repo.Push(cSharpSynonym);
+        await _repo.Push(new TagSynonymCreateDTO() {Name = "123"});
+        await _repo.Push(new TagSynonymCreateDTO() {Name = "abc"});
+        var expected = new TagSynonymDTO(1, "c#", new List<string>());
+        expected.Should().BeEquivalentTo(tagSyn);
+    }
+    [Fact]
+    public async Task GetTagBySynName_returns_correct_tag_out_of_many()
+    {
+        var cSharpSynonym = new TagSynonymCreateDTO() {Name = "c#"};
+        var cDashSharpSynonym = new TagSynonymCreateDTO() {Name = "C-Sharp"};
+        var cSharpLiteralSynonym = new TagSynonymCreateDTO() {Name = "cSharp"};
+        var cDashBluntSynonym = new TagSynonymCreateDTO() {Name = "C-Blunt"};
+
+        await _repo.Push(cSharpLiteralSynonym);
+        await _repo.Push(cDashBluntSynonym);
+        await _repo.Push(cSharpSynonym);
+        await _repo.Push(cDashSharpSynonym);
+
+        var actual = await _repo.GetTagSynByName("c#");
+
+        var expected = new TagSynonymDTO(3, "c#", new List<string>());
+
+        expected.Should().BeEquivalentTo(actual);
+    }
 
     [Fact]
     public async Task GetAll_returns_all_TagSynonyms()
