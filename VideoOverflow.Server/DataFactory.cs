@@ -59,15 +59,21 @@ public static class DataFactory
         {
             var context = scope.ServiceProvider.GetRequiredService<VideoOverflowContext>();
             await context.Database.EnsureDeletedAsync();
+            await context.Database.MigrateAsync();
             await CreateDemoData(context);
         }
 
         return host;
     }
+    public static async Task<int> FillDatabase(VideoOverflowContext context)
+    {
+        await CreateDemoData(context);
+        return _amountOfResources;
+    }
+
 
     private static async Task CreateDemoData(VideoOverflowContext context)
     {
-        await context.Database.MigrateAsync();
 
         // Add users to the database
         await context.Users.AddRangeAsync(
