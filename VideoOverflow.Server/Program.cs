@@ -28,8 +28,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         });
 
 builder.Services.Configure<JwtBearerOptions>(
-    JwtBearerDefaults.AuthenticationScheme, options =>
-    {
+    JwtBearerDefaults.AuthenticationScheme, options => {
         options.TokenValidationParameters.NameClaimType = "name";
     });
 
@@ -52,7 +51,6 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-
     app.UseDeveloperExceptionPage();
     app.UseWebAssemblyDebugging();
 }
