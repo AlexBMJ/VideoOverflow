@@ -63,12 +63,6 @@
 
         [Required]
         public string Language { get; set; }
-
-        [Required]
-        public string Tags { get; set; }
-        
-        public string Categories { get; set; }
-        public string Comments { get; set; }
     }
 
 
@@ -77,11 +71,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine("HITT");
-        
         await SetInitValues(id);
-        
-        Console.WriteLine("Update resource ID:" + id);
     }
 
     /// Fetch detailed information about the resource you want to edit and bind them to the variables
@@ -96,7 +86,6 @@
         _ResourceForm.Author = _resourceDetailsDto.Author;
         _ResourceForm.LixNumber = _resourceDetailsDto.LixNumber;
         _ResourceForm.Language = _resourceDetailsDto.Language;
-        _ResourceForm.Tags = string.Join(", ", _resourceDetailsDto.Tags);
     }
 
 
@@ -119,7 +108,6 @@
                 Categories = _resourceDetailsDto.Categories,
                 Comments = _resourceDetailsDto.Comments
             };
-            Console.WriteLine(update);
 
             var response = await _http.PutAsJsonAsync("Api/Resource", update);
 

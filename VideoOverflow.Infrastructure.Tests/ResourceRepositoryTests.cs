@@ -149,7 +149,7 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
             Language = "Danish",
             Tags = new Collection<string>() {"C#"},
             Categories = new Collection<string>() {"Programming"},
-            Comments = new Collection<string>() {"I just added this comment"}
+            Comments = new Collection<string>() {}
         };
         
         var actual = await _repo.Get(1);
@@ -410,7 +410,7 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
             Language = "English",
             Tags = new Collection<string>() {"C#"},
             Categories = new Collection<string>() {"Programming"},
-            Comments = new Collection<string>() {"comment1", "comment2", "comment3"}
+            Comments = new Collection<string>() {}
         };
 
         expected.Should().BeEquivalentTo(actual.Value);
@@ -802,9 +802,9 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         }
 
         
-        var expected = created.GetRange(10,3);
+        var expected = created.GetRange(11,3);
         var tags = new List<TagDTO>() {atag, btag};
-        List<ResourceDTO> actual = (List<ResourceDTO>) await _repo.GetResources(0, "title", tags, 10, 10);
+        List<ResourceDTO> actual = (await _repo.GetResources(0, "title", tags, 10, 10)).ToList();
 
         actual.Should().HaveSameCount(expected);
         expected.Should().BeEquivalentTo(actual.Select(a => a.SiteTitle));
@@ -1011,10 +1011,9 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         }
 
         
-        var expected = created.GetRange(1,9);
-        expected.Add(created[13]);
+        var expected = created.GetRange(1,10);
         var tags = new List<TagDTO>() {atag, btag};
-        List<ResourceDTO> actual = (List<ResourceDTO>) await _repo.GetResources(0, "title", tags, 10, 0);
+        List<ResourceDTO> actual = (await _repo.GetResources(0, "title", tags, 10, 0)).ToList();
 
         actual.Should().HaveSameCount(expected);
         expected.Should().BeEquivalentTo(actual.Select(a => a.SiteTitle));
