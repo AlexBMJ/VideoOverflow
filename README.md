@@ -45,12 +45,12 @@ dotnet test
 ```
 
 ## Contributors
-Asmus Tørsleff (ASMT)
+Alexander Bastian Magno Jacobsen (ALJA)
 Anton Marius Nielsen (ANTNI)
+Asmus Tørsleff (ASMT)
+Christian Lyon Lüthcke (CLYT)
 Deniz Isik (DENI)
 Karl Bilsted Michelsen (KABM)
-Christian Lyon Lüthcke (CLYT)
-Alexander Bastian Magno Jacobsen (ALJA)
 
 ## License
 [GPLv3](https://github.com/AlexBMJ/VideoOverflow/blob/main/LICENSE)
