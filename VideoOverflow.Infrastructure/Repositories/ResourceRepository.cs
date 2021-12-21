@@ -32,7 +32,7 @@ public class ResourceRepository : IResourceRepository
     public async Task<IEnumerable<ResourceDTO>> GetResources(int category, string query, IEnumerable<TagDTO> tags, int count, int skip)
     {
         return await _context.Resources.
-            Where(t => (category == 0 || t.Categories.Any(c=>c.Id == category)) && t.Tags.Any(a=> tags.Select(qt=>qt.Name).Contains(a.Name))).
+            Where(t => (category == 0 || t.Categories.Any(c=>c.Id == category)) && t.Tags.Any(a=> tags.Select(qt=>qt.Id).Contains(a.Id))).
             OrderByDescending(o=>EF.Functions.TrigramsSimilarity(o.SiteTitle, query)).
             Skip(skip).
             Take(count).

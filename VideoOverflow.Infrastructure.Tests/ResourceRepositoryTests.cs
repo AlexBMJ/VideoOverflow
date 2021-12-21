@@ -502,13 +502,11 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
 [Fact]
     public async Task Get_Resources_returns_last_3_resources_with_tag_a_and_b_given_13_resources_with_tag_a_and_b_and_others_and_no_category_and_skip_10_and_count_10_and_tags_a_and_b()
     {
-        await _context.Tags.AddAsync(new Tag()
-            {Id = 1, Name = "aaaaaaaaaaaaaaa", Resources = new List<Resource>(), TagSynonyms = new List<TagSynonym>()});
-        await _context.Tags.AddAsync(new Tag()
-            {Id = 2, Name = "bbbbbbbbbbbbbb", Resources = new List<Resource>(), TagSynonyms = new List<TagSynonym>()});
-        await _context.Tags.AddAsync(new Tag()
-            {Id = 3, Name = "ccccccccccccccccccccccccccc", Resources = new List<Resource>(), TagSynonyms = new List<TagSynonym>()});
-        await _context.SaveChangesAsync();
+        var tagRepo = new TagRepository(_pgContext);
+        var atag = await tagRepo.Push(new TagCreateDTO() {Name = "aaaaaaaaaaaaaaa", TagSynonyms = new List<string>()});
+        var btag = await tagRepo.Push(new TagCreateDTO() {Name = "bbbbbbbbbbbbbb", TagSynonyms = new List<string>()});
+        var ctag = await tagRepo.Push(new TagCreateDTO() {Name = "ccccccccccccccccccccccccccc", TagSynonyms = new List<string>()});
+        
         
         var resources = new List<ResourceCreateDTO>()
         {
@@ -702,25 +700,19 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
 
         
         var expected = created.GetRange(10,3);
-        var tags = new List<TagDTO>() {new TagDTO(1, "aaaaaaaaaaaaaaa", new List<string>()), new TagDTO(2, "bbbbbbbbbbbbbb", new List<string>())};
+        var tags = new List<TagDTO>() {atag, btag};
         List<ResourceDTO> actual = (List<ResourceDTO>) await _pgRepo.GetResources(0, "title", tags, 10, 10);
-        
         actual.Should().HaveSameCount(expected);
         expected.Should().BeEquivalentTo(actual.Select(a => a.SiteTitle));
-        
-        
-        
     }
     [Fact]
     public async Task Get_Resources_returns_first_10_resources_with_tag_a_and_b_given_13_resources_with_tag_a_and_b_and_others_and_no_category_and_skip_0_and_count_10_and_tags_a_and_b()
     {
-        await _context.Tags.AddAsync(new Tag()
-            {Id = 1, Name = "aaaaaaaaaaaaaaa", Resources = new List<Resource>(), TagSynonyms = new List<TagSynonym>()});
-        await _context.Tags.AddAsync(new Tag()
-            {Id = 2, Name = "bbbbbbbbbbbbbb", Resources = new List<Resource>(), TagSynonyms = new List<TagSynonym>()});
-        await _context.Tags.AddAsync(new Tag()
-            {Id = 3, Name = "ccccccccccccccccccccccccccc", Resources = new List<Resource>(), TagSynonyms = new List<TagSynonym>()});
-        await _context.SaveChangesAsync();
+        var tagRepo = new TagRepository(_pgContext);
+        var atag = await tagRepo.Push(new TagCreateDTO() {Name = "aaaaaaaaaaaaaaa", TagSynonyms = new List<string>()});
+        var btag = await tagRepo.Push(new TagCreateDTO() {Name = "bbbbbbbbbbbbbb", TagSynonyms = new List<string>()});
+        var ctag = await tagRepo.Push(new TagCreateDTO() {Name = "ccccccccccccccccccccccccccc", TagSynonyms = new List<string>()});
+        
         
         var resources = new List<ResourceCreateDTO>()
         {
@@ -915,13 +907,10 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         
         var expected = created.GetRange(1,9);
         expected.Add(created[13]);
-        var tags = new List<TagDTO>() {new TagDTO(1, "aaaaaaaaaaaaaaa", new List<string>()), new TagDTO(2, "bbbbbbbbbbbbbb", new List<string>())};
+        var tags = new List<TagDTO>() {atag, btag};
         List<ResourceDTO> actual = (List<ResourceDTO>) await _pgRepo.GetResources(0, "title", tags, 10, 0);
         actual.Should().HaveSameCount(expected);
         expected.Should().BeEquivalentTo(actual.Select(a => a.SiteTitle));
-        
-        
-        
     }
 
     /* Dispose code has been taken from  https://github.com/ondfisk/BDSA2021/blob/main/MyApp.Infrastructure.Tests/CityRepositoryTests.cs*/
