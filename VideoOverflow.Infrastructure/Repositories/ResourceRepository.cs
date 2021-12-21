@@ -24,17 +24,24 @@ public class ResourceRepository : IResourceRepository
     /// Gets all resources from the resource relation in the DB
     /// </summary>
     /// <returns>A collection of all resources</returns>
-    public async Task<IEnumerable<ResourceDTO>> GetAll()
+    public async Task<IEnumerable<ResourceDetailsDTO>> GetAll()
     {
         // Give resourceDTO
-        return await _context.Resources.Select(c => new ResourceDTO(
-            c.Id,
-            c.MaterialType,
-            c.SiteUrl,
-            c.SiteTitle,
-            c.Created,
-            c.Author,
-            c.Language)).ToListAsync();
+        return await _context.Resources.Select(c => new ResourceDetailsDTO() {
+            Id = c.Id,
+            MaterialType = c.MaterialType,
+            Author = c.Author,
+            SiteTitle = c.SiteTitle,
+            ContentSource = c.ContentSource,
+            SiteUrl = c.SiteUrl,
+            Created = c.Created,
+            Language = c.Language,
+            LixNumber = c.LixNumber,
+            SkillLevel = c.SkillLevel,
+            Categories = c.Categories.Select(category => category.Name).ToList(),
+            Comments = c.Comments.Select(comment => comment.Content).ToList(),
+            Tags = c.Tags.Select(t => t.Name).ToList()
+        }).ToListAsync();
     }
     
     /// <summary>
