@@ -677,7 +677,8 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         var created = new List<string>();
         foreach (var createDto in resources)
         {
-            created.Add((await _pgRepo.Push(createDto)).SiteTitle);
+            await _pgRepo.Push(createDto);
+            created.Add(createDto.SiteTitle);
         }
 
         
@@ -883,7 +884,8 @@ public class ResourceRepositoryTests : DatabaseTestCase, IDisposable
         var created = new List<string>();
         foreach (var createDto in resources)
         {
-            created.Add((await _pgRepo.Push(createDto)).SiteTitle);
+            await _pgRepo.Push(createDto);
+            created.Add(createDto.SiteTitle);
         }
 
         
