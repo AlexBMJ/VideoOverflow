@@ -46,7 +46,7 @@ If you wish to build and run the program on bare metal or debug outside a contai
 - [.NET 6](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
 - [PostgreSQL](https://www.postgresql.org/)
 
-Using dotnet tools, set connection strings to the database in the `Server` and `Infrastructure` projects.
+Using dotnet tools, set database connection strings with the name "VideoOverflow" in the `Server` and `Infrastructure` projects.
 In a production environment, key-stores are recommended.
 Once the database has been setup the app can be built from the root of the repository and run as follows:
 ```
