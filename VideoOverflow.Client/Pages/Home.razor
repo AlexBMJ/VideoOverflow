@@ -29,22 +29,20 @@
     </NotAuthorized>
 </AuthorizeView>
 
-<MudCarousel Style="height:275px; transform: translateY(-3px)" ShowArrows="@Arrows" ShowDelimiters="@Delimiters" AutoCycleTime="@_cycleTimer" AutoCycle="@AutoCycle" TData="object">
-    <MudCarouselItem Transition="Transition" Color="@Color.Primary">
-
+<MudCarousel Style="border-radius:10px; height:275px; transform: translateY(-6px)" ShowArrows="@Arrows"  ShowDelimiters="@Delimiters" AutoCycleTime="@_cycleTimer" AutoCycle="@AutoCycle" TData="object">
+    <MudCarouselItem Transition="Transition" Color="@Color.Tertiary">
         <div class="d-flex" style="height:100%">
-            <MudIcon Class="mx-auto my-auto" Icon="VideoOverflow.Client/wwwroot/icon-192.png" />
+            <img src="image2.svg" alt=""/>
+        </div>
+    </MudCarouselItem>
+    <MudCarouselItem Transition="Transition" Color="@Color.Surface">
+        <div class="d-flex" style="height:100%">
+            <img src="image3.svg" alt=""/>
         </div>
     </MudCarouselItem>
     <MudCarouselItem Transition="Transition" Color="@Color.Primary">
         <div class="d-flex" style="height:100%">
-            <MudIcon Class="mx-auto my-auto" src="icon-192.png" Size="@Size.Large" />
-        </div>
-    </MudCarouselItem>
-    <MudCarouselItem Transition="Transition" Color="@Color.Primary">
-
-        <div class="d-flex" style="height:100%">
-            <MudIcon Class="mx-auto my-auto" Icon="VideoOverflow.Client/wwwroot/icon-192.png" Color="@Color.Primary" Size="@Size.Large" />
+            <img src="image1.svg" alt=""/>
         </div>
     </MudCarouselItem>
 </MudCarousel>

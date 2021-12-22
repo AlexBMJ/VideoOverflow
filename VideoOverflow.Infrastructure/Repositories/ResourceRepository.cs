@@ -1,6 +1,7 @@
 ﻿
 using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
+using Castle.Core.Internal;
 
 namespace VideoOverflow.Infrastructure.repositories;
 
@@ -57,7 +58,7 @@ public class ResourceRepository : IResourceRepository
     public async Task<IEnumerable<ResourceDTO>> GetResources(int category, string query, IEnumerable<TagDTO> tags, int count, int skip)
     {
         return await _context.Resources.
-            Where(t => (category == 0 || t.Categories.Any(c=>c.Id == category)) && t.Tags.Any(a=> tags.Select(qt=>qt.Id).Contains(a.Id))).
+            Where(t => (category == 0 || t.Categories.Any(c=>c.Id == category)) && (tags.IsNullOrEmpty() || t.Tags.Any(a=> tags.Select(qt=>qt.Id).Contains(a.Id)))).
             OrderByDescending(o=>EF.Functions.TrigramsSimilarity(o.SiteTitle, query)).
             ThenBy(res=>res.Id).
             Skip(skip).
