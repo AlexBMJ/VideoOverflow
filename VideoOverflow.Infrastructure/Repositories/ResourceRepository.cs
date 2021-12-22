@@ -52,8 +52,8 @@ public class ResourceRepository : IResourceRepository
     /// <param name="query">The query from the user to parse</param>
     /// <param name="tags">All the tags which the resources needs to have</param>
     /// <param name="count">Amount of resources to return</param>
-    /// <param name="skip"></param>
-    /// <returns></returns>
+    /// <param name="skip">Number of elements to skip, this is related to the page from the controller</param>
+    /// <returns>List with "count" number of resources with the given tags, sorted by similarity to title and then by id, skipping the first number of "skips"</returns>
     public async Task<IEnumerable<ResourceDTO>> GetResources(int category, string query, IEnumerable<TagDTO> tags, int count, int skip)
     {
         return await _context.Resources.
