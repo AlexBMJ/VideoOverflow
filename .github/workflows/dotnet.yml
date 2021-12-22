@@ -40,7 +40,7 @@ jobs:
       run: dotnet test -p:CollectCoverage=true -p:CoverletOutputFormat=opencover -p:CoverletOutput='TestResults/' --no-restore --verbosity normal VideoOverflow.Infrastructure.Tests
       
     - name: Create Test Coverage Badge
-      uses: actions/setup-dotnet@v1
+      uses: simon-k/dotnet-code-coverage-badge@v1.0.0
       id: create_coverage_badge
       with:
         label: Unit Test Coverage
