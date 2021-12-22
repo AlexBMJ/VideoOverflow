@@ -4,33 +4,34 @@
 @using VideoOverflow.Core.DTOs
 @using Microsoft.AspNetCore.WebUtilities
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject HttpClient _http
 @inject NavigationManager _navigationManager
 @inject ISnackbar _snackbar
 
 <PageTitle>Browse</PageTitle>
 <MudGrid Justify="Justify.Center" Spacing="1" Class="my-4">
-        <MudItem lg="8" md="8" sm="7" xs="12">
-            <MudTextField @bind-Value="_search" OnKeyPress="@(e => {if (e.Code == "Enter") {SpellCheck();Search();}})" Immediate="true" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" OnAdornmentClick="@(Search)" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Primary"/>
-            @if (!string.IsNullOrEmpty(_correctionSuggestion)) {
-                <MudChip OnClick="@(() => { _search = _correctionSuggestion; _correctionSuggestion = null; Search(); })" Label="true">Did you mean: @_correctionSuggestion</MudChip>
+    <MudItem lg="8" md="8" sm="7" xs="12">
+        <MudTextField @bind-Value="_search" OnKeyPress="@(e => {if (e.Code == "Enter") {SpellCheck();Search();}})" Immediate="true" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" OnAdornmentClick="@(Search)" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Primary"/>
+        @if (!string.IsNullOrEmpty(_correctionSuggestion)) {
+            <MudChip OnClick="@(() => { _search = _correctionSuggestion; _correctionSuggestion = null; Search(); })" Label="true">Did you mean: @_correctionSuggestion</MudChip>
+        }
+    </MudItem>
+    <MudItem lg="3" md="3" sm="3" xs="12">
+        <MudSelect @bind-Value="_category" T="string" Label="Category" Strict="true" Variant="Variant.Outlined" Format="F2" AnchorOrigin="Origin.BottomCenter" AdornmentIcon="@Icons.Filled.Category">
+            @foreach (var ctg in _categories) {
+                <MudSelectItem Value="@ctg.Name"/>
             }
-        </MudItem>
-        <MudItem lg="3" md="3" sm="3" xs="12">
-            <MudSelect @bind-Value="_category" T="string" Label="Category" Strict="true" Variant="Variant.Outlined" Format="F2" AnchorOrigin="Origin.BottomCenter" AdornmentIcon="@Icons.Filled.Category">
-                @foreach (var ctg in _categories) {
-                    <MudSelectItem Value="@ctg.Name"/>
-                }
-            </MudSelect>
-        </MudItem>
+        </MudSelect>
+    </MudItem>
 </MudGrid>
 
 <MudDivider/>
 
-<MudTable  T="SettableTuple<bool, ResourceDTO>"  Items="_resources" Bordered="true" Class="ma-4" Height="100% -24px" >
+<MudTable T="SettableTuple<bool, ResourceDTO>" Items="_resources" Bordered="true" Class="ma-4" Height="100% -24px">
     <RowTemplate>
-        <MudGrid Justify="Justify.SpaceBetween" Style="width: calc(100% + 12px)" >
-            <MudItem Class="d-flex align-center" >
+        <MudGrid Justify="Justify.SpaceBetween" Style="width: calc(100% + 12px)">
+            <MudItem Class="d-flex align-center">
                 <MudToggleIconButton ToggledChanged="@(() => ShowDetails(context.Item2.Id))" Toggled="context.Item1" Icon="@Icons.Material.Filled.KeyboardArrowRight" ToggledIcon="@Icons.Filled.KeyboardArrowDown" aria-label="closed"/>
             </MudItem>
             <MudItem xl="1" lg="1" md="1" sm="1" Class="d-flex align-center">
@@ -72,16 +73,16 @@
 </MudTable>
 <MudGrid Justify="Justify.Center" Spacing="1" Class="my-4">
     <MudItem xs="12" sm="6" md="4">
-        <MudNumericField @bind-Value="_resultCount" Label="Results" Variant="Variant.Outlined" Step="5" Min="5" Max="50" />
+        <MudNumericField @bind-Value="_resultCount" Label="Results" Variant="Variant.Outlined" Step="5" Min="5" Max="50"/>
     </MudItem>
     <MudItem lg="3" md="3" sm="3" xs="12">
-        <MudIconButton Class="ma-2" Variant="Variant.Filled" DisableElevation="true" Icon="@Icons.Material.Filled.ArrowBackIosNew" OnClick="@(() => {if (_page > 1) {_page -= 1; Search();}})" Size="Size.Large" />
-        <MudIconButton Class="ma-2" Variant="Variant.Filled" DisableElevation="true" Icon="@Icons.Material.Filled.ArrowForwardIos" OnClick="@(() => {_page+=1;Search();})" Size="Size.Large"  />
+        <MudIconButton Class="ma-2" Variant="Variant.Filled" DisableElevation="true" Icon="@Icons.Material.Filled.ArrowBackIosNew" OnClick="@(() => {if (_page > 1) {_page -= 1; Search();}})" Size="Size.Large"/>
+        <MudIconButton Class="ma-2" Variant="Variant.Filled" DisableElevation="true" Icon="@Icons.Material.Filled.ArrowForwardIos" OnClick="@(() => {_page += 1;Search();})" Size="Size.Large"/>
 
     </MudItem>
 </MudGrid>
 
-<MudOverlay  AutoClose="true"  Visible="isVisible" OnClick="@(_ => ToggleOverlay(false))" DarkBackground="true" Absolute="true">
+<MudOverlay AutoClose="true" Visible="isVisible" OnClick="@(_ => ToggleOverlay(false))" DarkBackground="true" Absolute="true">
     <ResourceDetails id="@ResourceId"></ResourceDetails>
 </MudOverlay>
 
@@ -97,62 +98,82 @@
     private bool isVisible;
     private int ResourceId;
 
-    public void ToggleOverlay(bool value)
-    {
+    public void ToggleOverlay(bool value) {
         isVisible = value;
     }
 
     protected override async Task OnInitializedAsync() {
-        try { 
+        try {
             var categories = await _http.GetFromJsonAsync<CategoryDTO[]>("Api/Category");
             if (categories != null)
                 _categories = categories.ToList();
             _categories.Insert(0, new CategoryDTO(0, "None"));
         }
-        catch (Exception) {
+        catch (InvalidOperationException) {
             _snackbar.Add("Please login to continue", Severity.Error);
+        }
+        catch (AccessTokenNotAvailableException) {
+            _snackbar.Add("Please login to continue", Severity.Error);
+        }
+        catch (Exception e) {
+            _snackbar.Add("Something went wrong!", Severity.Error);
         }
     }
 
     private async Task SpellCheck() {
-        try { 
-            var uri = QueryHelpers.AddQueryString("Api/Resource/Spelling",
-                new Dictionary<string, string?>() {["Query"] = _search});
-            var suggestion = await _http.GetStringAsync(uri);
-            _correctionSuggestion = suggestion != _search ? suggestion : null;
-            StateHasChanged();
+        try {
+            if (!string.IsNullOrEmpty(_search)) {
+                var uri = QueryHelpers.AddQueryString("Api/Resource/Spelling",
+                    new Dictionary<string, string?>() {["Query"] = _search});
+                var suggestion = await _http.GetStringAsync(uri);
+                _correctionSuggestion = suggestion != _search ? suggestion : null;
+                StateHasChanged();
+            } else {
+                _snackbar.Add("Search field cannot be empty", Severity.Warning);
+            }
+        }
+        catch (InvalidOperationException) {
+            _snackbar.Add("Please login to continue", Severity.Error);
+        }
+        catch (AccessTokenNotAvailableException) {
+            _snackbar.Add("Please login to continue", Severity.Error);
         }
         catch (Exception) {
-            _snackbar.Add("Please login to continue", Severity.Error);
+            _snackbar.Add("Something went wrong!", Severity.Error);
         }
     }
 
     private async Task Search() {
-        try {
-        var resources = await GetResources();
-        if (resources != null) {
-            _resources = resources.Select(r => new SettableTuple<bool, ResourceDTO>(false, r)).ToList();
-            StateHasChanged();
-        }
-        }
-        catch (Exception) {
-            _snackbar.Add("Please login to continue", Severity.Error);
+        if (!string.IsNullOrEmpty(_search)) {
+            var resources = await GetResources();
+            if (resources != null) {
+                _resources = resources.Select(r => new SettableTuple<bool, ResourceDTO>(false, r)).ToList();
+                StateHasChanged();
+            }
+        } else {
+            _snackbar.Add("Search field cannot be empty", Severity.Warning);
         }
     }
 
     private async Task<IEnumerable<ResourceDTO>?> GetResources() {
         try {
-        var queryStringParams = new Dictionary<string, string?>() {
-            ["Category"] = _categories.First(c=>c.Name.Equals(_category)).Id.ToString(),
-            ["Query"] = _search,
-            ["Count"] = _resultCount.ToString(),
-            ["Page"] = _page.ToString()
-        };
-        var uri = QueryHelpers.AddQueryString("Api/Resource/Search", queryStringParams);
-        return await _http.GetFromJsonAsync<ResourceDTO[]>(uri);
+            var queryStringParams = new Dictionary<string, string?>() {
+                ["Category"] = _categories.First(c => c.Name.Equals(_category)).Id.ToString(),
+                ["Query"] = _search,
+                ["Count"] = _resultCount.ToString(),
+                ["Page"] = _page.ToString()
+            };
+            var uri = QueryHelpers.AddQueryString("Api/Resource/Search", queryStringParams);
+            return await _http.GetFromJsonAsync<ResourceDTO[]>(uri);
+        }
+        catch (InvalidOperationException) {
+            _snackbar.Add("Please login to continue", Severity.Error);
+        }
+        catch (AccessTokenNotAvailableException) {
+            _snackbar.Add("Please login to continue", Severity.Error);
         }
         catch (Exception) {
-            _snackbar.Add("Please login to continue", Severity.Error);
+            _snackbar.Add("Something went wrong!", Severity.Error);
         }
         return null;
     }
@@ -164,29 +185,32 @@
             ResourceType.Book => Icons.Filled.MenuBook,
             ResourceType.Video => Icons.Filled.VideoLibrary,
             _ => throw new ArgumentOutOfRangeException(nameof(material), material, null)
-        };
+            };
     }
 
     private async Task Delete(int id) {
         try {
-        
-        var response = await _http.DeleteAsync($"Api/Resource/{id}");
-        
-        if (response.IsSuccessStatusCode)
-        {
-            _snackbar.Add("SuccessFully Deleted a resource");
-            var entity = _resources.Where(c => c.Item2.Id 
+            var response = await _http.DeleteAsync($"Api/Resource/{id}");
 
-                 == id).Select(c => c).FirstOrDefault();
-            if (entity != null) {
-                _resources?.Remove(entity);
-                StateHasChanged();
+            if (response.IsSuccessStatusCode) {
+                _snackbar.Add("SuccessFully Deleted a resource");
+                var entity = _resources.Where(c => c.Item2.Id
+                                                   == id).Select(c => c).FirstOrDefault();
+                if (entity != null) {
+                    _resources?.Remove(entity);
+                    StateHasChanged();
+                }
             }
         }
-    }
-    catch (Exception) {
-        _snackbar.Add("Please login to continue", Severity.Error);
-    }
+        catch (InvalidOperationException) {
+            _snackbar.Add("Please login to continue", Severity.Error);
+        }
+        catch (AccessTokenNotAvailableException) {
+            _snackbar.Add("Please login to continue", Severity.Error);
+        }
+        catch (Exception) {
+            _snackbar.Add("Something went wrong!", Severity.Error);
+        }
     }
 
     private void ShowDetails(int id) {
@@ -199,7 +223,7 @@
         re.Item1 = !re.Item1;
     }
 
-    private class SettableTuple<T,T2> {
+    private class SettableTuple<T, T2> {
         public T Item1 { get; set; }
         public T2 Item2 { get; set; }
 
@@ -208,9 +232,8 @@
             Item2 = i2;
         }
     }
-    
-    private void NavigateToResource(int id)
-    {
+
+    private void NavigateToResource(int id) {
         _navigationManager.NavigateTo($"Edit/{id}");
     }
 

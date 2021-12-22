@@ -88,8 +88,6 @@
 
     private async Task EditResource()
     {
-        Console.WriteLine(_resourceDetailsDto);
-        Console.WriteLine(_ResourceForm);
         if (_resourceDetailsDto != null) {
             var update = new ResourceUpdateDTO() {
                 Id = id,
