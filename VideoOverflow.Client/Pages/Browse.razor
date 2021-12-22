@@ -81,7 +81,7 @@
     </MudItem>
 </MudGrid>
 
-<MudOverlay  AutoClose="true"  Visible="isVisible" OnClick="@(e => ToggleOverlay(false))" DarkBackground="true" Absolute="true">
+<MudOverlay  AutoClose="true"  Visible="isVisible" OnClick="@(_ => ToggleOverlay(false))" DarkBackground="true" Absolute="true">
     <ResourceDetails id="@ResourceId"></ResourceDetails>
 </MudOverlay>
 
@@ -109,7 +109,7 @@
                 _categories = categories.ToList();
             _categories.Insert(0, new CategoryDTO(0, "None"));
         }
-        catch (Exception e) {
+        catch (Exception) {
             _snackbar.Add("Please login to continue", Severity.Error);
         }
     }
@@ -122,7 +122,7 @@
             _correctionSuggestion = suggestion != _search ? suggestion : null;
             StateHasChanged();
         }
-        catch (Exception e) {
+        catch (Exception) {
             _snackbar.Add("Please login to continue", Severity.Error);
         }
     }
@@ -135,7 +135,7 @@
             StateHasChanged();
         }
         }
-        catch (Exception e) {
+        catch (Exception) {
             _snackbar.Add("Please login to continue", Severity.Error);
         }
     }
@@ -151,7 +151,7 @@
         var uri = QueryHelpers.AddQueryString("Api/Resource/Search", queryStringParams);
         return await _http.GetFromJsonAsync<ResourceDTO[]>(uri);
         }
-        catch (Exception e) {
+        catch (Exception) {
             _snackbar.Add("Please login to continue", Severity.Error);
         }
         return null;
@@ -184,7 +184,7 @@
             }
         }
     }
-    catch (Exception e) {
+    catch (Exception) {
         _snackbar.Add("Please login to continue", Severity.Error);
     }
     }

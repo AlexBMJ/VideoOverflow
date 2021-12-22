@@ -4,9 +4,14 @@ WORKDIR /app
 # Copy everything else and build
 COPY . ./
 RUN dotnet restore
+RUN dotnet tool install --global dotnet-ef
+RUN dotnet tool update --global dotnet-ef
+ENV PATH="${PATH}:/root/.dotnet/tools"
+RUN dotnet user-secrets init --project VideoOverflow.Infrastructure
+RUN dotnet user-secrets set "ConnectionStrings:VideoOverflow" "Server=db;Database=VideoOverflow;UserId=postgres;Password=ProdPassword" --project VideoOverflow.Infrastructure
+RUN dotnet ef migrations add VideoOverflowMigration --project VideoOverflow.Infrastructure
 RUN dotnet publish -c Release -o out
-
-RUN dotnet dev-certs https -ep ./out/cert.pfx -p Test1234
+RUN dotnet dev-certs https -ep ./out/cert.pfx -p CertPassword
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
