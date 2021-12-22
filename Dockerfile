@@ -11,7 +11,7 @@ RUN dotnet user-secrets init --project VideoOverflow.Infrastructure
 RUN dotnet user-secrets set "ConnectionStrings:VideoOverflow" "Server=db;Database=VideoOverflow;UserId=postgres;Password=ProdPassword" --project VideoOverflow.Infrastructure
 RUN dotnet ef migrations add VideoOverflowMigration --project VideoOverflow.Infrastructure
 RUN dotnet publish -c Release -o out
-RUN dotnet dev-certs https -ep ./out/cert.pfx -p CertPassword
+RUN dotnet dev-certs https -ep ./out/cert.pfx -p CertPassword1234
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
