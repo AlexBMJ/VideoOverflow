@@ -22,7 +22,7 @@ To run the production demo use [docker compose](https://docs.docker.com/compose/
 docker-compose up -d
 ```
 
-That's it! You should now be able to visit **http://localhost**. 
+That's it! You should now be able to visit **https://localhost**. 
 
 ---
 
