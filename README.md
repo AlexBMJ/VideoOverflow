@@ -1,7 +1,10 @@
 # VideoOverflow
 **BDSA 2021** 
-
+[![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/AlexBMJ/0429939e94ea4bf60727cef5e69faa60/raw/code-coverage.json)](https://app.codecov.io/gh/AlexBMJ/VideoOverflow/)
 [![.NET](https://github.com/AlexBMJ/VideoOverflow/actions/workflows/dotnet.yml/badge.svg?branch=main)](https://github.com/AlexBMJ/VideoOverflow/actions/workflows/dotnet.yml)
+[![C#](https://img.shields.io/badge/language-C%23-darkgreen.svg)](https://dotnet.microsoft.com/en-us/languages/csharp) 
+[![.Net](https://img.shields.io/badge/framework-.NET-purple.svg)](https://dotnet.microsoft.com/en-us/)
+![license](https://img.shields.io/github/license/AlexBMJ/VideoOverflow.svg)
 
 VideoOverflow is an web application which aggregates educational resources. It enables a user to search for tutorials by category, title and tag. They will then be presented with learning materials in the form of videos, articles and books.
 
