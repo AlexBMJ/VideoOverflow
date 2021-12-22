@@ -3,7 +3,7 @@
 
 [![.NET](https://github.com/AlexBMJ/VideoOverflow/actions/workflows/dotnet.yml/badge.svg?branch=main)](https://github.com/AlexBMJ/VideoOverflow/actions/workflows/dotnet.yml)
 
-VideoOverflow is an web application which aggregates educational resources. It enables a user to search for tutorials by category, title, tag. be presented with learning materials in the form of videos, articles and books.
+VideoOverflow is an web application which aggregates educational resources. It enables a user to search for tutorials by category, title and tag. They will then be presented with learning materials in the form of videos, articles and books.
 
 ## Prerequisites
 _Before attempting to run, make sure you have the following software installed_
