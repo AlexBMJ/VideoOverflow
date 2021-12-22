@@ -35,3 +35,17 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal --filter "FullyQualifiedName!~VideoOverflow.Server.Integration.Tests"
+    
+    - name: Test Infrastructure
+      run: dotnet test -p:CollectCoverage=true -p:CoverletOutputFormat=opencover -p:CoverletOutput='TestResults/' --no-restore --verbosity normal VideoOverflow.Infrastructure.Tests
+      
+    - name: Create Test Coverage Badge
+      uses: actions/setup-dotnet@v1
+      id: create_coverage_badge
+      with:
+        label: Unit Test Coverage
+        color: brightgreen
+        path: VideoOverflow.Infrastructure.Tests/TestResults/coverage.opencover.xml
+        gist-filename: code-coverage.json
+        gist-id: 0429939e94ea4bf60727cef5e69faa60
+        gist-auth-token: ${{ secrets.GIST_AUTH_TOKEN }}
