@@ -1,5 +1,6 @@
 ﻿namespace VideoOverflow.Core;
 
+//This code has been taken from https://github.com/ondfisk/BDSA2021/blob/main/MyApp.Core/Option.cs
 public struct Option<T> where T : class
 {
     private readonly T? _value;
