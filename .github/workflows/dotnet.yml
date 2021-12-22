@@ -37,7 +37,7 @@ jobs:
       run: dotnet test --no-build --verbosity normal --filter "FullyQualifiedName!~VideoOverflow.Server.Integration.Tests"
     
     - name: Test Infrastructure
-      run: dotnet test -p:CollectCoverage=true -p:CoverletOutputFormat=opencover -p:CoverletOutput='TestResults/' --no-restore --verbosity normal VideoOverflow.Infrastructure.Tests
+      run: dotnet test -p:CollectCoverage=true -p:CoverletOutputFormat=opencover -p:CoverletOutput=TestResults/ --no-restore --verbosity normal VideoOverflow.Infrastructure.Tests/
       
     - name: Create Test Coverage Badge
       uses: simon-k/dotnet-code-coverage-badge@v1.0.0
