@@ -1,4 +1,3 @@
-using VideoOverflow.Core.DTOs;
 
 namespace VideoOverflow.Infrastructure.repositories;
 

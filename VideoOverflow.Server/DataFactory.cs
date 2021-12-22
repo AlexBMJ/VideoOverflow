@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 using FluentAssertions.Extensions;
-using Microsoft.VisualBasic;
 using VideoOverflow.Infrastructure.Context;
 using VideoOverflow.Infrastructure.Entities;
 
