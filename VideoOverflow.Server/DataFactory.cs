@@ -40,13 +40,16 @@ public static class DataFactory
 
     private static IList<string> _siteTitles = new List<string>()
     {
-        "How to use GitHub | What is GitHub | Git and GitHub Tutorial | DevOps Training | Edureka",
+        "How to use GitHub",
+        "What is GitHub",
+        "Git and GitHub Tutorial",
+        "DevOps Training",
         "What is C#? | C# 101 [1 of 19]",
         "How to Get Started with Docker",
         "The Java Tutorial",
         "object-oriented programming (OOP)",
         "Functional programming",
-        "What is Unit Testing? Why YOU Should Learn It + Easy to Understand Examples",
+        "What is Unit Testing? Why YOU Should Learn It",
         "Types of Software Testing",
         "MySQL Tutorial for Beginners [Full Course]",
         "Distributed Systems 1.1: Introduction",

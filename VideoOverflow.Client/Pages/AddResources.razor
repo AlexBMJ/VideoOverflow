@@ -47,10 +47,21 @@
     
         private async Task HandleValidSubmit()
         {
+            if (_createForm.SiteTitle == null)
+                _snackbar.Add("Please pick a title!");
+            
+            if (_createForm.MaterialType == null)
+                _snackbar.Add("Please pick a Material!");
+            
+            if (_createForm.Language == null)
+                _snackbar.Add("Please pick a Language!");
 
-            if (!IsValidUrl(_createForm.SiteUrl))
+            if (string.IsNullOrEmpty(_createForm.Tags))
+                _createForm.Tags = "";
+
+            if (_createForm.SiteUrl == null || !IsValidUrl(_createForm.SiteUrl))
             {
-                _snackbar.Add("INVALID URL!");
+                _snackbar.Add("Invalid URL!");
                 return;
             }
             
@@ -99,13 +110,13 @@
     private class CreateForm
     {
         [Required]
-        public string SiteTitle { get; set; } = null!;
+        public string? SiteTitle { get; set; }
 
         [Required]
-        public string SiteUrl { get; set; } = null!;
+        public string? SiteUrl { get; set; }
 
         [Required]
-        public string MaterialType { get; set; } = null!;
+        public string? MaterialType { get; set; }
 
         public string? Author { get; set; }
 
@@ -113,10 +124,10 @@
         public int? LixNumber { get; set; }
 
         [Required]
-        public string Language { get; set; } = null!;
+        public string? Language { get; set; }
 
         [Required]
-        public string Tags { get; set; } = null!;
+        public string? Tags { get; set; }
 
         [Required]
         public DateTime? Created { get; set; }
