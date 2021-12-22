@@ -3,6 +3,7 @@ WORKDIR /app
 
 # Copy everything else and build
 COPY . ./
+RUN rm -rf VideoOverflow.Infrastructure/Migrations
 RUN dotnet restore
 RUN dotnet tool install --global dotnet-ef
 RUN dotnet tool update --global dotnet-ef
