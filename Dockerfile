@@ -6,7 +6,6 @@ COPY . ./
 RUN rm -rf VideoOverflow.Infrastructure/Migrations
 RUN dotnet restore
 RUN dotnet tool install --global dotnet-ef
-RUN dotnet tool update --global dotnet-ef
 ENV PATH="${PATH}:/root/.dotnet/tools"
 RUN dotnet user-secrets init --project VideoOverflow.Infrastructure
 RUN dotnet user-secrets set "ConnectionStrings:VideoOverflow" "Server=db;Database=VideoOverflow;UserId=postgres;Password=ProdPassword" --project VideoOverflow.Infrastructure
