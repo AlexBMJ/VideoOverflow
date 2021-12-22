@@ -41,8 +41,8 @@ namespace Server.Controllers
         /// </summary>
         /// <param name="Category">The selected category</param>
         /// <param name="Query">The users query</param>
-        /// <param name="Count"></param>
-        /// <param name="Page"></param>
+        /// <param name="Count">Number of elements to be returned</param>
+        /// <param name="Page">The page of a given list of results</param>
         /// <returns>All resources based on the parameters</returns>
         [AllowAnonymous]
         [HttpGet("Search")]
@@ -50,7 +50,7 @@ namespace Server.Controllers
             => await _repository.GetResources(Category, Query, _queryParser.ParseTags(Query), Count, Math.Max(0, Count*(Page-1)));
 
         /// <summary>
-        /// Gets a specific resoure based on an id
+        /// Gets a specific resource based on an id
         /// </summary>
         /// <param name="id">Id of the resource to get</param>
         /// <returns>The resource with specific id</returns>

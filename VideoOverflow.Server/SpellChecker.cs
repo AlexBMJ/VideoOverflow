@@ -7,9 +7,9 @@ public class SpellChecker {
     private readonly int _maxEditDistanceDictionary;
 
     /// <summary>
-    /// 
+    /// SpellChecker takes a dictionary and uses compound aware multi-word spelling correction to split words intelligently.
     /// </summary>
-    /// <param name="maxEditDistance"></param>
+    /// <param name="maxEditDistance">The maximum edit distance per dictionary pre-calculation</param>
     /// <param name="dictionary">The path for the dictionary</param>
     /// <exception cref="FileNotFoundException">If the input dictionary can't be found on the given path</exception>
     public SpellChecker(int maxEditDistance = 2, string dictionary = "frequency_dictionary.txt") {
