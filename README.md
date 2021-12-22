@@ -7,7 +7,7 @@
 [![.Net](https://img.shields.io/badge/framework-.NET-purple.svg)](https://dotnet.microsoft.com/en-us/)
 [![license](https://img.shields.io/github/license/AlexBMJ/VideoOverflow.svg)](https://github.com/AlexBMJ/VideoOverflow/blob/main/LICENSE)
 
-VideoOverflow is an web application which aggregates educational resources. It enables a user to search for tutorials by category, title and tag. They will then be presented with learning materials in the form of videos, articles and books.
+VideoOverflow is a web application which aggregates educational resources. It enables a user to search for tutorials by category, title and tag. They will then be presented with learning materials in the form of videos, articles and books.
 
 ## Prerequisites
 _Before attempting to run, make sure you have the following software installed_
