@@ -1,20 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="FluentAssertions" Version="6.2.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkcore.sqlite" Version="6.0.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
-        <PackageReference Include="xunit" Version="2.4.1" />
-      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0-preview-20211130-02" />
-      <PackageReference Include="xunit" Version="2.4.2-pre.12" />
+        <PackageReference Include="FluentAssertions" Version="6.2.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.0"/>
+        <PackageReference Include="Microsoft.EntityFrameworkcore.sqlite" Version="6.0.0"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0"/>
+        <PackageReference Include="xunit" Version="2.4.1"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0-preview-20211130-02"/>
+        <PackageReference Include="xunit" Version="2.4.2-pre.12"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
@@ -22,9 +21,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\VideoOverflow.Infrastructure\VideoOverflow.Infrastructure.csproj" />
-      <ProjectReference Include="..\VideoOverflow.Server\VideoOverflow.Server.csproj" />
+        <ProjectReference Include="..\VideoOverflow.Infrastructure\VideoOverflow.Infrastructure.csproj"/>
+        <ProjectReference Include="..\VideoOverflow.Server\VideoOverflow.Server.csproj"/>
     </ItemGroup>
-    
+
 
 </Project>

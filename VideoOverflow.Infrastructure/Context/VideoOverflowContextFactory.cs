@@ -7,7 +7,7 @@
         {
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddUserSecrets<Program>()
+                .AddUserSecrets<Program>(optional:true)
                 .Build();
 
             var connectionString = configuration.GetConnectionString("VideoOverflow");
