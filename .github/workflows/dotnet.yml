@@ -36,20 +36,20 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal --filter "FullyQualifiedName!~VideoOverflow.Server.Integration.Tests"
     - name: Test Infrastructure
-      working-directory: ./VideoOverflow.Infrastructure.Tests
+      working-directory: ./VideoOverflow/VideoOverflow.Infrastructure.Tests
       run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput='./result.xml' --no-restore --verbosity normal
     - name: Test Server
-      working-directory: ./VideoOverflow.Server.Tests
+      working-directory: ./VideoOverflow/VideoOverflow.Server.Tests
       run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput='./result.xml' --no-restore --verbosity normal
     - name: Upload coverage to Codecov  
       uses: codecov/codecov-action@v1
       with:
-        file: ./VideoOverflow.Server.Tests/result.xml
+        file: ./VideoOverflow/VideoOverflow.Server.Tests/result.xml
         flags: unittests
         fail_ci_if_error: true
     - name: Upload coverage to Codecov  
       uses: codecov/codecov-action@v1
       with:
-        file: ./VideoOverflow.Infrastructure.Tests/result.xml
+        file: ./VideoOverflow/VideoOverflow.Infrastructure.Tests/result.xml
         flags: unittests
         fail_ci_if_error: true
