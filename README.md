@@ -33,7 +33,7 @@ Using the recommended docker compose file, everything should be containerized an
 When running with the provided scripts, the database binds to **localhost:5001** and the blazor web page is served on **https://localhost:7019**
 
 ## Testing 
-###\*IMPORTANT\* PLEASE READ BEFORE TESTING
+### \*IMPORTANT\* PLEASE READ BEFORE TESTING
 Some of the xUnit tests rely on postgres specific features, therefore a temporary postgres database must be run separately. \
 `./run-testdb.sh` or `RunTestDB.ps1`
 
