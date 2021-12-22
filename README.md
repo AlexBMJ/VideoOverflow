@@ -1,7 +1,6 @@
 # VideoOverflow
 **BDSA 2021** 
-
-[![codecov](https://codecov.io/gh/AlexBMJ/VideoOverflow/branch/main/graph/badge.svg)](https://app.codecov.io/gh/AlexBMJ/VideoOverflow/)
+[![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/AlexBMJ/0429939e94ea4bf60727cef5e69faa60/raw/code-coverage.json)](https://app.codecov.io/gh/AlexBMJ/VideoOverflow/)
 [![.NET](https://github.com/AlexBMJ/VideoOverflow/actions/workflows/dotnet.yml/badge.svg?branch=main)](https://github.com/AlexBMJ/VideoOverflow/actions/workflows/dotnet.yml)
 [![C#](https://img.shields.io/badge/language-C%23-darkgreen.svg)](https://dotnet.microsoft.com/en-us/languages/csharp) 
 [![.Net](https://img.shields.io/badge/framework-.NET-purple.svg)](https://dotnet.microsoft.com/en-us/)
